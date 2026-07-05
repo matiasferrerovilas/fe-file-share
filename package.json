@@ -7,10 +7,15 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "prepare": "husky",
+    "test": "vitest",
+    "test:coverage": "vitest --coverage"
   },
   "dependencies": {
+    "@ant-design/icons": "~6.3.2",
     "@tanstack/react-router": "^1.170.17",
+    "antd": "^6.5.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7"
   },
