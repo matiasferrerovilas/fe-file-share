@@ -1,11 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import FileExplorer from "../components/files/FileExplorer";
-import { ROOT_FOLDER_ID } from "../api/foldersApi";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/files/$folderId")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  return <FileExplorer folderId={ROOT_FOLDER_ID} />;
+  const { folderId } = Route.useParams();
+  return <FileExplorer folderId={folderId} />;
 }

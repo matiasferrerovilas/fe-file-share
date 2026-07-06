@@ -1,6 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AxiosInterceptorProvider } from "./api/AxiosInterceptorProvider";
-import "./App.css";
 import { createRouter, RouterProvider } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
 import { ConfigProvider, theme, App as AntdApp } from "antd";
