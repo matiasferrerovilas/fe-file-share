@@ -5,7 +5,7 @@ import Keycloak from "keycloak-js";
  
 import { ReactKeycloakProvider } from "@react-keycloak/web";
 import App from "./App";
-import { AuthProvider } from "./apis/auth/AuthProvider";
+import { AuthProvider } from "./auth/AuthProvider";
  
 
 const keycloak = new Keycloak(window.env.keycloak);

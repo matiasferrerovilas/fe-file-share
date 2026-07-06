@@ -1,5 +1,5 @@
 import { redirect } from "@tanstack/react-router";
-import type { RootRouteContext } from "../../routes/__root";
+import type { RootRouteContext } from "../routes/__root";
 
 export const onBoardingGuard = async ({
   context,

@@ -5,9 +5,9 @@ import SunOutlined from "@ant-design/icons/SunOutlined";
 import UserOutlined from "@ant-design/icons/UserOutlined";
 import { useKeycloak } from "@react-keycloak/web";
 import { Header } from "antd/es/layout/layout";
-import { useCurrentUser } from "../apis/hooks/useCurrentUser";
-import { useTheme } from "../apis/theme/ThemeContext";
-import { getUserDisplayName } from "./utils/userDisplayName";
+import { useCurrentUser } from "../hooks/useCurrentUser";
+import { useTheme } from "../theme/ThemeContext";
+import { getUserDisplayName } from "../utils/userDisplayName";
 
 const { Text } = Typography;
 
