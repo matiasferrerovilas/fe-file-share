@@ -1,4 +1,4 @@
-const useLocalBackend = false;
+const useLocalBackend = true;
 
 const localBackend = {
   api: "http://localhost:8081/v1", 
@@ -6,14 +6,14 @@ const localBackend = {
 };
 
 const devBackend = {
-  api: "https://movement.eva-core.com/v1", 
-  websocketUrl: "https://movement.eva-core.com",
+  api: "https://file.eva-core.com/v1", 
+  websocketUrl: "https://file.eva-core.com",
 };
 
 window.env = {
   environment: "local",
   keycloak: {
-    clientId: "fe-expenses",
+    clientId: "fe-file-sharing",
     realm: "m2",
     url: "https://auth.eva-core.com"
   },

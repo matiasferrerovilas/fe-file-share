@@ -141,7 +141,7 @@ export default function FolderContentsPanel({ folderId }: FolderContentsPanelPro
         { text: "Archivos", value: "FILE" },
       ],
       onFilter: (value, row) => row.type === value,
-      render: (_, row) => (row.type === "FOLDER" ? "Carpeta" : (row.contentType ?? "Archivo")),
+      render: (_, row) => (row.type === "FOLDER" ? "Carpeta" : "Archivo"),
     },
     {
       title: "Tamaño",
@@ -152,10 +152,10 @@ export default function FolderContentsPanel({ folderId }: FolderContentsPanelPro
     },
     {
       title: "Modificado",
-      dataIndex: "createdAt",
+      dataIndex: "lastModified",
       width: 200,
-      sorter: (a, b) => (a.createdAt ?? "").localeCompare(b.createdAt ?? ""),
-      render: (_, row) => (row.createdAt ? new Date(row.createdAt).toLocaleString() : "-"),
+      sorter: (a, b) => a.lastModified.localeCompare(b.lastModified),
+      render: (_, row) => new Date(row.lastModified).toLocaleString(),
     },
   ];
 

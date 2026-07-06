@@ -19,7 +19,7 @@ function toTreeData(nodes: FileSystemNode[]): TreeDataNode[] {
     icon: node.type === "FOLDER" ? <FolderOutlined /> : <FileOutlined />,
     isLeaf: node.type === "FILE",
     selectable: node.type === "FOLDER",
-    children: node.children.length ? toTreeData(node.children) : undefined,
+    children: node.children?.length ? toTreeData(node.children) : undefined,
   }));
 }
 

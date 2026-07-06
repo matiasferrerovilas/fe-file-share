@@ -10,8 +10,7 @@ export interface FileSystemNode {
   id: string;
   name: string;
   type: FileSystemNodeType;
-  size?: number;
-  contentType?: string;
-  createdAt?: string;
-  children: FileSystemNode[];
+  size: number | null;
+  lastModified: string;
+  children: FileSystemNode[] | null;
 }
