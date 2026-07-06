@@ -1,15 +1,16 @@
 import { api } from "./axios";
-import type { FolderContents } from "../models/Folder";
-import type { FileItem } from "../models/FileItem";
-import type { FolderTreeNode } from "../models/FolderTree";
+import type { FileSystemNode } from "../models/FileSystemNode";
+import { MOCK_FILE_SYSTEM_TREE } from "./mocks/fileSystemTreeMock";
 
 export const ROOT_FOLDER_ID = "root";
 
-export const getFolderContents = (folderId: string) =>
-  api.get<FolderContents>(`/v1/folders/${folderId}/contents`).then((r) => r.data);
+// TODO: mock temporal para probar el explorador visualmente sin backend — sacar cuando /v1/folders/tree exista de verdad.
+const USE_MOCK_TREE = true;
 
-export const getFolderTree = () =>
-  api.get<FolderTreeNode[]>("/v1/folders/tree").then((r) => r.data);
+export const getFileSystemTree = () =>
+  USE_MOCK_TREE
+    ? Promise.resolve(MOCK_FILE_SYSTEM_TREE)
+    : api.get<FileSystemNode[]>("/v1/folders/tree").then((r) => r.data);
 
 export const deleteFolder = (folderId: string) =>
   api.delete<void>(`/v1/folders/${folderId}`).then((r) => r.data);
@@ -27,7 +28,7 @@ export const uploadFileToFolder = (
   formData.append("file", file);
 
   return api
-    .post<FileItem>(`/v1/folders/${folderId}/files`, formData, {
+    .post<FileSystemNode>(`/v1/folders/${folderId}/files`, formData, {
       signal,
       onUploadProgress: (event) => {
         if (event.total) {

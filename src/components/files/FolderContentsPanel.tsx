@@ -13,44 +13,42 @@ import FileOutlined from "@ant-design/icons/FileOutlined";
 import FolderOpenOutlined from "@ant-design/icons/FolderOpenOutlined";
 import FolderOutlined from "@ant-design/icons/FolderOutlined";
 import ShareAltOutlined from "@ant-design/icons/ShareAltOutlined";
-import { useFolderContents } from "../../hooks/useFolderContents";
+import { useFileSystemTree } from "../../hooks/useFileSystemTree";
 import { useDeleteFolder } from "../../hooks/useDeleteFolder";
 import { useShareFolderWithMedicalApp } from "../../hooks/useShareFolderWithMedicalApp";
+import { findNode, findPath } from "../../utils/fileSystemTree";
 import { formatFileSize } from "../../utils/formatFileSize";
-import type { FileItem } from "../../models/FileItem";
-import type { FolderSummary } from "../../models/Folder";
+import { ROOT_FOLDER_ID } from "../../api/foldersApi";
+import type { FileSystemNode } from "../../models/FileSystemNode";
 
 interface FolderContentsPanelProps {
   folderId: string;
 }
 
-type Row =
-  | ({ rowType: "folder" } & FolderSummary)
-  | ({ rowType: "file" } & FileItem);
-
 export default function FolderContentsPanel({ folderId }: FolderContentsPanelProps) {
   const navigate = useNavigate();
   const { message, modal } = AntdApp.useApp();
 
-  const { data, isLoading } = useFolderContents(folderId);
-  const { mutate: deleteFolder } = useDeleteFolder(folderId);
+  const { data: tree = [], isLoading } = useFileSystemTree();
+  const { mutate: deleteFolder } = useDeleteFolder();
   const { mutate: shareWithMedicalApp } = useShareFolderWithMedicalApp();
+
+  const { rows, ancestors } = useMemo(() => {
+    const isRoot = folderId === ROOT_FOLDER_ID;
+    const currentNode = isRoot ? null : findNode(tree, folderId);
+    return {
+      rows: isRoot ? tree : (currentNode?.children ?? []),
+      ancestors: isRoot ? [] : findPath(tree, folderId),
+    };
+  }, [tree, folderId]);
 
   const goToFolder = useCallback(
     (id: string) => navigate({ to: "/files/$folderId", params: { folderId: id } }),
     [navigate],
   );
 
-  const rows: Row[] = useMemo(() => {
-    if (!data) return [];
-    return [
-      ...data.folders.map((folder) => ({ rowType: "folder" as const, ...folder })),
-      ...data.files.map((file) => ({ rowType: "file" as const, ...file })),
-    ];
-  }, [data]);
-
   const handleDeleteFolder = useCallback(
-    (folder: FolderSummary) => {
+    (folder: FileSystemNode) => {
       modal.confirm({
         title: `¿Eliminar la carpeta "${folder.name}"?`,
         content: "Esta acción no se puede deshacer.",
@@ -68,7 +66,7 @@ export default function FolderContentsPanel({ folderId }: FolderContentsPanelPro
   );
 
   const handleShareWithMedicalApp = useCallback(
-    (folder: FolderSummary) => {
+    (folder: FileSystemNode) => {
       shareWithMedicalApp(folder.id, {
         onSuccess: () => message.success(`"${folder.name}" compartida con App Médica`),
         onError: () => message.error("No se pudo compartir la carpeta"),
@@ -78,7 +76,7 @@ export default function FolderContentsPanel({ folderId }: FolderContentsPanelPro
   );
 
   const getFolderMenuItems = useCallback(
-    (folder: FolderSummary): MenuProps["items"] => [
+    (folder: FileSystemNode): MenuProps["items"] => [
       {
         key: "open",
         label: "Abrir",
@@ -103,7 +101,7 @@ export default function FolderContentsPanel({ folderId }: FolderContentsPanelPro
     [goToFolder, handleShareWithMedicalApp, handleDeleteFolder],
   );
 
-  const columns: TableColumnsType<Row> = [
+  const columns: TableColumnsType<FileSystemNode> = [
     {
       title: "Nombre",
       dataIndex: "name",
@@ -115,16 +113,16 @@ export default function FolderContentsPanel({ folderId }: FolderContentsPanelPro
               display: "inline-flex",
               alignItems: "center",
               gap: 8,
-              cursor: row.rowType === "folder" ? "pointer" : "default",
+              cursor: row.type === "FOLDER" ? "pointer" : "default",
             }}
-            onClick={() => row.rowType === "folder" && goToFolder(row.id)}
+            onClick={() => row.type === "FOLDER" && goToFolder(row.id)}
           >
-            {row.rowType === "folder" ? <FolderOutlined /> : <FileOutlined />}
+            {row.type === "FOLDER" ? <FolderOutlined /> : <FileOutlined />}
             {name}
           </span>
         );
 
-        if (row.rowType === "folder") {
+        if (row.type === "FOLDER") {
           return (
             <Dropdown trigger={["contextMenu"]} menu={{ items: getFolderMenuItems(row) }}>
               {label}
@@ -136,53 +134,50 @@ export default function FolderContentsPanel({ folderId }: FolderContentsPanelPro
     },
     {
       title: "Tipo",
-      dataIndex: "rowType",
+      dataIndex: "type",
       width: 160,
       filters: [
-        { text: "Carpetas", value: "folder" },
-        { text: "Archivos", value: "file" },
+        { text: "Carpetas", value: "FOLDER" },
+        { text: "Archivos", value: "FILE" },
       ],
-      onFilter: (value, row) => row.rowType === value,
-      render: (_, row) => (row.rowType === "folder" ? "Carpeta" : row.contentType),
+      onFilter: (value, row) => row.type === value,
+      render: (_, row) => (row.type === "FOLDER" ? "Carpeta" : (row.contentType ?? "Archivo")),
     },
     {
       title: "Tamaño",
       dataIndex: "size",
       width: 120,
-      sorter: (a, b) => (a.rowType === "file" ? a.size : -1) - (b.rowType === "file" ? b.size : -1),
-      render: (_, row) => (row.rowType === "file" ? formatFileSize(row.size) : "-"),
+      sorter: (a, b) => (a.size ?? -1) - (b.size ?? -1),
+      render: (_, row) => (row.type === "FILE" && row.size != null ? formatFileSize(row.size) : "-"),
     },
     {
       title: "Modificado",
       dataIndex: "createdAt",
       width: 200,
-      sorter: (a, b) =>
-        (a.rowType === "file" ? a.createdAt : "").localeCompare(
-          b.rowType === "file" ? b.createdAt : "",
-        ),
-      render: (_, row) => (row.rowType === "file" ? new Date(row.createdAt).toLocaleString() : "-"),
+      sorter: (a, b) => (a.createdAt ?? "").localeCompare(b.createdAt ?? ""),
+      render: (_, row) => (row.createdAt ? new Date(row.createdAt).toLocaleString() : "-"),
     },
   ];
 
-  const breadcrumbItems = useMemo(() => {
-    const ancestors = data?.breadcrumb ?? [];
-    return [
+  const breadcrumbItems = useMemo(
+    () => [
       { title: <a onClick={() => navigate({ to: "/" })}>Inicio</a> },
-      ...ancestors.map((crumb, index) => {
+      ...ancestors.map((node, index) => {
         const isCurrent = index === ancestors.length - 1;
         return {
-          title: isCurrent ? crumb.name : <a onClick={() => goToFolder(crumb.id)}>{crumb.name}</a>,
+          title: isCurrent ? node.name : <a onClick={() => goToFolder(node.id)}>{node.name}</a>,
         };
       }),
-    ];
-  }, [data?.breadcrumb, navigate, goToFolder]);
+    ],
+    [ancestors, navigate, goToFolder],
+  );
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
       <Breadcrumb items={breadcrumbItems} />
 
-      <Table<Row>
-        rowKey={(row) => `${row.rowType}-${row.id}`}
+      <Table<FileSystemNode>
+        rowKey="id"
         columns={columns}
         dataSource={rows}
         loading={isLoading}

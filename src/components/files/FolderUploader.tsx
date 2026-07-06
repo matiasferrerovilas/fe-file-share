@@ -2,7 +2,7 @@ import { App as AntdApp, Upload, type UploadProps } from "antd";
 import { useQueryClient } from "@tanstack/react-query";
 import InboxOutlined from "@ant-design/icons/InboxOutlined";
 import { uploadFileToFolder } from "../../api/foldersApi";
-import { folderContentsQueryKey } from "../../hooks/useFolderContents";
+import { FILE_SYSTEM_TREE_QUERY_KEY } from "../../hooks/useFileSystemTree";
 import { Semaphore } from "../../utils/semaphore";
 
 const { Dragger } = Upload;
@@ -30,7 +30,7 @@ export default function FolderUploader({ folderId }: FolderUploaderProps) {
           file as File,
           (percent) => onProgress?.({ percent }),
         );
-        queryClient.invalidateQueries({ queryKey: folderContentsQueryKey(folderId) });
+        queryClient.invalidateQueries({ queryKey: FILE_SYSTEM_TREE_QUERY_KEY });
         onSuccess?.(uploaded);
       } catch (err) {
         onError?.(err as Error);
