@@ -1,8 +1,6 @@
 import { App as AntdApp, Upload, type UploadProps } from "antd";
-import { useQueryClient } from "@tanstack/react-query";
 import InboxOutlined from "@ant-design/icons/InboxOutlined";
-import { uploadFileToFolder } from "../../api/foldersApi";
-import { FILE_SYSTEM_TREE_QUERY_KEY } from "../../hooks/useFileSystemTree";
+import { useUploadFileToFolder } from "../../hooks/useUploadFileToFolder";
 import { Semaphore } from "../../utils/semaphore";
 
 const { Dragger } = Upload;
@@ -16,8 +14,8 @@ interface FolderUploaderProps {
 }
 
 export default function FolderUploader({ folderId }: FolderUploaderProps) {
-  const queryClient = useQueryClient();
   const { message } = AntdApp.useApp();
+  const { mutateAsync: uploadFile } = useUploadFileToFolder();
 
   const uploadProps: UploadProps = {
     multiple: true,
@@ -25,12 +23,11 @@ export default function FolderUploader({ folderId }: FolderUploaderProps) {
     customRequest: async ({ file, onProgress, onSuccess, onError }) => {
       const release = await uploadSemaphore.acquire();
       try {
-        const uploaded = await uploadFileToFolder(
+        const uploaded = await uploadFile({
           folderId,
-          file as File,
-          (percent) => onProgress?.({ percent }),
-        );
-        queryClient.invalidateQueries({ queryKey: FILE_SYSTEM_TREE_QUERY_KEY });
+          file: file as File,
+          onProgress: (percent) => onProgress?.({ percent }),
+        });
         onSuccess?.(uploaded);
       } catch (err) {
         onError?.(err as Error);

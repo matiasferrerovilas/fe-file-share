@@ -12,10 +12,8 @@ import DeleteOutlined from "@ant-design/icons/DeleteOutlined";
 import FileOutlined from "@ant-design/icons/FileOutlined";
 import FolderOpenOutlined from "@ant-design/icons/FolderOpenOutlined";
 import FolderOutlined from "@ant-design/icons/FolderOutlined";
-import ShareAltOutlined from "@ant-design/icons/ShareAltOutlined";
 import { useFileSystemTree } from "../../hooks/useFileSystemTree";
 import { useDeleteFolder } from "../../hooks/useDeleteFolder";
-import { useShareFolderWithMedicalApp } from "../../hooks/useShareFolderWithMedicalApp";
 import { findNode, findPath } from "../../utils/fileSystemTree";
 import { formatFileSize } from "../../utils/formatFileSize";
 import { ROOT_FOLDER_ID } from "../../api/foldersApi";
@@ -31,7 +29,6 @@ export default function FolderContentsPanel({ folderId }: FolderContentsPanelPro
 
   const { data: tree = [], isLoading } = useFileSystemTree();
   const { mutate: deleteFolder } = useDeleteFolder();
-  const { mutate: shareWithMedicalApp } = useShareFolderWithMedicalApp();
 
   const { rows, ancestors } = useMemo(() => {
     const isRoot = folderId === ROOT_FOLDER_ID;
@@ -65,16 +62,6 @@ export default function FolderContentsPanel({ folderId }: FolderContentsPanelPro
     [deleteFolder, message, modal],
   );
 
-  const handleShareWithMedicalApp = useCallback(
-    (folder: FileSystemNode) => {
-      shareWithMedicalApp(folder.id, {
-        onSuccess: () => message.success(`"${folder.name}" compartida con App Médica`),
-        onError: () => message.error("No se pudo compartir la carpeta"),
-      });
-    },
-    [shareWithMedicalApp, message],
-  );
-
   const getFolderMenuItems = useCallback(
     (folder: FileSystemNode): MenuProps["items"] => [
       {
@@ -82,12 +69,6 @@ export default function FolderContentsPanel({ folderId }: FolderContentsPanelPro
         label: "Abrir",
         icon: <FolderOpenOutlined />,
         onClick: () => goToFolder(folder.id),
-      },
-      {
-        key: "share",
-        label: "Compartir con App Médica",
-        icon: <ShareAltOutlined />,
-        onClick: () => handleShareWithMedicalApp(folder),
       },
       { type: "divider" },
       {
@@ -98,7 +79,7 @@ export default function FolderContentsPanel({ folderId }: FolderContentsPanelPro
         onClick: () => handleDeleteFolder(folder),
       },
     ],
-    [goToFolder, handleShareWithMedicalApp, handleDeleteFolder],
+    [goToFolder, handleDeleteFolder],
   );
 
   const columns: TableColumnsType<FileSystemNode> = [

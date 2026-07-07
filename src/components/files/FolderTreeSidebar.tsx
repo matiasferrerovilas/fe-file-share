@@ -1,11 +1,9 @@
 import { useMemo } from "react";
 import { Tree, type TreeDataNode } from "antd";
-import HomeOutlined from "@ant-design/icons/HomeOutlined";
 import FolderOutlined from "@ant-design/icons/FolderOutlined";
 import FileOutlined from "@ant-design/icons/FileOutlined";
 import { useNavigate } from "@tanstack/react-router";
 import { useFileSystemTree } from "../../hooks/useFileSystemTree";
-import { ROOT_FOLDER_ID } from "../../api/foldersApi";
 import type { FileSystemNode } from "../../models/FileSystemNode";
 
 interface FolderTreeSidebarProps {
@@ -27,13 +25,7 @@ export default function FolderTreeSidebar({ activeFolderId }: FolderTreeSidebarP
   const navigate = useNavigate();
   const { data: tree = [] } = useFileSystemTree();
 
-  const treeData: TreeDataNode[] = useMemo(
-    () => [
-      { key: ROOT_FOLDER_ID, title: "Inicio", icon: <HomeOutlined /> },
-      ...toTreeData(tree),
-    ],
-    [tree],
-  );
+  const treeData: TreeDataNode[] = useMemo(() => toTreeData(tree), [tree]);
 
   return (
     <Tree
@@ -45,11 +37,7 @@ export default function FolderTreeSidebar({ activeFolderId }: FolderTreeSidebarP
       onSelect={(keys) => {
         const folderId = keys[0];
         if (typeof folderId !== "string") return;
-        if (folderId === ROOT_FOLDER_ID) {
-          navigate({ to: "/" });
-        } else {
-          navigate({ to: "/files/$folderId", params: { folderId } });
-        }
+        navigate({ to: "/files/$folderId", params: { folderId } });
       }}
     />
   );

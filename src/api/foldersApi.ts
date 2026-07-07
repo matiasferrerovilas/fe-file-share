@@ -9,9 +9,6 @@ export const getFileSystemTree = () =>
 export const deleteFolder = (folderId: string) =>
   api.delete<void>(`folders/${folderId}`).then((r) => r.data);
 
-export const shareFolderWithMedicalApp = (folderId: string) =>
-  api.post<void>(`folders/${folderId}/integrations/medical-app`).then((r) => r.data);
-
 export const uploadFileToFolder = (
   folderId: string,
   file: File,
@@ -22,7 +19,9 @@ export const uploadFileToFolder = (
   formData.append("file", file);
 
   return api
-    .post<FileSystemNode>(`folders/${folderId}/files`, formData, {
+    .post<FileSystemNode>("folders/upload", formData, {
+      params: folderId === ROOT_FOLDER_ID ? undefined : { parentId: folderId },
+      headers: { "Content-Type": undefined },
       signal,
       onUploadProgress: (event) => {
         if (event.total) {
@@ -31,4 +30,21 @@ export const uploadFileToFolder = (
       },
     })
     .then((r) => r.data);
+};
+
+
+export const downloadFile = async (fileId: string) => {
+  const response = await api.get<Blob>(`folders/${fileId}/download`, {
+    responseType: "blob",
+  });
+
+  const contentDisposition = response.headers["content-disposition"] as string | undefined;
+  const filename = contentDisposition?.match(/filename="?([^"]+)"?/)?.[1] ?? fileId;
+
+  const url = URL.createObjectURL(response.data);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  link.click();
+  URL.revokeObjectURL(url);
 };
