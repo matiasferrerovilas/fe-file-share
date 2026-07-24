@@ -10,7 +10,5 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     loading: !initialized,
   };
 
-  return (
-    <AuthContext.Provider value={state}>{children}</AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={state}>{children}</AuthContext.Provider>;
 }

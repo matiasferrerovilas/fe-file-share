@@ -61,9 +61,7 @@ export default function NavHeader() {
       >
         <Flex align="center" gap={10} style={{ cursor: "pointer" }}>
           <Flex vertical align="flex-end">
-            <Text style={{ fontSize: 12, fontWeight: 500 }}>
-              {displayName || email}
-            </Text>
+            <Text style={{ fontSize: 12, fontWeight: 500 }}>{displayName || email}</Text>
           </Flex>
           <Avatar
             size={36}

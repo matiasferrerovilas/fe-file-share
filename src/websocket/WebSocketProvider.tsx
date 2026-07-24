@@ -15,15 +15,9 @@ interface WebSocketContextProps {
   isConnected: boolean;
 }
 
-const WebSocketContext = createContext<WebSocketContextProps | undefined>(
-  undefined
-);
+const WebSocketContext = createContext<WebSocketContextProps | undefined>(undefined);
 
-export const WebSocketProvider = ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => {
+export const WebSocketProvider = ({ children }: { children: React.ReactNode }) => {
   const clientRef = useRef<Client | null>(null);
   const subscriptionsRef = useRef<Map<string, Set<EventCallback>>>(new Map());
   const activeSubscriptionsRef = useRef<Map<string, StompSubscription>>(new Map());
@@ -143,7 +137,6 @@ export const WebSocketProvider = ({
 
 export const useWebSocket = () => {
   const context = useContext(WebSocketContext);
-  if (!context)
-    throw new Error("useWebSocket must be used within WebSocketProvider");
+  if (!context) throw new Error("useWebSocket must be used within WebSocketProvider");
   return context;
 };

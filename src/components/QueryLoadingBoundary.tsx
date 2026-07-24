@@ -5,9 +5,7 @@ interface QueryLoadingBoundaryProps {
   children: ReactNode;
 }
 
-export const QueryLoadingBoundary = ({
-  children,
-}: QueryLoadingBoundaryProps) => {
+export const QueryLoadingBoundary = ({ children }: QueryLoadingBoundaryProps) => {
   return (
     <Suspense
       fallback={

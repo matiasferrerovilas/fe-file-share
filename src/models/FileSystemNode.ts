@@ -3,8 +3,7 @@ export const FileSystemNodeType = {
   FILE: "FILE",
 } as const;
 
-export type FileSystemNodeType =
-  (typeof FileSystemNodeType)[keyof typeof FileSystemNodeType];
+export type FileSystemNodeType = (typeof FileSystemNodeType)[keyof typeof FileSystemNodeType];
 
 export interface FileSystemNode {
   id: string;

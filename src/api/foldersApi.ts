@@ -32,7 +32,6 @@ export const uploadFileToFolder = (
     .then((r) => r.data);
 };
 
-
 export const downloadFile = async (fileId: string) => {
   const response = await api.get<Blob>(`folders/${fileId}/download`, {
     responseType: "blob",

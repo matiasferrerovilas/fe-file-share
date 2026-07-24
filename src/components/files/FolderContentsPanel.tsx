@@ -129,7 +129,8 @@ export default function FolderContentsPanel({ folderId }: FolderContentsPanelPro
       dataIndex: "size",
       width: 120,
       sorter: (a, b) => (a.size ?? -1) - (b.size ?? -1),
-      render: (_, row) => (row.type === "FILE" && row.size != null ? formatFileSize(row.size) : "-"),
+      render: (_, row) =>
+        row.type === "FILE" && row.size != null ? formatFileSize(row.size) : "-",
     },
     {
       title: "Modificado",

@@ -8,9 +8,7 @@ export function getUserDisplayName(user: {
   email?: string | null;
 }): string {
   if (user.givenName) {
-    return user.familyName
-      ? `${user.givenName} ${user.familyName}`.trim()
-      : user.givenName;
+    return user.familyName ? `${user.givenName} ${user.familyName}`.trim() : user.givenName;
   }
   return user.email ?? "";
 }

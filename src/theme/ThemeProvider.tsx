@@ -25,14 +25,10 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
   // Set initial data-theme attribute on mount
   useEffect(() => {
     document.body.setAttribute("data-theme", isDark ? "dark" : "light");
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const toggleTheme = () => setIsDark((prev) => !prev);
 
-  return (
-    <ThemeContext.Provider value={{ isDark, toggleTheme }}>
-      {children}
-    </ThemeContext.Provider>
-  );
+  return <ThemeContext.Provider value={{ isDark, toggleTheme }}>{children}</ThemeContext.Provider>;
 }

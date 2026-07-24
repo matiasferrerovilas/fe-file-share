@@ -1,7 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import FileExplorer from "../components/files/FileExplorer";
+import { RoleEnum } from "../enums/RoleEnum";
+import { protectedRouteGuard } from "../auth/protectedRouteGuard";
 
 export const Route = createFileRoute("/files/$folderId")({
+  beforeLoad: protectedRouteGuard({
+    roles: [RoleEnum.ADMIN, RoleEnum.FAMILY, RoleEnum.GUEST],
+  }),
   component: RouteComponent,
 });
 

@@ -55,7 +55,7 @@ function RouterWithAuth() {
   const auth = useContext(AuthContext);
   const { keycloak } = useKeycloak();
   const { data: currentUser, isSuccess: userReady } = useCurrentUser();
-  const firstLogin = currentUser?.isFirstLogin ?? false;
+  const firstLogin = currentUser?.metadata?.isFirstLogin ?? false;
 
   // authRef permite leer el valor actual de auth dentro del efecto sin convertirlo
   // en dependencia reactiva — el objeto cambia de referencia en cada render aunque

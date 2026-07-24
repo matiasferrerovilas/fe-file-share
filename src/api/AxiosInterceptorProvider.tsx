@@ -3,11 +3,7 @@ import { useLayoutEffect, useRef } from "react";
 import { useKeycloak } from "@react-keycloak/web";
 import { api } from "./axios";
 
-export function AxiosInterceptorProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export function AxiosInterceptorProvider({ children }: { children: React.ReactNode }) {
   const { keycloak, initialized } = useKeycloak();
   const interceptorsRef = useRef<{ request: number; response: number } | null>(null);
 
@@ -40,7 +36,7 @@ export function AxiosInterceptorProvider({
 
         return config;
       },
-      (error) => Promise.reject(error)
+      (error) => Promise.reject(error),
     );
 
     const responseInterceptor = api.interceptors.response.use(
@@ -48,11 +44,7 @@ export function AxiosInterceptorProvider({
       async (error) => {
         const originalRequest = error.config;
 
-        if (
-          error.response?.status === 401 &&
-          !originalRequest._retry &&
-          keycloak.authenticated
-        ) {
+        if (error.response?.status === 401 && !originalRequest._retry && keycloak.authenticated) {
           originalRequest._retry = true;
 
           try {
@@ -64,17 +56,14 @@ export function AxiosInterceptorProvider({
               return api(originalRequest);
             }
           } catch (refreshError) {
-            console.error(
-              "Error renovando token después de 401:",
-              refreshError
-            );
+            console.error("Error renovando token después de 401:", refreshError);
             keycloak.login();
             return Promise.reject(refreshError);
           }
         }
 
         return Promise.reject(error);
-      }
+      },
     );
 
     interceptorsRef.current = { request: requestInterceptor, response: responseInterceptor };
