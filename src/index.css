@@ -2,3 +2,90 @@ body {
   font-family: "Inter", sans-serif;
   margin: 0px;
 }
+.ant-table-row-completed {
+  background-color: var(--completed-row-bg) !important;
+}
+
+@keyframes onboarding-card-in {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes step-enter-from-right {
+  from {
+    opacity: 0;
+    transform: translateX(48px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes step-enter-from-left {
+  from {
+    opacity: 0;
+    transform: translateX(-48px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.step-enter-right {
+  animation: step-enter-from-right 0.28s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+.step-enter-left {
+  animation: step-enter-from-left 0.28s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+@keyframes fade-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.fade-in-up {
+  animation: fade-slide-up 0.38s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+.fade-in-down {
+  animation: fade-slide-down 0.28s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+.fade-in {
+  animation: fade-in 0.22s ease both;
+}
