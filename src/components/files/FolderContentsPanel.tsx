@@ -9,11 +9,13 @@ import {
 } from "antd";
 import { useNavigate } from "@tanstack/react-router";
 import DeleteOutlined from "@ant-design/icons/DeleteOutlined";
+import DownloadOutlined from "@ant-design/icons/DownloadOutlined";
 import FileOutlined from "@ant-design/icons/FileOutlined";
 import FolderOpenOutlined from "@ant-design/icons/FolderOpenOutlined";
 import FolderOutlined from "@ant-design/icons/FolderOutlined";
 import { useFileSystemTree } from "../../hooks/useFileSystemTree";
 import { useDeleteFolder } from "../../hooks/useDeleteFolder";
+import { useDownloadFile } from "../../hooks/useDownloadFile";
 import { findNode, findPath } from "../../utils/fileSystemTree";
 import { formatFileSize } from "../../utils/formatFileSize";
 import { ROOT_FOLDER_ID } from "../../api/foldersApi";
@@ -29,6 +31,7 @@ export default function FolderContentsPanel({ folderId }: FolderContentsPanelPro
 
   const { data: tree = [], isLoading } = useFileSystemTree();
   const { mutate: deleteFolder } = useDeleteFolder();
+  const { mutate: downloadFile, isPending: isDownloading } = useDownloadFile();
 
   const { rows, ancestors } = useMemo(() => {
     const isRoot = folderId === ROOT_FOLDER_ID;
@@ -60,6 +63,15 @@ export default function FolderContentsPanel({ folderId }: FolderContentsPanelPro
       });
     },
     [deleteFolder, message, modal],
+  );
+
+  const handleDownloadFile = useCallback(
+    (file: FileSystemNode) => {
+      downloadFile(file.id, {
+        onError: () => message.error(`No se pudo descargar "${file.name}"`),
+      });
+    },
+    [downloadFile, message],
   );
 
   const getFolderMenuItems = useCallback(
@@ -138,6 +150,19 @@ export default function FolderContentsPanel({ folderId }: FolderContentsPanelPro
       width: 200,
       sorter: (a, b) => a.lastModified.localeCompare(b.lastModified),
       render: (_, row) => new Date(row.lastModified).toLocaleString(),
+    },
+    {
+      title: "Descargar",
+      key: "download",
+      width: 100,
+      align: "center",
+      render: (_, row) =>
+        row.type === "FILE" ? (
+          <DownloadOutlined
+            style={{ cursor: isDownloading ? "not-allowed" : "pointer" }}
+            onClick={() => handleDownloadFile(row)}
+          />
+        ) : null,
     },
   ];
 

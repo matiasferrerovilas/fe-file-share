@@ -36,7 +36,6 @@ export default function FileExplorer({ folderId }: FileExplorerProps) {
           minWidth: 0,
         }}
       >
-        <FolderUploader folderId={folderId} />
         <FolderContentsPanel folderId={folderId} />
       </Content>
     </Layout>
