@@ -6,6 +6,18 @@ body {
   background-color: var(--completed-row-bg) !important;
 }
 
+/* Evita que los nombres largos en el árbol de carpetas empujen el ícono arriba —
+   fuerza una sola línea con "..." en vez de wrappear. */
+.ant-tree .ant-tree-node-content-wrapper {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+.ant-tree .ant-tree-title {
+  overflow: hidden;
+  min-width: 0;
+}
+
 @keyframes onboarding-card-in {
   from {
     opacity: 0;

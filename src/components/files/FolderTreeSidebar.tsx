@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Tree, type TreeDataNode } from "antd";
+import { Tooltip, Tree, type TreeDataNode } from "antd";
 import FolderOutlined from "@ant-design/icons/FolderOutlined";
 import FileOutlined from "@ant-design/icons/FileOutlined";
 import { useNavigate } from "@tanstack/react-router";
@@ -13,7 +13,20 @@ interface FolderTreeSidebarProps {
 function toTreeData(nodes: FileSystemNode[]): TreeDataNode[] {
   return nodes.map((node) => ({
     key: node.id,
-    title: node.name,
+    title: (
+      <Tooltip title={node.name} placement="right" mouseEnterDelay={0.4}>
+        <span
+          style={{
+            display: "block",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+          }}
+        >
+          {node.name}
+        </span>
+      </Tooltip>
+    ),
     icon: node.type === "FOLDER" ? <FolderOutlined /> : <FileOutlined />,
     isLeaf: node.type === "FILE",
     selectable: node.type === "FOLDER",
