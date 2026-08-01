@@ -8,6 +8,8 @@ import { finishOnboarding, type OnboardingForm } from "../api/onboarding/onboard
 import WelcomeOnboarding from "../components/onboarding/WelcomeOnboarding";
 import WorkspaceOnboarding from "../components/onboarding/WorkspaceOnboarding";
 import { CURRENT_USER_QUERY_KEY } from "../hooks/useCurrentUser";
+import { USER_WORKSPACES_QUERY_KEY } from "../hooks/useWorkspaces";
+import { USER_DEFAULTS_QUERY_KEY } from "../hooks/useSettings";
 const { Title, Text } = Typography;
 
 export const Route = createFileRoute("/onboarding")({
@@ -43,6 +45,8 @@ function RouteComponent() {
         console.error("Error refreshing token after onboarding");
       }
       await queryClient.invalidateQueries({ queryKey: CURRENT_USER_QUERY_KEY });
+      await queryClient.invalidateQueries({ queryKey: USER_WORKSPACES_QUERY_KEY });
+      await queryClient.invalidateQueries({ queryKey: [USER_DEFAULTS_QUERY_KEY] });
       router.invalidate();
       router.navigate({ to: "/", replace: true });
     },
