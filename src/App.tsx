@@ -13,6 +13,7 @@ import { ThemeProvider } from "./theme/ThemeProvider";
 import { useTheme } from "./theme/ThemeContext";
 import { useCurrentUser } from "./hooks/useCurrentUser";
 import NotFound from "./components/NotFound";
+import { WorkspaceProvider } from "./workspace/WorkspaceProvider";
 
 declare module "@tanstack/react-router" {
   interface Register {
@@ -84,7 +85,11 @@ function RouterWithAuth() {
     }
   }, [auth.loading, auth.authenticated, firstLogin, userReady, keycloak]);
 
-  return <RouterProvider router={router} />;
+  return (
+    <WorkspaceProvider>
+      <RouterProvider router={router} />
+    </WorkspaceProvider>
+  );
 }
 
 function ThemedApp() {

@@ -3,13 +3,14 @@ import type { FileSystemNode } from "../models/FileSystemNode";
 
 export const ROOT_FOLDER_ID = "root";
 
-export const getFileSystemTree = () =>
-  api.get<FileSystemNode>("folders/tree").then((r) => [r.data]);
+export const getFileSystemTree = (workspaceId: number) =>
+  api.get<FileSystemNode>("folders/tree", { params: { workspaceId } }).then((r) => [r.data]);
 
 export const deleteFolder = (folderId: string) =>
   api.delete<void>(`folders/${folderId}`).then((r) => r.data);
 
 export const uploadFileToFolder = (
+  workspaceId: number,
   folderId: string,
   file: File,
   onProgress: (percent: number) => void,
@@ -20,7 +21,10 @@ export const uploadFileToFolder = (
 
   return api
     .post<FileSystemNode>("folders/upload", formData, {
-      params: folderId === ROOT_FOLDER_ID ? undefined : { parentId: folderId },
+      params: {
+        workspaceId,
+        parentId: folderId === ROOT_FOLDER_ID ? undefined : folderId,
+      },
       headers: { "Content-Type": undefined },
       signal,
       onUploadProgress: (event) => {

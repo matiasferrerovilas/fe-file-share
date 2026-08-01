@@ -8,6 +8,7 @@ import { Header } from "antd/es/layout/layout";
 import { useCurrentUser } from "../hooks/useCurrentUser";
 import { useTheme } from "../theme/ThemeContext";
 import { getUserDisplayName } from "../utils/userDisplayName";
+import WorkspaceSelector from "./WorkspaceSelector";
 
 const { Text } = Typography;
 
@@ -49,10 +50,11 @@ export default function NavHeader() {
         boxShadow: "0 1px 4px rgba(0,0,0,0.08)",
         display: "flex",
         alignItems: "center",
-        justifyContent: "flex-end",
+        justifyContent: "space-between",
         height: 56,
       }}
     >
+      <WorkspaceSelector />
       <Dropdown
         menu={{ items: dropdownItems }}
         placement="bottomRight"
