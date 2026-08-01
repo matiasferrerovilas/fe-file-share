@@ -4,10 +4,13 @@ import FileOutlined from "@ant-design/icons/FileOutlined";
 import FolderOutlined from "@ant-design/icons/FolderOutlined";
 import EditOutlined from "@ant-design/icons/EditOutlined";
 import DeleteOutlined from "@ant-design/icons/DeleteOutlined";
+import DownloadOutlined from "@ant-design/icons/DownloadOutlined";
 import { useNavigate } from "@tanstack/react-router";
 import { FileSystemNodeType, type FileSystemNode } from "../../models/FileSystemNode";
 import { formatFileSize } from "../../utils/formatFileSize";
 import { useDeleteFolder } from "../../hooks/useDeleteFolder";
+import { useDownloadFile } from "../../hooks/useDownloadFile";
+import { useMoveNode, MOVE_NODE_DATA_TYPE } from "../../hooks/useMoveNode";
 import RenameNodeModal from "./RenameNodeModal";
 
 interface FolderContentCardProps {
@@ -19,7 +22,10 @@ export default function FolderContentCard({ node }: FolderContentCardProps) {
   const { token } = theme.useToken();
   const { modal, message } = AntdApp.useApp();
   const deleteMutation = useDeleteFolder();
+  const downloadMutation = useDownloadFile();
+  const { moveIfValid } = useMoveNode();
   const [renaming, setRenaming] = useState(false);
+  const [dragDepth, setDragDepth] = useState(0);
 
   const isFolder = node.type === FileSystemNodeType.FOLDER;
 
@@ -40,12 +46,20 @@ export default function FolderContentCard({ node }: FolderContentCardProps) {
   };
 
   const menuItems: MenuProps["items"] = [
+    ...(!isFolder
+      ? [{ key: "download", label: "Descargar", icon: <DownloadOutlined /> }]
+      : []),
     { key: "rename", label: "Renombrar", icon: <EditOutlined /> },
     { key: "delete", label: "Eliminar", icon: <DeleteOutlined />, danger: true },
   ];
 
   const handleMenuClick: MenuProps["onClick"] = ({ key, domEvent }) => {
     domEvent.stopPropagation();
+    if (key === "download") {
+      downloadMutation.mutate(node.id, {
+        onError: () => message.error(`No se pudo descargar "${node.name}"`),
+      });
+    }
     if (key === "rename") setRenaming(true);
     if (key === "delete") handleDelete();
   };
@@ -57,7 +71,41 @@ export default function FolderContentCard({ node }: FolderContentCardProps) {
         <Dropdown menu={{ items: menuItems, onClick: handleMenuClick }} trigger={["contextMenu"]}>
           <Card
             hoverable
-            style={{ width: 240, border: `1px solid ${token.colorPrimary}` }}
+            draggable
+            onDragStart={(e) => {
+              e.dataTransfer.setData(MOVE_NODE_DATA_TYPE, node.id);
+              e.dataTransfer.effectAllowed = "move";
+            }}
+            onDragEnter={(e) => {
+              if (!isFolder) return;
+              e.preventDefault();
+              setDragDepth((d) => d + 1);
+            }}
+            onDragOver={(e) => {
+              if (!isFolder) return;
+              e.preventDefault();
+            }}
+            onDragLeave={(e) => {
+              if (!isFolder) return;
+              e.preventDefault();
+              setDragDepth((d) => Math.max(0, d - 1));
+            }}
+            onDrop={(e) => {
+              if (!isFolder) return;
+              e.preventDefault();
+              setDragDepth(0);
+              const draggedId = e.dataTransfer.getData(MOVE_NODE_DATA_TYPE);
+              moveIfValid(draggedId, node.id);
+            }}
+            style={{
+              width: 240,
+              border:
+                dragDepth > 0
+                  ? `2px dashed ${token.colorPrimary}`
+                  : `1px solid ${token.colorPrimary}`,
+              background: dragDepth > 0 ? token.colorPrimaryBg : undefined,
+              transition: "border-color 0.15s ease, background 0.15s ease",
+            }}
             onClick={() => {
               if (node.type !== FileSystemNodeType.FOLDER) return;
               navigate({ to: "/files/$folderId", params: { folderId: node.id } });

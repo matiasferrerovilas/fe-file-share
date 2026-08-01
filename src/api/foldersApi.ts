@@ -21,6 +21,13 @@ export const createFolder = (workspaceId: number, folderId: string, name: string
 export const renameNode = (nodeId: string, name: string) =>
   api.patch<FileSystemNode>(`folders/${nodeId}`, { name }).then((r) => r.data);
 
+export const moveNode = (nodeId: string, targetFolderId: string) =>
+  api
+    .patch<FileSystemNode>(`folders/${nodeId}/move`, {
+      parentId: targetFolderId === ROOT_FOLDER_ID ? null : Number(targetFolderId),
+    })
+    .then((r) => r.data);
+
 export const uploadFileToFolder = (
   workspaceId: number,
   folderId: string,
