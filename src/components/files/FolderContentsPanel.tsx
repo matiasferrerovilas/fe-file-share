@@ -1,18 +1,25 @@
-import { useMemo } from "react";
-import { Breadcrumb, Col, Space } from "antd";
+import { useMemo, useState } from "react";
+import { Breadcrumb, Col, Dropdown, Space, type MenuProps } from "antd";
 import { useNavigate } from "@tanstack/react-router";
+import FolderAddOutlined from "@ant-design/icons/FolderAddOutlined";
 import { useFileSystemTree } from "../../hooks/useFileSystemTree";
 import { findNode, findPath } from "../../utils/fileSystemTree";
 import { ROOT_FOLDER_ID } from "../../api/foldersApi";
 import FolderContentCard from "./FolderContentCard";
+import CreateFolderModal from "./CreateFolderModal";
 
 interface FolderContentsPanelProps {
   folderId: string;
 }
 
+const contextMenuItems: MenuProps["items"] = [
+  { key: "create-folder", label: "Crear carpeta", icon: <FolderAddOutlined /> },
+];
+
 export default function FolderContentsPanel({ folderId }: FolderContentsPanelProps) {
   const navigate = useNavigate();
   const { data: tree = [] } = useFileSystemTree();
+  const [creatingFolder, setCreatingFolder] = useState(false);
 
   const rows = useMemo(() => {
     // El primer nodo es la carpeta raíz ("Home") del backend — "Inicio" muestra sus
@@ -43,20 +50,32 @@ export default function FolderContentsPanel({ folderId }: FolderContentsPanelPro
   return (
     <>
       <Breadcrumb items={breadcrumbItems} style={{ marginBottom: 16 }} />
-      <Space wrap>
-        {rows.map((node, index) => (
-          <Col
-            xs={24}
-            sm={12}
-            lg={8}
-            key={node.id}
-            style={{ marginBottom: 16, animationDelay: `${(index + 2) * 80}ms` }}
-            className="fade-in-up"
-          >
-            <FolderContentCard key={node.id} node={node} />
-          </Col>
-        ))}
-      </Space>
+      <Dropdown
+        menu={{ items: contextMenuItems, onClick: () => setCreatingFolder(true) }}
+        trigger={["contextMenu"]}
+      >
+        <div style={{ flex: 1, minHeight: "60vh" }}>
+          <Space wrap>
+            {rows.map((node, index) => (
+              <Col
+                xs={24}
+                sm={12}
+                lg={8}
+                key={node.id}
+                style={{ marginBottom: 16, animationDelay: `${(index + 2) * 80}ms` }}
+                className="fade-in-up"
+              >
+                <FolderContentCard key={node.id} node={node} />
+              </Col>
+            ))}
+          </Space>
+        </div>
+      </Dropdown>
+      <CreateFolderModal
+        folderId={folderId}
+        open={creatingFolder}
+        onClose={() => setCreatingFolder(false)}
+      />
     </>
   );
 }

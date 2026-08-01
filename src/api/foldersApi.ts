@@ -9,6 +9,18 @@ export const getFileSystemTree = (workspaceId: number) =>
 export const deleteFolder = (folderId: string) =>
   api.delete<void>(`folders/${folderId}`).then((r) => r.data);
 
+export const createFolder = (workspaceId: number, folderId: string, name: string) =>
+  api
+    .post<FileSystemNode>("folders", {
+      workspaceId,
+      parentId: folderId === ROOT_FOLDER_ID ? undefined : folderId,
+      name,
+    })
+    .then((r) => r.data);
+
+export const renameNode = (nodeId: string, name: string) =>
+  api.patch<FileSystemNode>(`folders/${nodeId}`, { name }).then((r) => r.data);
+
 export const uploadFileToFolder = (
   workspaceId: number,
   folderId: string,
