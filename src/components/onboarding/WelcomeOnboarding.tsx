@@ -16,11 +16,12 @@ const { Text } = Typography;
 
 interface Props {
   initialValues: Partial<OnboardingForm>;
-  onFinish: (values: OnboardingForm) => void;
+  onFinish: (values: Pick<OnboardingForm, "filesToAdd">) => void;
+  onPrev: () => void;
   isLoading?: boolean;
 }
 
-export default function WelcomeOnboarding({ onFinish, isLoading }: Props) {
+export default function WelcomeOnboarding({ onFinish, onPrev, isLoading }: Props) {
   const [fileList, setFileList] = useState<UploadFile[]>([]);
 
   const uploadProps: UploadProps = {
@@ -54,7 +55,12 @@ export default function WelcomeOnboarding({ onFinish, isLoading }: Props) {
       </Upload>
 
       <Row gutter={[16, 10]} style={{ marginTop: 20 }}>
-        <Col xs={24}>
+        <Col xs={12}>
+          <Button block type="default" onClick={onPrev} disabled={isLoading}>
+            Volver
+          </Button>
+        </Col>
+        <Col xs={12}>
           <Button
             block
             color="geekblue"

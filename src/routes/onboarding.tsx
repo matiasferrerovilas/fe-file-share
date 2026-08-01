@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { finishOnboarding, type OnboardingForm } from "../api/onboarding/onboardinApi";
 import WelcomeOnboarding from "../components/onboarding/WelcomeOnboarding";
+import WorkspaceOnboarding from "../components/onboarding/WorkspaceOnboarding";
 import { CURRENT_USER_QUERY_KEY } from "../hooks/useCurrentUser";
 const { Title, Text } = Typography;
 
@@ -18,9 +19,20 @@ function RouteComponent() {
   const { keycloak } = useKeycloak();
   const router = useRouter();
   const queryClient = useQueryClient();
-  const [currentStep] = useState(0);
+  const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<Partial<OnboardingForm>>({});
-  const [direction] = useState<"forward" | "back">("forward");
+  const [direction, setDirection] = useState<"forward" | "back">("forward");
+
+  const handleNext = (values: Partial<OnboardingForm>) => {
+    setDirection("forward");
+    setFormData((prev) => ({ ...prev, ...values }));
+    setCurrentStep((prev) => prev + 1);
+  };
+
+  const handlePrev = () => {
+    setDirection("back");
+    setCurrentStep((prev) => prev - 1);
+  };
 
   const finishMutation = useMutation({
     mutationFn: (form: OnboardingForm) => finishOnboarding(form),
@@ -38,14 +50,24 @@ function RouteComponent() {
 
   const steps = [
     {
+      title: "Workspace",
+      description: "Elegí dónde guardar tus archivos",
+      content: <WorkspaceOnboarding initialValues={formData} onNext={handleNext} />,
+    },
+    {
       title: "Bienvenido",
       description: "Organizá tus archivos",
       content: (
         <WelcomeOnboarding
           initialValues={formData}
           isLoading={finishMutation.isPending}
-          onFinish={(values: OnboardingForm) => {
-            const finalData = { ...formData, ...values };
+          onPrev={handlePrev}
+          onFinish={(values: Pick<OnboardingForm, "filesToAdd">) => {
+            const finalData: OnboardingForm = {
+              workspacesToAdd: formData.workspacesToAdd ?? [],
+              existingDefaultWorkspaceId: formData.existingDefaultWorkspaceId,
+              filesToAdd: values.filesToAdd,
+            };
             setFormData(finalData);
             finishMutation.mutate(finalData);
           }}
