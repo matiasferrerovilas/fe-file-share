@@ -25,7 +25,9 @@ export default function FolderTreeSidebar({ activeFolderId }: FolderTreeSidebarP
   const navigate = useNavigate();
   const { data: tree = [] } = useFileSystemTree();
 
-  const treeData: TreeDataNode[] = useMemo(() => toTreeData(tree), [tree]);
+  // El primer nodo es la carpeta raíz ("Home") del backend — la sidebar la trata como
+  // el propio "Inicio" en vez de mostrarla como un nodo más para expandir.
+  const treeData: TreeDataNode[] = useMemo(() => toTreeData(tree[0]?.children ?? []), [tree]);
 
   return (
     <Tree

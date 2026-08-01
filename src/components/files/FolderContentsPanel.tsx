@@ -15,7 +15,9 @@ export default function FolderContentsPanel({ folderId }: FolderContentsPanelPro
   const { data: tree = [] } = useFileSystemTree();
 
   const rows = useMemo(() => {
-    if (folderId === ROOT_FOLDER_ID) return tree;
+    // El primer nodo es la carpeta raíz ("Home") del backend — "Inicio" muestra sus
+    // hijos directamente en vez de mostrar "Home" como si fuera una carpeta más.
+    if (folderId === ROOT_FOLDER_ID) return tree[0]?.children ?? [];
     return findNode(tree, folderId)?.children ?? [];
   }, [tree, folderId]);
 
