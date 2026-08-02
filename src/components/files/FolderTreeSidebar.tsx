@@ -8,10 +8,12 @@ import { useFileSystemTree } from "../../hooks/useFileSystemTree";
 import { useMoveNode, MOVE_NODE_DATA_TYPE } from "../../hooks/useMoveNode";
 import { useUploadFileToFolder } from "../../hooks/useUploadFileToFolder";
 import { uploadSemaphore } from "../../utils/uploadSemaphore";
+import { partitionUploadableFiles } from "../../utils/uploadValidation";
 import type { FileSystemNode } from "../../models/FileSystemNode";
 
 interface FolderTreeSidebarProps {
   activeFolderId: string;
+  onNavigate?: () => void;
 }
 
 function toTreeData(nodes: FileSystemNode[]): TreeDataNode[] {
@@ -38,7 +40,7 @@ function toTreeData(nodes: FileSystemNode[]): TreeDataNode[] {
   }));
 }
 
-export default function FolderTreeSidebar({ activeFolderId }: FolderTreeSidebarProps) {
+export default function FolderTreeSidebar({ activeFolderId, onNavigate }: FolderTreeSidebarProps) {
   const navigate = useNavigate();
   const { message } = AntdApp.useApp();
   const { data: tree = [] } = useFileSystemTree();
@@ -51,7 +53,11 @@ export default function FolderTreeSidebar({ activeFolderId }: FolderTreeSidebarP
   const treeData: TreeDataNode[] = useMemo(() => toTreeData(tree[0]?.children ?? []), [tree]);
 
   const handleFilesSelected = async (fileList: FileList | null) => {
-    const files = Array.from(fileList ?? []);
+    const selected = Array.from(fileList ?? []);
+    if (selected.length === 0) return;
+
+    const { valid: files, rejectionReasons } = partitionUploadableFiles(selected);
+    rejectionReasons.forEach((reason) => message.error(reason));
     if (files.length === 0) return;
 
     const results = await Promise.allSettled(
@@ -118,6 +124,7 @@ export default function FolderTreeSidebar({ activeFolderId }: FolderTreeSidebarP
           const folderId = keys[0];
           if (typeof folderId !== "string") return;
           navigate({ to: "/files/$folderId", params: { folderId } });
+          onNavigate?.();
         }}
       />
     </>

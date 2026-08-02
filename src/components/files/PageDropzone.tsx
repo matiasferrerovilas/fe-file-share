@@ -3,6 +3,7 @@ import { App as AntdApp, theme } from "antd";
 import InboxOutlined from "@ant-design/icons/InboxOutlined";
 import { useUploadFileToFolder } from "../../hooks/useUploadFileToFolder";
 import { uploadSemaphore } from "../../utils/uploadSemaphore";
+import { partitionUploadableFiles } from "../../utils/uploadValidation";
 
 interface PageDropzoneProps {
   folderId: string;
@@ -36,7 +37,11 @@ export default function PageDropzone({ folderId, children }: PageDropzoneProps) 
     e.preventDefault();
     setDragDepth(0);
 
-    const files = Array.from(e.dataTransfer.files);
+    const dropped = Array.from(e.dataTransfer.files);
+    if (dropped.length === 0) return;
+
+    const { valid: files, rejectionReasons } = partitionUploadableFiles(dropped);
+    rejectionReasons.forEach((reason) => message.error(reason));
     if (files.length === 0) return;
 
     const results = await Promise.allSettled(

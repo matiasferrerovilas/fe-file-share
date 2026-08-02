@@ -2,12 +2,14 @@ import { Divider, Select, Space, theme } from "antd";
 import SwapOutlined from "@ant-design/icons/SwapOutlined";
 import PlusOutlined from "@ant-design/icons/PlusOutlined";
 import AppstoreOutlined from "@ant-design/icons/AppstoreOutlined";
+import { useNavigate } from "@tanstack/react-router";
 import { useCurrentWorkspace } from "../workspace/WorkspaceContext";
 import CreateWorkspaceModal from "./modals/CreateWorkspaceModal";
 
 export default function WorkspaceSelector() {
   const { currentWorkspace, workspaces, setCurrentWorkspace, isLoading } = useCurrentWorkspace();
   const { token } = theme.useToken();
+  const navigate = useNavigate();
 
   if (isLoading || workspaces.length === 0) {
     return null;
@@ -17,6 +19,11 @@ export default function WorkspaceSelector() {
     value: ws.workspaceId,
     label: ws.workspaceName,
   }));
+
+  const handleWorkspaceChange = (value: number) => {
+    setCurrentWorkspace(value);
+    navigate({ to: "/" });
+  };
 
   return (
     <CreateWorkspaceModal>
@@ -35,7 +42,7 @@ export default function WorkspaceSelector() {
           <AppstoreOutlined style={{ color: token.colorTextSecondary, fontSize: 14 }} />
           <Select
             value={currentWorkspace?.workspaceId}
-            onChange={(value) => setCurrentWorkspace(value)}
+            onChange={handleWorkspaceChange}
             style={{ minWidth: 140 }}
             loading={isLoading}
             suffixIcon={<SwapOutlined />}

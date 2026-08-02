@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Breadcrumb, Col, Dropdown, Space, type MenuProps } from "antd";
+import { Breadcrumb, Col, Dropdown, Grid, Space, type MenuProps } from "antd";
 import { useNavigate } from "@tanstack/react-router";
 import FolderAddOutlined from "@ant-design/icons/FolderAddOutlined";
 import { useFileSystemTree } from "../../hooks/useFileSystemTree";
@@ -16,10 +16,14 @@ const contextMenuItems: MenuProps["items"] = [
   { key: "create-folder", label: "Crear carpeta", icon: <FolderAddOutlined /> },
 ];
 
+const { useBreakpoint } = Grid;
+
 export default function FolderContentsPanel({ folderId }: FolderContentsPanelProps) {
   const navigate = useNavigate();
   const { data: tree = [] } = useFileSystemTree();
   const [creatingFolder, setCreatingFolder] = useState(false);
+  const screens = useBreakpoint();
+  const isMobile = !screens.md;
 
   const rows = useMemo(() => {
     // El primer nodo es la carpeta raíz del backend — al verla se muestran
@@ -57,7 +61,7 @@ export default function FolderContentsPanel({ folderId }: FolderContentsPanelPro
         trigger={["contextMenu"]}
       >
         <div style={{ flex: 1, minHeight: "60vh" }}>
-          <Space wrap>
+          <Space wrap style={isMobile ? { width: "100%", justifyContent: "center" } : undefined}>
             {rows.map((node, index) => (
               <Col
                 xs={24}

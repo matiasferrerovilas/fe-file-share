@@ -1,5 +1,6 @@
 import PlusOutlined from "@ant-design/icons/PlusOutlined";
 import {
+  App as AntdApp,
   Button,
   Row,
   Col,
@@ -11,6 +12,7 @@ import {
 } from "antd";
 import { useState } from "react";
 import type { OnboardingForm } from "../../api/onboarding/onboardinApi";
+import { getUploadRejectionReason } from "../../utils/uploadValidation";
 
 const { Text } = Typography;
 
@@ -22,12 +24,20 @@ interface Props {
 }
 
 export default function WelcomeOnboarding({ onFinish, onPrev, isLoading }: Props) {
+  const { message } = AntdApp.useApp();
   const [fileList, setFileList] = useState<UploadFile[]>([]);
 
   const uploadProps: UploadProps = {
     multiple: true,
     fileList,
-    beforeUpload: () => false,
+    beforeUpload: (file) => {
+      const reason = getUploadRejectionReason(file);
+      if (reason) {
+        message.error(reason);
+        return Upload.LIST_IGNORE;
+      }
+      return false;
+    },
     onChange: ({ fileList: newFileList }) => setFileList(newFileList),
   };
 
