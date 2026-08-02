@@ -11,16 +11,21 @@ const prodConfigPath = fileURLToPath(
   new URL("./config/config.prod.js", import.meta.url),
 );
 
-// Serves config/config.local.js as /config.js in dev, and bakes
-// config/config.prod.js into /config.js on every `vite build`.
+// Serves config/config.local.js as /config.js in dev (or config.prod.js when
+// run with `--mode prod`), and bakes config/config.prod.js into /config.js
+// on every `vite build`.
 function envConfig(): Plugin {
+  let devConfigPath = localConfigPath;
   return {
     name: "env-config",
+    configResolved(config) {
+      devConfigPath = config.mode === "prod" ? prodConfigPath : localConfigPath;
+    },
     configureServer(server) {
       server.middlewares.use((req, res, next) => {
         if (req.url === "/config.js") {
           res.setHeader("Content-Type", "text/javascript");
-          res.end(readFileSync(localConfigPath));
+          res.end(readFileSync(devConfigPath));
           return;
         }
         next();
