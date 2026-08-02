@@ -6,8 +6,8 @@ const localBackend = {
 };
 
 const devBackend = {
-  api: "https://file.eva-core.com/v1",
-  websocketUrl: "https://file.eva-core.com",
+  api: "https://keep.eva-core.com/v1",
+  websocketUrl: "https://keep.eva-core.com",
 };
 
 window.env = {
