@@ -16,7 +16,6 @@ Object.defineProperty(window, "env", {
   writable: true,
 });
 
-// Polyfill ResizeObserver — not available in jsdom but required by Ant Design
 global.ResizeObserver = class ResizeObserver {
   observe() {}
   unobserve() {}
