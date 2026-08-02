@@ -54,7 +54,10 @@ export default function NavHeader() {
         height: 56,
       }}
     >
-      <WorkspaceSelector />
+      <Flex align="center" gap={12}>
+        <img src="/logo.png" alt="Logo" style={{ height: 44, width: 44, borderRadius: 10 }} />
+        <WorkspaceSelector />
+      </Flex>
       <Dropdown
         menu={{ items: dropdownItems }}
         placement="bottomRight"

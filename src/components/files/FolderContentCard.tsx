@@ -1,6 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
-import { App as AntdApp, Avatar, Card, Dropdown, Tag, Tooltip, theme, type MenuProps } from "antd";
+import { App as AntdApp, Avatar, Card, Checkbox, Dropdown, Tag, Tooltip, theme, type MenuProps } from "antd";
 import FileOutlined from "@ant-design/icons/FileOutlined";
 import FolderOutlined from "@ant-design/icons/FolderOutlined";
 import EditOutlined from "@ant-design/icons/EditOutlined";
@@ -23,9 +23,17 @@ const SHARE_TARGETS = [{ key: "api-movement", label: "api-movement" }];
 
 interface FolderContentCardProps {
   node: FileSystemNode;
+  selected: boolean;
+  selectionActive: boolean;
+  onToggleSelect: (id: string) => void;
 }
 
-export default function FolderContentCard({ node }: FolderContentCardProps) {
+export default function FolderContentCard({
+  node,
+  selected,
+  selectionActive,
+  onToggleSelect,
+}: FolderContentCardProps) {
   const navigate = useNavigate();
   const { token } = theme.useToken();
   const { modal, message } = AntdApp.useApp();
@@ -36,6 +44,7 @@ export default function FolderContentCard({ node }: FolderContentCardProps) {
   const { moveIfValid } = useMoveNode();
   const [renaming, setRenaming] = useState(false);
   const [dragDepth, setDragDepth] = useState(0);
+  const [hovering, setHovering] = useState(false);
 
   const isFolder = node.type === FileSystemNodeType.FOLDER;
 
@@ -105,7 +114,30 @@ export default function FolderContentCard({ node }: FolderContentCardProps) {
   return (
     <>
       {/* Evita que el click derecho también dispare el menú de "Crear carpeta" del panel */}
-      <div onContextMenu={(e) => e.stopPropagation()} style={{ position: "relative", width: 240 }}>
+      <div
+        onContextMenu={(e) => e.stopPropagation()}
+        onMouseEnter={() => setHovering(true)}
+        onMouseLeave={() => setHovering(false)}
+        style={{ position: "relative", width: 240 }}
+      >
+        <div
+          style={{
+            position: "absolute",
+            top: 8,
+            left: 8,
+            zIndex: 2,
+            opacity: selected || selectionActive || hovering ? 1 : 0,
+            transition: "opacity 0.15s ease",
+            background: token.colorBgContainer,
+            borderRadius: token.borderRadiusSM,
+          }}
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleSelect(node.id);
+          }}
+        >
+          <Checkbox checked={selected} />
+        </div>
         {node.shareWith.length > 0 && (
           <div
             style={{ position: "absolute", top: 8, right: 8, zIndex: 2 }}
