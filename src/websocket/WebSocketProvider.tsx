@@ -26,11 +26,9 @@ export const WebSocketProvider = ({ children }: { children: React.ReactNode }) =
 
   useEffect(() => {
     // CRÍTICO: Espera a que Keycloak esté inicializado y autenticado
-    if (!initialized || !keycloak.authenticated || !keycloak.token) {
+    if (!initialized || !keycloak.authenticated) {
       return;
     }
-
-    const token = keycloak.token;
 
     const baseUrl = window.env.backend.websocketUrl;
 
@@ -40,10 +38,18 @@ export const WebSocketProvider = ({ children }: { children: React.ReactNode }) =
 
     const client = new Client({
       webSocketFactory: () => new SockJS(`${baseUrl}/ws`),
-      connectHeaders: { Authorization: `Bearer ${token}` },
       reconnectDelay: 5000,
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,
+      beforeConnect: async () => {
+        // Refresca el token si está por vencer, sin recrear la conexión entera.
+        try {
+          await keycloak.updateToken(30);
+        } catch {
+          // no se pudo renovar — se intenta igual con el token vigente
+        }
+        client.connectHeaders = { Authorization: `Bearer ${keycloak.token}` };
+      },
       onConnect: () => {
         setIsConnected(true);
 
@@ -82,7 +88,9 @@ export const WebSocketProvider = ({ children }: { children: React.ReactNode }) =
       activeSubscriptionsSnapshot.clear();
       setIsConnected(false);
     };
-  }, [keycloak.token, keycloak.authenticated, initialized]);
+    // keycloak es una instancia estable (no cambia de referencia en cada refresh de
+    // token), así que este efecto solo corre en login/logout real, no en cada renovación.
+  }, [keycloak, keycloak.authenticated, initialized]);
 
   const subscribe = useCallback(<T,>(topic: string, callback: EventCallback<T>) => {
     if (!subscriptionsRef.current.has(topic)) {
