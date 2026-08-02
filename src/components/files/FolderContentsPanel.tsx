@@ -22,21 +22,23 @@ export default function FolderContentsPanel({ folderId }: FolderContentsPanelPro
   const [creatingFolder, setCreatingFolder] = useState(false);
 
   const rows = useMemo(() => {
-    // El primer nodo es la carpeta raíz ("Home") del backend — "Inicio" muestra sus
-    // hijos directamente en vez de mostrar "Home" como si fuera una carpeta más.
+    // El primer nodo es la carpeta raíz del backend — al verla se muestran
+    // directamente sus hijos en vez de listarla como si fuera una carpeta más.
     if (folderId === ROOT_FOLDER_ID) return tree[0]?.children ?? [];
     return findNode(tree, folderId)?.children ?? [];
   }, [tree, folderId]);
 
   const ancestors = useMemo(() => {
     if (folderId === ROOT_FOLDER_ID) return [];
-    return findPath(tree, folderId);
+    // Busca desde los hijos de la raíz: el nodo raíz ya se muestra como el
+    // primer item del breadcrumb, no hace falta repetirlo en ancestors.
+    return findPath(tree[0]?.children ?? [], folderId);
   }, [tree, folderId]);
 
   const goToFolder = (id: string) => navigate({ to: "/files/$folderId", params: { folderId: id } });
 
   const breadcrumbItems = [
-    { title: <a onClick={() => goToFolder(ROOT_FOLDER_ID)}>Inicio</a> },
+    { title: <a onClick={() => goToFolder(ROOT_FOLDER_ID)}>{tree[0]?.name}</a> },
     ...ancestors.map((node, index) => ({
       title:
         index === ancestors.length - 1 ? (
