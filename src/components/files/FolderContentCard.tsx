@@ -1,17 +1,25 @@
 import { useState } from "react";
-import { App as AntdApp, Card, Dropdown, Tag, theme, type MenuProps } from "antd";
+import axios from "axios";
+import { App as AntdApp, Avatar, Card, Dropdown, Tag, Tooltip, theme, type MenuProps } from "antd";
 import FileOutlined from "@ant-design/icons/FileOutlined";
 import FolderOutlined from "@ant-design/icons/FolderOutlined";
 import EditOutlined from "@ant-design/icons/EditOutlined";
 import DeleteOutlined from "@ant-design/icons/DeleteOutlined";
 import DownloadOutlined from "@ant-design/icons/DownloadOutlined";
+import ShareAltOutlined from "@ant-design/icons/ShareAltOutlined";
 import { useNavigate } from "@tanstack/react-router";
 import { FileSystemNodeType, type FileSystemNode } from "../../models/FileSystemNode";
 import { formatFileSize } from "../../utils/formatFileSize";
 import { useDeleteFolder } from "../../hooks/useDeleteFolder";
 import { useDownloadFile } from "../../hooks/useDownloadFile";
 import { useMoveNode, MOVE_NODE_DATA_TYPE } from "../../hooks/useMoveNode";
+import { useUserRoles } from "../../hooks/useUserRoles";
+import { useShareFile } from "../../hooks/useShareFile";
+import { SharePermission } from "../../models/FileShare";
+import { shareAbbreviation } from "../../utils/shareAbbreviation";
 import RenameNodeModal from "./RenameNodeModal";
+
+const SHARE_TARGETS = [{ key: "api-movement", label: "api-movement" }];
 
 interface FolderContentCardProps {
   node: FileSystemNode;
@@ -21,8 +29,10 @@ export default function FolderContentCard({ node }: FolderContentCardProps) {
   const navigate = useNavigate();
   const { token } = theme.useToken();
   const { modal, message } = AntdApp.useApp();
+  const { isAdmin } = useUserRoles();
   const deleteMutation = useDeleteFolder();
   const downloadMutation = useDownloadFile();
+  const shareMutation = useShareFile();
   const { moveIfValid } = useMoveNode();
   const [renaming, setRenaming] = useState(false);
   const [dragDepth, setDragDepth] = useState(0);
@@ -46,10 +56,21 @@ export default function FolderContentCard({ node }: FolderContentCardProps) {
   };
 
   const menuItems: MenuProps["items"] = [
-    ...(!isFolder
-      ? [{ key: "download", label: "Descargar", icon: <DownloadOutlined /> }]
-      : []),
+    ...(!isFolder ? [{ key: "download", label: "Descargar", icon: <DownloadOutlined /> }] : []),
     { key: "rename", label: "Renombrar", icon: <EditOutlined /> },
+    ...(isAdmin
+      ? [
+          {
+            key: "share",
+            label: "Compartir con",
+            icon: <ShareAltOutlined />,
+            children: SHARE_TARGETS.map((target) => ({
+              key: `share:${target.key}`,
+              label: target.label,
+            })),
+          },
+        ]
+      : []),
     { key: "delete", label: "Eliminar", icon: <DeleteOutlined />, danger: true },
   ];
 
@@ -62,12 +83,51 @@ export default function FolderContentCard({ node }: FolderContentCardProps) {
     }
     if (key === "rename") setRenaming(true);
     if (key === "delete") handleDelete();
+    if (key.startsWith("share:")) {
+      const apiName = key.slice("share:".length);
+      shareMutation.mutate(
+        { fileId: node.id, apiName, permission: SharePermission.READ_WRITE },
+        {
+          onSuccess: () => message.success(`"${node.name}" compartido con ${apiName}`),
+          onError: (error) => {
+            const alreadyShared = axios.isAxiosError(error) && error.response?.status === 409;
+            message.error(
+              alreadyShared
+                ? `"${node.name}" ya está compartido con ${apiName}`
+                : `No se pudo compartir "${node.name}" con ${apiName}`,
+            );
+          },
+        },
+      );
+    }
   };
 
   return (
     <>
       {/* Evita que el click derecho también dispare el menú de "Crear carpeta" del panel */}
-      <div onContextMenu={(e) => e.stopPropagation()}>
+      <div onContextMenu={(e) => e.stopPropagation()} style={{ position: "relative", width: 240 }}>
+        {node.shareWith.length > 0 && (
+          <Avatar.Group
+            style={{ position: "absolute", top: 8, right: 8, zIndex: 2 }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {node.shareWith.map((apiName) => (
+              <Tooltip key={apiName} title={`Compartido con ${apiName}`}>
+                <Avatar
+                  size={28}
+                  style={{
+                    backgroundColor: token.colorPrimary,
+                    fontSize: 10,
+                    fontWeight: 600,
+                    cursor: "default",
+                  }}
+                >
+                  {shareAbbreviation(apiName)}
+                </Avatar>
+              </Tooltip>
+            ))}
+          </Avatar.Group>
+        )}
         <Dropdown menu={{ items: menuItems, onClick: handleMenuClick }} trigger={["contextMenu"]}>
           <Card
             hoverable

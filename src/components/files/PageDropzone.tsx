@@ -2,11 +2,7 @@ import { useState, type DragEvent, type ReactNode } from "react";
 import { App as AntdApp, theme } from "antd";
 import InboxOutlined from "@ant-design/icons/InboxOutlined";
 import { useUploadFileToFolder } from "../../hooks/useUploadFileToFolder";
-import { Semaphore } from "../../utils/semaphore";
-
-// Como mucho 4 subidas en simultáneo — protege al Pi y al pool de conexiones del browser
-// cuando se sueltan muchos archivos de una.
-const uploadSemaphore = new Semaphore(4);
+import { uploadSemaphore } from "../../utils/uploadSemaphore";
 
 interface PageDropzoneProps {
   folderId: string;

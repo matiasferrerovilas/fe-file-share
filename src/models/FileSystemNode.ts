@@ -12,4 +12,5 @@ export interface FileSystemNode {
   size: number | null;
   lastModified: string;
   children: FileSystemNode[] | null;
+  shareWith: string[];
 }
