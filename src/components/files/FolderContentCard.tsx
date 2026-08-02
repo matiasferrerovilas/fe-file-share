@@ -107,26 +107,28 @@ export default function FolderContentCard({ node }: FolderContentCardProps) {
       {/* Evita que el click derecho también dispare el menú de "Crear carpeta" del panel */}
       <div onContextMenu={(e) => e.stopPropagation()} style={{ position: "relative", width: 240 }}>
         {node.shareWith.length > 0 && (
-          <Avatar.Group
+          <div
             style={{ position: "absolute", top: 8, right: 8, zIndex: 2 }}
             onClick={(e) => e.stopPropagation()}
           >
-            {node.shareWith.map((apiName) => (
-              <Tooltip key={apiName} title={`Compartido con ${apiName}`}>
-                <Avatar
-                  size={28}
-                  style={{
-                    backgroundColor: token.colorPrimary,
-                    fontSize: 10,
-                    fontWeight: 600,
-                    cursor: "default",
-                  }}
-                >
-                  {shareAbbreviation(apiName)}
-                </Avatar>
-              </Tooltip>
-            ))}
-          </Avatar.Group>
+            <Avatar.Group>
+              {node.shareWith.map((apiName) => (
+                <Tooltip key={apiName} title={`Compartido con ${apiName}`}>
+                  <Avatar
+                    size={28}
+                    style={{
+                      backgroundColor: token.colorPrimary,
+                      fontSize: 10,
+                      fontWeight: 600,
+                      cursor: "default",
+                    }}
+                  >
+                    {shareAbbreviation(apiName)}
+                  </Avatar>
+                </Tooltip>
+              ))}
+            </Avatar.Group>
+          </div>
         )}
         <Dropdown menu={{ items: menuItems, onClick: handleMenuClick }} trigger={["contextMenu"]}>
           <Card
