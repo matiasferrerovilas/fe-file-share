@@ -65,7 +65,7 @@ export default function FolderContentCard({
   };
 
   const menuItems: MenuProps["items"] = [
-    ...(!isFolder ? [{ key: "download", label: "Descargar", icon: <DownloadOutlined /> }] : []),
+    { key: "download", label: "Descargar", icon: <DownloadOutlined /> },
     { key: "rename", label: "Renombrar", icon: <EditOutlined /> },
     ...(isAdmin
       ? [

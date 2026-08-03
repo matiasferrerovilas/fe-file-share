@@ -8,7 +8,6 @@ import CloseOutlined from "@ant-design/icons/CloseOutlined";
 import { useFileSystemTree } from "../../hooks/useFileSystemTree";
 import { findNode, findPath } from "../../utils/fileSystemTree";
 import { ROOT_FOLDER_ID } from "../../api/foldersApi";
-import { FileSystemNodeType } from "../../models/FileSystemNode";
 import { useDeleteFolder } from "../../hooks/useDeleteFolder";
 import { useDownloadFile } from "../../hooks/useDownloadFile";
 import FolderContentCard from "./FolderContentCard";
@@ -55,8 +54,6 @@ export default function FolderContentsPanel({ folderId }: FolderContentsPanelPro
     () => rows.filter((node) => selectedIds.has(node.id)),
     [rows, selectedIds],
   );
-  const allSelectedAreFiles =
-    selectedNodes.length > 0 && selectedNodes.every((node) => node.type === FileSystemNodeType.FILE);
 
   const toggleSelect = (id: string) => {
     setSelectedIds((prev) => {
@@ -138,11 +135,7 @@ export default function FolderContentsPanel({ folderId }: FolderContentsPanelPro
           }}
         >
           <Text strong>{selectedNodes.length} seleccionado(s)</Text>
-          <Button
-            icon={<DownloadOutlined />}
-            disabled={!allSelectedAreFiles}
-            onClick={handleBulkDownload}
-          >
+          <Button icon={<DownloadOutlined />} onClick={handleBulkDownload}>
             Descargar
           </Button>
           <Button danger icon={<DeleteOutlined />} onClick={handleBulkDelete}>
