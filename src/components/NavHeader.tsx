@@ -1,5 +1,17 @@
 import { useState } from "react";
-import { Avatar, Button, Divider, Drawer, Flex, Grid, Popover, Segmented, Tag, theme, Typography } from "antd";
+import {
+  Avatar,
+  Button,
+  Divider,
+  Drawer,
+  Flex,
+  Grid,
+  Popover,
+  Segmented,
+  Tag,
+  theme,
+  Typography,
+} from "antd";
 import LogoutOutlined from "@ant-design/icons/LogoutOutlined";
 import MenuOutlined from "@ant-design/icons/MenuOutlined";
 import MoonOutlined from "@ant-design/icons/MoonOutlined";
@@ -13,6 +25,7 @@ import { useCurrentUser } from "../hooks/useCurrentUser";
 import { useTheme } from "../theme/ThemeContext";
 import { getUserDisplayName } from "../utils/userDisplayName";
 import { AppsGrid } from "./AppsGrid";
+import FileSearch from "./files/FileSearch";
 import WorkspaceSelector from "./WorkspaceSelector";
 
 const { Text } = Typography;
@@ -235,6 +248,9 @@ export default function NavHeader() {
               <img src="/logo.png" alt="Logo" style={{ height: 44, width: 44, borderRadius: 10 }} />
               <WorkspaceSelector />
             </Flex>
+            <Flex style={{ flex: 1 }} align="center" gap={12}>
+              <FileSearch />
+            </Flex>
             <Flex style={{ flex: 1 }} justify="flex-end" align="center">
               {UserAvatar}
             </Flex>
@@ -262,6 +278,9 @@ export default function NavHeader() {
       >
         <div style={{ paddingTop: 8 }}>
           <WorkspaceSelector compact />
+        </div>
+        <div style={{ padding: "12px 16px" }}>
+          <FileSearch onNavigate={() => setDrawerOpen(false)} />
         </div>
         <div style={{ padding: "16px 16px 0" }}>
           <Flex gap={8} style={{ marginBottom: 16 }}>
