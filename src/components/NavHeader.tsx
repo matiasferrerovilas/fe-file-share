@@ -176,7 +176,7 @@ export default function NavHeader() {
       trigger="click"
       open={profileOpen}
       onOpenChange={setProfileOpen}
-      styles={{ root: { marginTop: 8 }, body: { padding: 0 } }}
+      styles={{ root: { marginTop: 8 }, content: { padding: 0 } }}
     >
       <Avatar
         size={36}
