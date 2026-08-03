@@ -1,19 +1,9 @@
 import { useState } from "react";
-import {
-  Avatar,
-  Button,
-  Drawer,
-  Dropdown,
-  Flex,
-  Grid,
-  type MenuProps,
-  Segmented,
-  theme,
-  Typography,
-} from "antd";
+import { Avatar, Button, Divider, Drawer, Flex, Grid, Popover, Segmented, Tag, theme, Typography } from "antd";
 import LogoutOutlined from "@ant-design/icons/LogoutOutlined";
 import MenuOutlined from "@ant-design/icons/MenuOutlined";
 import MoonOutlined from "@ant-design/icons/MoonOutlined";
+import SettingOutlined from "@ant-design/icons/SettingOutlined";
 import SunOutlined from "@ant-design/icons/SunOutlined";
 import UserOutlined from "@ant-design/icons/UserOutlined";
 import { useKeycloak } from "@react-keycloak/web";
@@ -22,10 +12,81 @@ import { Header } from "antd/es/layout/layout";
 import { useCurrentUser } from "../hooks/useCurrentUser";
 import { useTheme } from "../theme/ThemeContext";
 import { getUserDisplayName } from "../utils/userDisplayName";
+import { AppsGrid } from "./AppsGrid";
 import WorkspaceSelector from "./WorkspaceSelector";
 
 const { Text } = Typography;
 const { useBreakpoint } = Grid;
+
+const USER_TYPE_COLOR: Record<string, string> = {
+  PERSONAL: "blue",
+  ENTERPRISE: "green",
+};
+
+interface ProfileMenuItemProps {
+  icon: React.ReactNode;
+  label: string;
+  onClick: () => void;
+  danger?: boolean;
+}
+
+function ProfileMenuItem({ icon, label, onClick, danger }: ProfileMenuItemProps) {
+  const { token } = theme.useToken();
+  return (
+    <div
+      onClick={onClick}
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: 10,
+        padding: "8px 16px",
+        cursor: "pointer",
+        color: danger ? token.colorError : token.colorText,
+        transition: "background 0.15s ease",
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.background = token.colorFillTertiary;
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.background = "transparent";
+      }}
+    >
+      <span style={{ fontSize: 15, display: "flex" }}>{icon}</span>
+      <Text style={{ fontSize: 13, color: "inherit" }}>{label}</Text>
+    </div>
+  );
+}
+
+function ProfileTile({ icon, label, onClick }: Omit<ProfileMenuItemProps, "danger">) {
+  const { token } = theme.useToken();
+  return (
+    <div
+      onClick={onClick}
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: 6,
+        width: 72,
+        padding: 8,
+        borderRadius: token.borderRadiusLG,
+        cursor: "pointer",
+        color: token.colorText,
+        textAlign: "center",
+        transition: "background 0.15s ease",
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.background = token.colorFillTertiary;
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.background = "transparent";
+      }}
+    >
+      <span style={{ fontSize: 20, display: "flex" }}>{icon}</span>
+      <Text style={{ fontSize: 11 }}>{label}</Text>
+    </div>
+  );
+}
 
 export default function NavHeader() {
   const screens = useBreakpoint();
@@ -36,26 +97,12 @@ export default function NavHeader() {
   const { isDark, toggleTheme } = useTheme();
   const { data: currentUser } = useCurrentUser();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
 
   const displayName = currentUser ? getUserDisplayName(currentUser) : null;
   const email = currentUser?.email;
 
-  const dropdownItems: MenuProps["items"] = [
-    {
-      key: "theme",
-      label: isDark ? "Modo claro" : "Modo oscuro",
-      icon: isDark ? <SunOutlined /> : <MoonOutlined />,
-      onClick: toggleTheme,
-    },
-    { type: "divider" as const },
-    {
-      key: "logout",
-      label: "Cerrar sesión",
-      icon: <LogoutOutlined />,
-      danger: true,
-      onClick: () => keycloak.logout(),
-    },
-  ];
+  const closeProfile = () => setProfileOpen(false);
 
   const ThemeToggle = (
     <Segmented
@@ -71,24 +118,72 @@ export default function NavHeader() {
     />
   );
 
-  const UserAvatar = (
-    <Dropdown
-      menu={{ items: dropdownItems }}
-      placement="bottomRight"
-      styles={{ root: { marginTop: 8 } }}
-      trigger={["click"]}
-    >
-      <Flex align="center" gap={10} style={{ cursor: "pointer" }}>
-        {!isMobile && (
-          <Text style={{ fontSize: 12, fontWeight: 500 }}>{displayName || email}</Text>
+  const ProfilePopoverContent = (
+    <div style={{ width: 220 }}>
+      <div style={{ padding: "12px 16px" }}>
+        <Text strong style={{ display: "block" }}>
+          {displayName || email}
+        </Text>
+        {currentUser?.userType && (
+          <Tag
+            color={USER_TYPE_COLOR[currentUser.userType] ?? "default"}
+            style={{ marginTop: 4, marginInlineEnd: 0 }}
+          >
+            {currentUser.userType}
+          </Tag>
         )}
-        <Avatar
-          size={36}
-          icon={<UserOutlined />}
-          style={{ backgroundColor: token.colorPrimary, flexShrink: 0 }}
+      </div>
+      <Divider style={{ margin: 0 }} />
+      <Flex gap={8} style={{ padding: "8px 16px" }}>
+        <ProfileTile icon={<SettingOutlined />} label="Ajustes" onClick={closeProfile} />
+        <ProfileTile
+          icon={isDark ? <SunOutlined /> : <MoonOutlined />}
+          label={isDark ? "Modo claro" : "Modo oscuro"}
+          onClick={() => {
+            toggleTheme();
+            closeProfile();
+          }}
         />
       </Flex>
-    </Dropdown>
+      <Divider style={{ margin: 0 }} />
+      <div style={{ padding: "12px 16px" }}>
+        <Text type="secondary" style={{ fontSize: 11 }}>
+          Apps
+        </Text>
+        <div style={{ marginTop: 8 }}>
+          <AppsGrid />
+        </div>
+      </div>
+      <Divider style={{ margin: 0 }} />
+      <div style={{ padding: "4px 0" }}>
+        <ProfileMenuItem
+          icon={<LogoutOutlined />}
+          label="Cerrar sesión"
+          danger
+          onClick={() => {
+            closeProfile();
+            keycloak.logout();
+          }}
+        />
+      </div>
+    </div>
+  );
+
+  const UserAvatar = (
+    <Popover
+      content={ProfilePopoverContent}
+      placement="bottomRight"
+      trigger="click"
+      open={profileOpen}
+      onOpenChange={setProfileOpen}
+      styles={{ root: { marginTop: 8 }, body: { padding: 0 } }}
+    >
+      <Avatar
+        size={36}
+        icon={<UserOutlined />}
+        style={{ backgroundColor: token.colorPrimary, flexShrink: 0, cursor: "pointer" }}
+      />
+    </Popover>
   );
 
   return (
@@ -132,9 +227,7 @@ export default function NavHeader() {
             >
               <img src="/logo.png" alt="Logo" style={{ height: 36, width: 36, borderRadius: 8 }} />
             </button>
-            <Flex align="center" gap={4}>
-              {UserAvatar}
-            </Flex>
+            {UserAvatar}
           </>
         ) : (
           <>
