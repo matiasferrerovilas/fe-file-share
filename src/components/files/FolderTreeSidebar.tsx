@@ -33,9 +33,9 @@ function toTreeData(nodes: FileSystemNode[]): TreeDataNode[] {
         </span>
       </Tooltip>
     ),
-    icon: node.type === "FOLDER" ? <FolderOutlined /> : <FileOutlined />,
-    isLeaf: node.type === "FILE",
-    selectable: node.type === "FOLDER",
+    icon: node.metadata.type === "FOLDER" ? <FolderOutlined /> : <FileOutlined />,
+    isLeaf: node.metadata.type === "FILE",
+    selectable: node.metadata.type === "FOLDER",
     children: node.children?.length ? toTreeData(node.children) : undefined,
   }));
 }

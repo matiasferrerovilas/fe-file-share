@@ -28,7 +28,7 @@ export const useMoveNode = () => {
     if (!draggedId || draggedId === targetFolderId) return;
 
     const draggedNode = findNode(tree, draggedId);
-    if (draggedNode?.type === "FOLDER" && findNode(draggedNode.children ?? [], targetFolderId)) {
+    if (draggedNode?.metadata.type === "FOLDER" && findNode(draggedNode.children ?? [], targetFolderId)) {
       message.warning("No podés mover una carpeta dentro de sí misma");
       return;
     }

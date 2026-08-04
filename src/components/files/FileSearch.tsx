@@ -36,7 +36,7 @@ export default function FileSearch({ style, onNavigate }: FileSearchProps) {
 
     const { node, path } = match;
     const folderId =
-      node.type === FileSystemNodeType.FOLDER
+      node.metadata.type === FileSystemNodeType.FOLDER
         ? node.id
         : (path[path.length - 2]?.id ?? ROOT_FOLDER_ID);
 
@@ -76,7 +76,7 @@ export default function FileSearch({ style, onNavigate }: FileSearchProps) {
                 e.currentTarget.style.background = "transparent";
               }}
             >
-              {node.type === FileSystemNodeType.FOLDER ? <FolderOutlined /> : <FileOutlined />}
+              {node.metadata.type === FileSystemNodeType.FOLDER ? <FolderOutlined /> : <FileOutlined />}
               <Flex vertical style={{ minWidth: 0, flex: 1 }}>
                 <Text ellipsis>{node.name}</Text>
                 {breadcrumb && (

@@ -46,7 +46,7 @@ export default function FolderContentCard({
   const [dragDepth, setDragDepth] = useState(0);
   const [hovering, setHovering] = useState(false);
 
-  const isFolder = node.type === FileSystemNodeType.FOLDER;
+  const isFolder = node.metadata.type === FileSystemNodeType.FOLDER;
 
   const handleDelete = () => {
     modal.confirm({
@@ -201,7 +201,7 @@ export default function FolderContentCard({
               transition: "border-color 0.15s ease, background 0.15s ease",
             }}
             onClick={() => {
-              if (node.type !== FileSystemNodeType.FOLDER) return;
+              if (node.metadata.type !== FileSystemNodeType.FOLDER) return;
               navigate({ to: "/files/$folderId", params: { folderId: node.id } });
             }}
             cover={
@@ -225,7 +225,7 @@ export default function FolderContentCard({
                 color={isFolder ? "blue" : "default"}
                 style={{ borderRadius: 16, fontWeight: 600 }}
               >
-                {isFolder ? "Carpeta" : `Archivo · ${formatFileSize(node.size ?? 0)}`}
+                {isFolder ? "Carpeta" : `Archivo · ${formatFileSize(node.metadata.size ?? 0)}`}
               </Tag>
             </div>
           </Card>
