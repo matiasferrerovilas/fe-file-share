@@ -10,26 +10,32 @@ import { useFileSystemTree } from "../../src/hooks/useFileSystemTree";
 import { WorkspaceContext, type WorkspaceContextValue } from "../../src/workspace/WorkspaceContext";
 import type { Workspace } from "../../src/models/Workspace";
 
+const makeMetadata = (type: "FOLDER" | "FILE") => ({
+  size: null,
+  lastModified: "2026-01-01T00:00:00Z",
+  createdAt: "2026-01-01T00:00:00Z",
+  type,
+  contentType: null,
+  checksum: null,
+});
+
 const treeRoot = {
   id: "root",
   name: "root",
-  type: "FOLDER",
-  size: null,
-  lastModified: "2026-01-01T00:00:00Z",
+  metadata: makeMetadata("FOLDER"),
+  shareWith: [],
   children: [
     {
       id: "20",
       name: "docs",
-      type: "FOLDER",
-      size: null,
-      lastModified: "2026-01-01T00:00:00Z",
+      metadata: makeMetadata("FOLDER"),
+      shareWith: [],
       children: [
         {
           id: "21",
           name: "child",
-          type: "FOLDER",
-          size: null,
-          lastModified: "2026-01-01T00:00:00Z",
+          metadata: makeMetadata("FOLDER"),
+          shareWith: [],
           children: [],
         },
       ],
@@ -37,9 +43,8 @@ const treeRoot = {
     {
       id: "30",
       name: "photos",
-      type: "FOLDER",
-      size: null,
-      lastModified: "2026-01-01T00:00:00Z",
+      metadata: makeMetadata("FOLDER"),
+      shareWith: [],
       children: [],
     },
   ],
