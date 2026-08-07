@@ -10,12 +10,18 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as HelpRouteImport } from './routes/help'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as FilesFolderIdRouteImport } from './routes/files.$folderId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HelpRoute = HelpRouteImport.update({
+  id: '/help',
+  path: '/help',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OnboardingRoute = OnboardingRouteImport.update({
@@ -31,30 +37,34 @@ const FilesFolderIdRoute = FilesFolderIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/help': typeof HelpRoute
   '/onboarding': typeof OnboardingRoute
   '/files/$folderId': typeof FilesFolderIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/help': typeof HelpRoute
   '/onboarding': typeof OnboardingRoute
   '/files/$folderId': typeof FilesFolderIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/help': typeof HelpRoute
   '/onboarding': typeof OnboardingRoute
   '/files/$folderId': typeof FilesFolderIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/onboarding' | '/files/$folderId'
+  fullPaths: '/' | '/help' | '/onboarding' | '/files/$folderId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/onboarding' | '/files/$folderId'
-  id: '__root__' | '/' | '/onboarding' | '/files/$folderId'
+  to: '/' | '/help' | '/onboarding' | '/files/$folderId'
+  id: '__root__' | '/' | '/help' | '/onboarding' | '/files/$folderId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  HelpRoute: typeof HelpRoute
   OnboardingRoute: typeof OnboardingRoute
   FilesFolderIdRoute: typeof FilesFolderIdRoute
 }
@@ -66,6 +76,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/help': {
+      id: '/help'
+      path: '/help'
+      fullPath: '/help'
+      preLoaderRoute: typeof HelpRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/onboarding': {
@@ -87,6 +104,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  HelpRoute: HelpRoute,
   OnboardingRoute: OnboardingRoute,
   FilesFolderIdRoute: FilesFolderIdRoute,
 }
