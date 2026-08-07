@@ -15,6 +15,7 @@ import {
 import LogoutOutlined from "@ant-design/icons/LogoutOutlined";
 import MenuOutlined from "@ant-design/icons/MenuOutlined";
 import MoonOutlined from "@ant-design/icons/MoonOutlined";
+import QuestionCircleOutlined from "@ant-design/icons/QuestionCircleOutlined";
 import SettingOutlined from "@ant-design/icons/SettingOutlined";
 import SunOutlined from "@ant-design/icons/SunOutlined";
 import UserOutlined from "@ant-design/icons/UserOutlined";
@@ -150,6 +151,14 @@ export default function NavHeader() {
       <Flex gap={8} style={{ padding: "8px 16px" }}>
         <ProfileTile icon={<SettingOutlined />} label="Ajustes" onClick={closeProfile} />
         <ProfileTile
+          icon={<QuestionCircleOutlined />}
+          label="Ayuda"
+          onClick={() => {
+            navigate({ to: "/help" });
+            closeProfile();
+          }}
+        />
+        <ProfileTile
           icon={isDark ? <SunOutlined /> : <MoonOutlined />}
           label={isDark ? "Modo claro" : "Modo oscuro"}
           onClick={() => {
@@ -283,6 +292,17 @@ export default function NavHeader() {
           <FileSearch onNavigate={() => setDrawerOpen(false)} />
         </div>
         <div style={{ padding: "16px 16px 0" }}>
+          <Button
+            block
+            icon={<QuestionCircleOutlined />}
+            style={{ marginBottom: 12 }}
+            onClick={() => {
+              setDrawerOpen(false);
+              navigate({ to: "/help" });
+            }}
+          >
+            Ayuda
+          </Button>
           <Flex gap={8} style={{ marginBottom: 16 }}>
             {ThemeToggle}
             <Text type="secondary" style={{ lineHeight: "32px", fontSize: 13 }}>
