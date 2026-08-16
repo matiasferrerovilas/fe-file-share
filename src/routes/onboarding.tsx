@@ -95,7 +95,7 @@ function RouteComponent() {
               Bienvenido
             </Title>
             <Text type="secondary">
-              Bienvenido a FilesShare, {keycloak?.tokenParsed?.preferred_username}. Antes de
+              Bienvenido a Keep, {keycloak?.tokenParsed?.preferred_username}. Antes de
               comenzar, necesitamos que completes el proceso de configuración inicial. Esto nos
               ayudará a personalizar tu experiencia y asegurarnos de que todo esté listo para ti.
             </Text>

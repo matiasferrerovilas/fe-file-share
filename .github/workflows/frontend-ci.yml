@@ -11,7 +11,7 @@ on:
 
 env:
   REGISTRY: docker.io
-  IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/fe-file-share
+  IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/fe-keep
 
 jobs:
   validate:

@@ -14,6 +14,7 @@ import { useTheme } from "./theme/ThemeContext";
 import { useCurrentUser } from "./hooks/useCurrentUser";
 import NotFound from "./components/NotFound";
 import { WorkspaceProvider } from "./workspace/WorkspaceProvider";
+import { FileTreeRealtimeSync } from "./websocket/FileTreeRealtimeSync";
 
 declare module "@tanstack/react-router" {
   interface Register {
@@ -87,6 +88,7 @@ function RouterWithAuth() {
 
   return (
     <WorkspaceProvider>
+      <FileTreeRealtimeSync />
       <RouterProvider router={router} />
     </WorkspaceProvider>
   );

@@ -138,7 +138,7 @@ export function HelpPage() {
             <Title level={3} style={{ margin: 0 }}>
               Centro de Ayuda
             </Title>
-            <Text type="secondary">Aprendé a usar todas las funciones de FileShare</Text>
+            <Text type="secondary">Aprendé a usar todas las funciones de Keep</Text>
           </div>
         </Flex>
 
@@ -163,7 +163,7 @@ export function HelpPage() {
           }}
         >
           <Text type="secondary" style={{ fontSize: 13 }}>
-            Esta es tu instancia personal de FileShare
+            Esta es tu instancia personal de Keep
           </Text>
         </Flex>
       </Col>
