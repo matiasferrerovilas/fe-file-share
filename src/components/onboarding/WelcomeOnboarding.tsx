@@ -11,6 +11,7 @@ import {
   type UploadProps,
 } from "antd";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { OnboardingForm } from "../../api/onboarding/onboardinApi";
 import { getUploadRejectionReason } from "../../utils/uploadValidation";
 
@@ -24,6 +25,7 @@ interface Props {
 }
 
 export default function WelcomeOnboarding({ onFinish, onPrev, isLoading }: Props) {
+  const { t } = useTranslation();
   const { message } = AntdApp.useApp();
   const [fileList, setFileList] = useState<UploadFile[]>([]);
 
@@ -31,7 +33,7 @@ export default function WelcomeOnboarding({ onFinish, onPrev, isLoading }: Props
     multiple: true,
     fileList,
     beforeUpload: (file) => {
-      const reason = getUploadRejectionReason(file);
+      const reason = getUploadRejectionReason(file, t);
       if (reason) {
         message.error(reason);
         return Upload.LIST_IGNORE;
@@ -53,21 +55,21 @@ export default function WelcomeOnboarding({ onFinish, onPrev, isLoading }: Props
     <Space orientation="vertical" style={{ width: "100%" }}>
       <div style={{ textAlign: "center", marginBottom: 20 }}>
         <Text type="secondary" style={{ display: "block" }}>
-          Subí tus primeros archivos para empezar.
+          {t("onboarding.welcomeStep.intro1")}
         </Text>
         <Text type="secondary" style={{ display: "block" }}>
-          Podés agregarlos más adelante si preferís continuar sin nada.
+          {t("onboarding.welcomeStep.intro2")}
         </Text>
       </div>
 
       <Upload {...uploadProps}>
-        <Button icon={<PlusOutlined />}>Seleccionar archivos</Button>
+        <Button icon={<PlusOutlined />}>{t("onboarding.welcomeStep.selectFiles")}</Button>
       </Upload>
 
       <Row gutter={[16, 10]} style={{ marginTop: 20 }}>
         <Col xs={12}>
           <Button block type="default" onClick={onPrev} disabled={isLoading}>
-            Volver
+            {t("onboarding.welcomeStep.back")}
           </Button>
         </Col>
         <Col xs={12}>
@@ -78,7 +80,7 @@ export default function WelcomeOnboarding({ onFinish, onPrev, isLoading }: Props
             loading={isLoading}
             onClick={handleFinish}
           >
-            Finalizar
+            {t("onboarding.welcomeStep.finish")}
           </Button>
         </Col>
       </Row>

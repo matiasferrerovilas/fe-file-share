@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { Button, Form, Input, Modal } from "antd";
 import EditOutlined from "@ant-design/icons/EditOutlined";
+import { useTranslation } from "react-i18next";
 import { useRenameNode } from "../../hooks/useRenameNode";
 
 interface RenameNodeModalProps {
@@ -9,6 +10,7 @@ interface RenameNodeModalProps {
 }
 
 export default function RenameNodeModal({ node, onClose }: RenameNodeModalProps) {
+  const { t } = useTranslation();
   const [form] = Form.useForm<{ name: string }>();
   const renameMutation = useRenameNode();
 
@@ -33,7 +35,7 @@ export default function RenameNodeModal({ node, onClose }: RenameNodeModalProps)
     <Modal
       open={node !== null}
       onCancel={handleClose}
-      title="Renombrar"
+      title={t("files.rename")}
       width={400}
       destroyOnHidden
       footer={
@@ -43,7 +45,7 @@ export default function RenameNodeModal({ node, onClose }: RenameNodeModalProps)
           loading={renameMutation.isPending}
           onClick={() => form.submit()}
         >
-          Renombrar
+          {t("files.rename")}
         </Button>
       }
     >
@@ -54,9 +56,9 @@ export default function RenameNodeModal({ node, onClose }: RenameNodeModalProps)
         disabled={renameMutation.isPending}
       >
         <Form.Item
-          label="Nombre"
+          label={t("files.renameNameLabel")}
           name="name"
-          rules={[{ required: true, message: "Ingresá un nombre" }]}
+          rules={[{ required: true, message: t("files.renameNamePlaceholder") }]}
         >
           <Input autoFocus />
         </Form.Item>

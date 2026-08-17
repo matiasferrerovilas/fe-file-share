@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button, Drawer, Grid, Layout, theme } from "antd";
 import MenuOutlined from "@ant-design/icons/MenuOutlined";
+import { useTranslation } from "react-i18next";
 import FolderTreeSidebar from "./FolderTreeSidebar";
 import FolderContentsPanel from "./FolderContentsPanel";
 import PageDropzone from "./PageDropzone";
@@ -13,6 +14,7 @@ interface FileExplorerProps {
 }
 
 export default function FileExplorer({ folderId }: FileExplorerProps) {
+  const { t } = useTranslation();
   const { token } = theme.useToken();
   const screens = useBreakpoint();
   const isMobile = !screens.md;
@@ -23,7 +25,7 @@ export default function FileExplorer({ folderId }: FileExplorerProps) {
       <Layout style={{ flex: 1, minHeight: 0, background: token.colorBgContainer }}>
         {isMobile ? (
           <Drawer
-            title="Carpetas"
+            title={t("files.folders")}
             placement="left"
             open={treeOpen}
             onClose={() => setTreeOpen(false)}
@@ -61,7 +63,7 @@ export default function FileExplorer({ folderId }: FileExplorerProps) {
         >
           {isMobile && (
             <Button icon={<MenuOutlined />} onClick={() => setTreeOpen(true)} style={{ alignSelf: "flex-start" }}>
-              Carpetas
+              {t("files.folders")}
             </Button>
           )}
           <FolderContentsPanel folderId={folderId} />

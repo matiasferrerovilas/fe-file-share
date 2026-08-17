@@ -1,6 +1,7 @@
 import { useState, type DragEvent, type ReactNode } from "react";
 import { App as AntdApp, theme } from "antd";
 import InboxOutlined from "@ant-design/icons/InboxOutlined";
+import { useTranslation } from "react-i18next";
 import { useUploadFileToFolder } from "../../hooks/useUploadFileToFolder";
 import { uploadSemaphore } from "../../utils/uploadSemaphore";
 import { partitionUploadableFiles } from "../../utils/uploadValidation";
@@ -11,6 +12,7 @@ interface PageDropzoneProps {
 }
 
 export default function PageDropzone({ folderId, children }: PageDropzoneProps) {
+  const { t } = useTranslation();
   const { token } = theme.useToken();
   const { message } = AntdApp.useApp();
   const { mutateAsync: uploadFile } = useUploadFileToFolder();
@@ -40,7 +42,7 @@ export default function PageDropzone({ folderId, children }: PageDropzoneProps) 
     const dropped = Array.from(e.dataTransfer.files);
     if (dropped.length === 0) return;
 
-    const { valid: files, rejectionReasons } = partitionUploadableFiles(dropped);
+    const { valid: files, rejectionReasons } = partitionUploadableFiles(dropped, t);
     rejectionReasons.forEach((reason) => message.error(reason));
     if (files.length === 0) return;
 
@@ -57,10 +59,10 @@ export default function PageDropzone({ folderId, children }: PageDropzoneProps) 
 
     const failed = results.filter((r) => r.status === "rejected").length;
     if (failed > 0) {
-      message.error(`${failed} de ${files.length} archivo(s) fallaron al subir`);
+      message.error(t("files.uploadFailedCount", { failed, total: files.length }));
     } else {
       message.success(
-        files.length === 1 ? "Archivo subido correctamente" : `${files.length} archivos subidos correctamente`,
+        files.length === 1 ? t("files.uploadSuccess") : t("files.uploadSuccessMultiple", { count: files.length }),
       );
     }
   };
@@ -94,7 +96,7 @@ export default function PageDropzone({ folderId, children }: PageDropzoneProps) 
         >
           <InboxOutlined style={{ fontSize: 42, color: token.colorPrimary }} />
           <span style={{ fontSize: 16, fontWeight: 600, color: token.colorPrimary }}>
-            Soltá los archivos acá para subirlos
+            {t("files.dropHint")}
           </span>
         </div>
       )}

@@ -1,0 +1,184 @@
+{
+  "nav": {
+    "settings": "Settings",
+    "help": "Help",
+    "lightMode": "Light mode",
+    "darkMode": "Dark mode",
+    "apps": "Apps",
+    "logout": "Log out",
+    "search": "Search files and folders",
+    "noResults": "No results",
+    "language": "Language"
+  },
+  "files": {
+    "preview": "Preview",
+    "download": "Download",
+    "rename": "Rename",
+    "shareWith": "Share with",
+    "delete": "Delete",
+    "createFolder": "New folder",
+    "folder": "Folder",
+    "fileWithSize": "File · {{size}}",
+    "sharedWithTooltip": "Shared with {{apiName}}",
+    "deleteConfirmTitle": "Delete \"{{name}}\"",
+    "deleteConfirmFolderContent": "The folder and everything in it will be deleted. This can't be undone.",
+    "deleteConfirmFileContent": "This can't be undone.",
+    "cancel": "Cancel",
+    "deleteFailed": "Couldn't delete \"{{name}}\"",
+    "downloadFailed": "Couldn't download \"{{name}}\"",
+    "sharedSuccess": "\"{{name}}\" shared with {{apiName}}",
+    "sharedAlready": "\"{{name}}\" is already shared with {{apiName}}",
+    "sharedFailed": "Couldn't share \"{{name}}\" with {{apiName}}",
+    "uploadSuccess": "File uploaded successfully",
+    "uploadSuccessMultiple": "{{count}} files uploaded successfully",
+    "uploadFailedCount": "{{failed}} of {{total}} file(s) failed to upload",
+    "itemsDeletedSuccess": "Items deleted successfully",
+    "bulkDeleteConfirmTitle": "Delete {{count}} item(s)",
+    "bulkDeleteConfirmContent": "The selected folders and everything in them will be deleted. This can't be undone.",
+    "bulkDeleteFailed": "{{failed}} of {{total}} item(s) couldn't be deleted",
+    "bulkDownloadFailed": "{{failed}} of {{total}} file(s) couldn't be downloaded",
+    "renameNamePlaceholder": "Enter a name",
+    "renameNameLabel": "Name",
+    "createFolderNamePlaceholder": "Enter the folder name",
+    "createFolderExample": "E.g.: Photos",
+    "previewLoadFailed": "Couldn't load the preview.",
+    "selectedCount": "{{count}} selected",
+    "gridView": "Grid",
+    "listView": "List",
+    "sortName": "Name",
+    "sortSize": "Size",
+    "sortDate": "Date",
+    "sortAscending": "Sort ascending",
+    "sortDescending": "Sort descending",
+    "columnName": "Name",
+    "columnSize": "Size",
+    "columnModified": "Modified",
+    "folders": "Folders",
+    "uploadFile": "Upload file",
+    "dropHint": "Drop your files here to upload them",
+    "moveFailed": "Couldn't move the item",
+    "moveIntoSelfError": "You can't move a folder into itself",
+    "uploadRejectedMedia": "\"{{name}}\": images and videos aren't allowed",
+    "uploadRejectedTooLarge": "\"{{name}}\": exceeds the maximum size of {{maxSize}}"
+  },
+  "common": {
+    "loading": "Loading...",
+    "forbiddenSubtitle": "You don't have permission to access this application.",
+    "forbiddenRetry": "Retry",
+    "notFoundSubtitle": "The page you're looking for doesn't exist.",
+    "notFoundBackHome": "Back to home"
+  },
+  "workspace": {
+    "activeLabel": "Active workspace",
+    "createWorkspace": "Create workspace",
+    "newWorkspaceTitle": "New workspace",
+    "nameLabel": "Name",
+    "nameRequired": "Enter the workspace name",
+    "namePlaceholder": "E.g.: Family"
+  },
+  "onboarding": {
+    "welcomeTitle": "Welcome",
+    "welcomeIntro": "Welcome to Keep, {{username}}. Before you start, we need you to complete the initial setup process. This will help us personalize your experience and make sure everything is ready for you.",
+    "steps": {
+      "workspaceTitle": "Workspace",
+      "workspaceDescription": "Choose where to store your files",
+      "welcomeStepTitle": "Welcome",
+      "welcomeStepDescription": "Organize your files"
+    },
+    "workspaceStep": {
+      "intro1": "Choose which workspace you'll use to store your files.",
+      "intro2": "You can use an existing one, create a new one, and choose which one is your default.",
+      "nameRequired": "Enter the workspace name",
+      "nameInvalid": "Only letters, numbers and spaces are allowed",
+      "namePlaceholder": "Workspace name...",
+      "add": "Add",
+      "empty": "You don't have any workspaces yet. We'll create a default one for you.",
+      "default": "Default",
+      "alreadyDefaultTooltip": "This is already your default workspace",
+      "setAsDefaultTooltip": "Set as default",
+      "markAsDefaultAriaLabel": "Mark {{name}} as default",
+      "removeWorkspaceTooltip": "Remove workspace",
+      "removeWorkspaceAriaLabel": "Remove {{name}}",
+      "footerHint": "If you don't add any, we'll create a default workspace for you.",
+      "next": "Next"
+    },
+    "welcomeStep": {
+      "intro1": "Upload your first files to get started.",
+      "intro2": "You can add them later if you'd rather continue without any.",
+      "selectFiles": "Select files",
+      "back": "Back",
+      "finish": "Finish"
+    }
+  },
+  "help": {
+    "pageTitle": "Help Center",
+    "pageSubtitle": "Learn how to use all of Keep's features",
+    "tipLabel": "Tip: ",
+    "footer": "This is your personal instance of Keep",
+    "sections": {
+      "workspace": {
+        "title": "What is a Workspace?",
+        "text": "A Workspace is an independent file space with its own root folder. Think of it as a separate \"drive\": what you upload in one workspace doesn't mix with what you upload in another.",
+        "list": [
+          "Every user gets a default workspace when they sign up",
+          "You can create several workspaces to separate contexts (for example, personal and work)",
+          "Folders and files in each workspace are independent of one another"
+        ],
+        "tip": "Switch workspaces from the selector in the top bar, next to the logo. To create a new one, choose \"Create workspace\" at the end of the list."
+      },
+      "navigation": {
+        "title": "Navigating folders",
+        "text": "The file explorer shows the full folder tree on the left and the contents of the current folder on the right.",
+        "list": [
+          "Click a folder in the side tree, or a folder card, to enter it",
+          "The breadcrumb at the top shows where you are and lets you go back to a previous folder",
+          "On mobile, the folder tree opens with the \"Folders\" button"
+        ],
+        "tip": "Use the search bar at the top to jump straight to a file or folder by name, without navigating folder by folder."
+      },
+      "upload": {
+        "title": "Uploading files",
+        "text": "There are several ways to upload files to the folder you're currently in.",
+        "list1": [
+          "\"Upload file\" button in the folder sidebar",
+          "Drag and drop one or more files onto the screen",
+          "On mobile, tapping the empty background of the content panel opens the file picker"
+        ],
+        "list2": [
+          "Images and videos aren't allowed",
+          "Each file has a maximum allowed size",
+          "Uploads are processed several at a time, but with a concurrency limit to avoid overloading the server"
+        ],
+        "tip": "If you upload many files at once and some fail, you'll see a notice indicating how many couldn't be uploaded, without affecting the rest."
+      },
+      "organize": {
+        "title": "Organize: create, move, rename and delete",
+        "list": [
+          "Right-click on a folder's background and choose \"New folder\" to add a subfolder",
+          "Drag a file or folder card and drop it onto another folder (in the panel or in the side tree) to move it",
+          "Right-click on a file or folder for \"Rename\", \"Download\" or \"Delete\""
+        ],
+        "tip": "Deleting a folder also deletes everything inside it. This can't be undone, so the app asks you to confirm before applying it."
+      },
+      "selection": {
+        "title": "Multiple selection",
+        "text": "You can select several files or folders at once to download or delete them together.",
+        "list": [
+          "Hover over a card (or tap it on mobile) to see the selection checkbox in the top-left corner",
+          "With at least one item selected, a bar appears with the available actions: Download, Delete and an option to clear the selection"
+        ],
+        "tip": "The selection is cleared automatically when you switch folders."
+      },
+      "share": {
+        "title": "Sharing files",
+        "text": "A file can be shared with other applications so they can access it directly, without having to download it and upload it again by hand.",
+        "list": [
+          "Right-click on a file and choose \"Share with\"",
+          "Choose the target application from the submenu",
+          "A small avatar on the file card shows which apps it's shared with"
+        ],
+        "tip": "This option only appears for users with the administrator role."
+      }
+    }
+  }
+}

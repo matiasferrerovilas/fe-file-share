@@ -3,6 +3,7 @@ import SwapOutlined from "@ant-design/icons/SwapOutlined";
 import PlusOutlined from "@ant-design/icons/PlusOutlined";
 import AppstoreOutlined from "@ant-design/icons/AppstoreOutlined";
 import { useNavigate } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import { useCurrentWorkspace } from "../workspace/WorkspaceContext";
 import CreateWorkspaceModal from "./modals/CreateWorkspaceModal";
 
@@ -14,6 +15,7 @@ interface WorkspaceSelectorProps {
 }
 
 export default function WorkspaceSelector({ compact = false }: WorkspaceSelectorProps) {
+  const { t } = useTranslation();
   const { currentWorkspace, workspaces, setCurrentWorkspace, isLoading } = useCurrentWorkspace();
   const { token } = theme.useToken();
   const navigate = useNavigate();
@@ -38,7 +40,7 @@ export default function WorkspaceSelector({ compact = false }: WorkspaceSelector
         {(openModal) => (
           <div style={{ padding: "0 16px", marginBottom: 12 }}>
             <Text type="secondary" style={{ fontSize: 12, display: "block", marginBottom: 4 }}>
-              Workspace activo
+              {t("workspace.activeLabel")}
             </Text>
             <Select
               value={currentWorkspace?.workspaceId}
@@ -57,7 +59,7 @@ export default function WorkspaceSelector({ compact = false }: WorkspaceSelector
                   >
                     <Space>
                       <PlusOutlined />
-                      <span>Crear workspace</span>
+                      <span>{t("workspace.createWorkspace")}</span>
                     </Space>
                   </div>
                 </>
@@ -103,7 +105,7 @@ export default function WorkspaceSelector({ compact = false }: WorkspaceSelector
                 >
                   <Space>
                     <PlusOutlined />
-                    <span>Crear workspace</span>
+                    <span>{t("workspace.createWorkspace")}</span>
                   </Space>
                 </div>
               </>

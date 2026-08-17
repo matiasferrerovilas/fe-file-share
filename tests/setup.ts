@@ -1,4 +1,9 @@
 import "@testing-library/jest-dom";
+import i18n from "../src/i18n/config";
+
+// Deterministic language for tests regardless of jsdom's navigator locale — matches the app's
+// own default (Spanish) rather than whatever the language detector happens to pick up.
+await i18n.changeLanguage("es");
 
 Object.defineProperty(window, "env", {
   value: {

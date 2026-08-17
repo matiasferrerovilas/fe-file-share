@@ -4,6 +4,7 @@ import { Card, Col, Row, Steps, Typography } from "antd";
 import { useKeycloak } from "@react-keycloak/web";
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { finishOnboarding, type OnboardingForm } from "../api/onboarding/onboardinApi";
 import WelcomeOnboarding from "../components/onboarding/WelcomeOnboarding";
 import WorkspaceOnboarding from "../components/onboarding/WorkspaceOnboarding";
@@ -18,6 +19,7 @@ export const Route = createFileRoute("/onboarding")({
 });
 
 function RouteComponent() {
+  const { t } = useTranslation();
   const { keycloak } = useKeycloak();
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -54,13 +56,13 @@ function RouteComponent() {
 
   const steps = [
     {
-      title: "Workspace",
-      description: "Elegí dónde guardar tus archivos",
+      title: t("onboarding.steps.workspaceTitle"),
+      description: t("onboarding.steps.workspaceDescription"),
       content: <WorkspaceOnboarding initialValues={formData} onNext={handleNext} />,
     },
     {
-      title: "Bienvenido",
-      description: "Organizá tus archivos",
+      title: t("onboarding.steps.welcomeStepTitle"),
+      description: t("onboarding.steps.welcomeStepDescription"),
       content: (
         <WelcomeOnboarding
           initialValues={formData}
@@ -92,12 +94,12 @@ function RouteComponent() {
         >
           <div style={{ textAlign: "center", marginBottom: 30 }}>
             <Title level={2} style={{ margin: 0 }}>
-              Bienvenido
+              {t("onboarding.welcomeTitle")}
             </Title>
             <Text type="secondary">
-              Bienvenido a Keep, {keycloak?.tokenParsed?.preferred_username}. Antes de
-              comenzar, necesitamos que completes el proceso de configuración inicial. Esto nos
-              ayudará a personalizar tu experiencia y asegurarnos de que todo esté listo para ti.
+              {t("onboarding.welcomeIntro", {
+                username: keycloak?.tokenParsed?.preferred_username,
+              })}
             </Text>
           </div>
 

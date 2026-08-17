@@ -4,6 +4,7 @@ import FolderOutlined from "@ant-design/icons/FolderOutlined";
 import FileOutlined from "@ant-design/icons/FileOutlined";
 import UploadOutlined from "@ant-design/icons/UploadOutlined";
 import { useNavigate } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import { useFileSystemTree } from "../../hooks/useFileSystemTree";
 import { useMoveNode, MOVE_NODE_DATA_TYPE } from "../../hooks/useMoveNode";
 import { useUploadFileToFolder } from "../../hooks/useUploadFileToFolder";
@@ -42,6 +43,7 @@ function toTreeData(nodes: FileSystemNode[]): TreeDataNode[] {
 
 export default function FolderTreeSidebar({ activeFolderId, onNavigate }: FolderTreeSidebarProps) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { message } = AntdApp.useApp();
   const { data: tree = [] } = useFileSystemTree();
   const { moveIfValid } = useMoveNode();
@@ -56,7 +58,7 @@ export default function FolderTreeSidebar({ activeFolderId, onNavigate }: Folder
     const selected = Array.from(fileList ?? []);
     if (selected.length === 0) return;
 
-    const { valid: files, rejectionReasons } = partitionUploadableFiles(selected);
+    const { valid: files, rejectionReasons } = partitionUploadableFiles(selected, t);
     rejectionReasons.forEach((reason) => message.error(reason));
     if (files.length === 0) return;
 
@@ -73,10 +75,10 @@ export default function FolderTreeSidebar({ activeFolderId, onNavigate }: Folder
 
     const failed = results.filter((r) => r.status === "rejected").length;
     if (failed > 0) {
-      message.error(`${failed} de ${files.length} archivo(s) fallaron al subir`);
+      message.error(t("files.uploadFailedCount", { failed, total: files.length }));
     } else {
       message.success(
-        files.length === 1 ? "Archivo subido correctamente" : `${files.length} archivos subidos correctamente`,
+        files.length === 1 ? t("files.uploadSuccess") : t("files.uploadSuccessMultiple", { count: files.length }),
       );
     }
   };
@@ -89,7 +91,7 @@ export default function FolderTreeSidebar({ activeFolderId, onNavigate }: Folder
         style={{ marginBottom: 12 }}
         onClick={() => fileInputRef.current?.click()}
       >
-        Subir archivo
+        {t("files.uploadFile")}
       </Button>
       <input
         ref={fileInputRef}

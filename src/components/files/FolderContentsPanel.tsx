@@ -1,10 +1,15 @@
 import { useMemo, useRef, useState, type MouseEvent } from "react";
-import { App as AntdApp, Breadcrumb, Button, Col, Dropdown, Flex, Grid, Space, Typography, theme, type MenuProps } from "antd";
+import { App as AntdApp, Breadcrumb, Button, Col, Dropdown, Flex, Grid, Segmented, Space, Typography, theme, type MenuProps } from "antd";
 import { useNavigate } from "@tanstack/react-router";
 import FolderAddOutlined from "@ant-design/icons/FolderAddOutlined";
 import DownloadOutlined from "@ant-design/icons/DownloadOutlined";
 import DeleteOutlined from "@ant-design/icons/DeleteOutlined";
 import CloseOutlined from "@ant-design/icons/CloseOutlined";
+import AppstoreOutlined from "@ant-design/icons/AppstoreOutlined";
+import UnorderedListOutlined from "@ant-design/icons/UnorderedListOutlined";
+import SortAscendingOutlined from "@ant-design/icons/SortAscendingOutlined";
+import SortDescendingOutlined from "@ant-design/icons/SortDescendingOutlined";
+import { useTranslation } from "react-i18next";
 import { useFileSystemTree } from "../../hooks/useFileSystemTree";
 import { findNode, findPath } from "../../utils/fileSystemTree";
 import { ROOT_FOLDER_ID } from "../../api/foldersApi";
@@ -13,7 +18,9 @@ import { useDownloadFile } from "../../hooks/useDownloadFile";
 import { useUploadFileToFolder } from "../../hooks/useUploadFileToFolder";
 import { uploadSemaphore } from "../../utils/uploadSemaphore";
 import { partitionUploadableFiles } from "../../utils/uploadValidation";
+import { FileSystemNodeType, type FileSystemNode } from "../../models/FileSystemNode";
 import FolderContentCard from "./FolderContentCard";
+import FolderContentRow from "./FolderContentRow";
 import CreateFolderModal from "./CreateFolderModal";
 
 const { Text } = Typography;
@@ -22,19 +29,40 @@ interface FolderContentsPanelProps {
   folderId: string;
 }
 
-const contextMenuItems: MenuProps["items"] = [
-  { key: "create-folder", label: "Crear carpeta", icon: <FolderAddOutlined /> },
-];
-
 const { useBreakpoint } = Grid;
+
+type ViewMode = "grid" | "list";
+type SortField = "name" | "size" | "date";
+type SortDirection = "asc" | "desc";
+
+function compareNodes(a: FileSystemNode, b: FileSystemNode, field: SortField, direction: SortDirection): number {
+  // Las carpetas siempre van antes que los archivos, sin importar el criterio u orden elegido.
+  const aIsFolder = a.metadata.type === FileSystemNodeType.FOLDER;
+  const bIsFolder = b.metadata.type === FileSystemNodeType.FOLDER;
+  if (aIsFolder !== bIsFolder) return aIsFolder ? -1 : 1;
+
+  const sign = direction === "asc" ? 1 : -1;
+  if (field === "size") return sign * ((a.metadata.size ?? 0) - (b.metadata.size ?? 0));
+  if (field === "date") {
+    return sign * (new Date(a.metadata.lastModified).getTime() - new Date(b.metadata.lastModified).getTime());
+  }
+  return sign * a.name.localeCompare(b.name);
+}
 
 export default function FolderContentsPanel({ folderId }: FolderContentsPanelProps) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { token } = theme.useToken();
   const { modal, message } = AntdApp.useApp();
+  const contextMenuItems: MenuProps["items"] = [
+    { key: "create-folder", label: t("files.createFolder"), icon: <FolderAddOutlined /> },
+  ];
   const { data: tree = [] } = useFileSystemTree();
   const [creatingFolder, setCreatingFolder] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [viewMode, setViewMode] = useState<ViewMode>("grid");
+  const [sortField, setSortField] = useState<SortField>("name");
+  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   // Al cambiar de carpeta la selección anterior ya no aplica a lo que se ve en pantalla.
   const [selectionFolderId, setSelectionFolderId] = useState(folderId);
   if (folderId !== selectionFolderId) {
@@ -51,9 +79,10 @@ export default function FolderContentsPanel({ folderId }: FolderContentsPanelPro
   const rows = useMemo(() => {
     // El primer nodo es la carpeta raíz del backend — al verla se muestran
     // directamente sus hijos en vez de listarla como si fuera una carpeta más.
-    if (folderId === ROOT_FOLDER_ID) return tree[0]?.children ?? [];
-    return findNode(tree, folderId)?.children ?? [];
-  }, [tree, folderId]);
+    const children =
+      folderId === ROOT_FOLDER_ID ? (tree[0]?.children ?? []) : (findNode(tree, folderId)?.children ?? []);
+    return [...children].sort((a, b) => compareNodes(a, b, sortField, sortDirection));
+  }, [tree, folderId, sortField, sortDirection]);
 
   const selectedNodes = useMemo(
     () => rows.filter((node) => selectedIds.has(node.id)),
@@ -77,26 +106,26 @@ export default function FolderContentsPanel({ folderId }: FolderContentsPanelPro
     );
     const failed = results.filter((r) => r.status === "rejected").length;
     if (failed > 0) {
-      message.error(`${failed} de ${selectedNodes.length} archivo(s) no se pudieron descargar`);
+      message.error(t("files.bulkDownloadFailed", { failed, total: selectedNodes.length }));
     }
   };
 
   const handleBulkDelete = () => {
     modal.confirm({
-      title: `Eliminar ${selectedNodes.length} elemento(s)`,
-      content: "Se eliminarán las carpetas seleccionadas y todo su contenido. Esta acción no se puede deshacer.",
-      okText: "Eliminar",
+      title: t("files.bulkDeleteConfirmTitle", { count: selectedNodes.length }),
+      content: t("files.bulkDeleteConfirmContent"),
+      okText: t("files.delete"),
       okButtonProps: { danger: true },
-      cancelText: "Cancelar",
+      cancelText: t("files.cancel"),
       onOk: async () => {
         const results = await Promise.allSettled(
           selectedNodes.map((node) => deleteMutation.mutateAsync(node.id)),
         );
         const failed = results.filter((r) => r.status === "rejected").length;
         if (failed > 0) {
-          message.error(`${failed} de ${selectedNodes.length} elemento(s) no se pudieron eliminar`);
+          message.error(t("files.bulkDeleteFailed", { failed, total: selectedNodes.length }));
         } else {
-          message.success("Elementos eliminados correctamente");
+          message.success(t("files.itemsDeletedSuccess"));
         }
         clearSelection();
       },
@@ -107,7 +136,7 @@ export default function FolderContentsPanel({ folderId }: FolderContentsPanelPro
     const selected = Array.from(fileList ?? []);
     if (selected.length === 0) return;
 
-    const { valid: files, rejectionReasons } = partitionUploadableFiles(selected);
+    const { valid: files, rejectionReasons } = partitionUploadableFiles(selected, t);
     rejectionReasons.forEach((reason) => message.error(reason));
     if (files.length === 0) return;
 
@@ -124,10 +153,10 @@ export default function FolderContentsPanel({ folderId }: FolderContentsPanelPro
 
     const failed = results.filter((r) => r.status === "rejected").length;
     if (failed > 0) {
-      message.error(`${failed} de ${files.length} archivo(s) fallaron al subir`);
+      message.error(t("files.uploadFailedCount", { failed, total: files.length }));
     } else {
       message.success(
-        files.length === 1 ? "Archivo subido correctamente" : `${files.length} archivos subidos correctamente`,
+        files.length === 1 ? t("files.uploadSuccess") : t("files.uploadSuccessMultiple", { count: files.length }),
       );
     }
   };
@@ -176,16 +205,43 @@ export default function FolderContentsPanel({ folderId }: FolderContentsPanelPro
             borderRadius: token.borderRadius,
           }}
         >
-          <Text strong>{selectedNodes.length} seleccionado(s)</Text>
+          <Text strong>{t("files.selectedCount", { count: selectedNodes.length })}</Text>
           <Button icon={<DownloadOutlined />} onClick={handleBulkDownload}>
-            Descargar
+            {t("files.download")}
           </Button>
           <Button danger icon={<DeleteOutlined />} onClick={handleBulkDelete}>
-            Eliminar
+            {t("files.delete")}
           </Button>
           <Button type="text" icon={<CloseOutlined />} onClick={clearSelection} />
         </Flex>
       )}
+      <Flex align="center" justify="space-between" wrap gap={12} style={{ marginBottom: 16 }}>
+        <Flex align="center" gap={8}>
+          <Segmented
+            value={sortField}
+            onChange={(value) => setSortField(value as SortField)}
+            options={[
+              { label: t("files.sortName"), value: "name" },
+              { label: t("files.sortSize"), value: "size" },
+              { label: t("files.sortDate"), value: "date" },
+            ]}
+          />
+          <Button
+            type="text"
+            aria-label={t(sortDirection === "asc" ? "files.sortAscending" : "files.sortDescending")}
+            icon={sortDirection === "asc" ? <SortAscendingOutlined /> : <SortDescendingOutlined />}
+            onClick={() => setSortDirection((d) => (d === "asc" ? "desc" : "asc"))}
+          />
+        </Flex>
+        <Segmented
+          value={viewMode}
+          onChange={(value) => setViewMode(value as ViewMode)}
+          options={[
+            { label: t("files.gridView"), value: "grid", icon: <AppstoreOutlined /> },
+            { label: t("files.listView"), value: "list", icon: <UnorderedListOutlined /> },
+          ]}
+        />
+      </Flex>
       <input
         ref={uploadInputRef}
         type="file"
@@ -201,26 +257,58 @@ export default function FolderContentsPanel({ folderId }: FolderContentsPanelPro
         trigger={["contextMenu"]}
       >
         <div style={{ flex: 1, minHeight: "60vh" }} onClick={handleEmptyAreaTap}>
-          <Space wrap style={isMobile ? { width: "100%", justifyContent: "center" } : undefined}>
-            {rows.map((node, index) => (
-              <Col
-                xs={24}
-                sm={12}
-                lg={8}
-                key={node.id}
-                style={{ marginBottom: 16, animationDelay: `${(index + 2) * 80}ms` }}
-                className="fade-in-up"
-              >
-                <FolderContentCard
+          {viewMode === "grid" ? (
+            <Space wrap style={isMobile ? { width: "100%", justifyContent: "center" } : undefined}>
+              {rows.map((node, index) => (
+                <Col
+                  xs={24}
+                  sm={12}
+                  lg={8}
+                  key={node.id}
+                  style={{ marginBottom: 16, animationDelay: `${(index + 2) * 80}ms` }}
+                  className="fade-in-up"
+                >
+                  <FolderContentCard
+                    key={node.id}
+                    node={node}
+                    selected={selectedIds.has(node.id)}
+                    selectionActive={selectedIds.size > 0}
+                    onToggleSelect={toggleSelect}
+                  />
+                </Col>
+              ))}
+            </Space>
+          ) : (
+            <Flex vertical gap={4}>
+              {!isMobile && (
+                <Flex
+                  gap={12}
+                  style={{ padding: "0 12px 4px", color: token.colorTextSecondary, fontSize: 12 }}
+                >
+                  <div style={{ width: 20 }} />
+                  <div style={{ width: 24 }} />
+                  <Text type="secondary" style={{ flex: 1, fontSize: 12 }}>
+                    {t("files.columnName")}
+                  </Text>
+                  <Text type="secondary" style={{ width: 90, textAlign: "right", fontSize: 12 }}>
+                    {t("files.columnSize")}
+                  </Text>
+                  <Text type="secondary" style={{ width: 100, textAlign: "right", fontSize: 12 }}>
+                    {t("files.columnModified")}
+                  </Text>
+                </Flex>
+              )}
+              {rows.map((node) => (
+                <FolderContentRow
                   key={node.id}
                   node={node}
                   selected={selectedIds.has(node.id)}
                   selectionActive={selectedIds.size > 0}
                   onToggleSelect={toggleSelect}
                 />
-              </Col>
-            ))}
-          </Space>
+              ))}
+            </Flex>
+          )}
         </div>
       </Dropdown>
       <CreateFolderModal

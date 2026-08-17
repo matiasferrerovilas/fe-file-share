@@ -1,5 +1,6 @@
 import { Button, Form, Input, Modal } from "antd";
 import FolderAddOutlined from "@ant-design/icons/FolderAddOutlined";
+import { useTranslation } from "react-i18next";
 import { useCreateFolder } from "../../hooks/useCreateFolder";
 
 interface CreateFolderModalProps {
@@ -9,6 +10,7 @@ interface CreateFolderModalProps {
 }
 
 export default function CreateFolderModal({ folderId, open, onClose }: CreateFolderModalProps) {
+  const { t } = useTranslation();
   const [form] = Form.useForm<{ name: string }>();
   const createFolderMutation = useCreateFolder();
 
@@ -28,7 +30,7 @@ export default function CreateFolderModal({ folderId, open, onClose }: CreateFol
     <Modal
       open={open}
       onCancel={handleClose}
-      title="Nueva carpeta"
+      title={t("files.createFolder")}
       width={400}
       destroyOnHidden
       footer={
@@ -38,7 +40,7 @@ export default function CreateFolderModal({ folderId, open, onClose }: CreateFol
           loading={createFolderMutation.isPending}
           onClick={() => form.submit()}
         >
-          Crear carpeta
+          {t("files.createFolder")}
         </Button>
       }
     >
@@ -49,11 +51,11 @@ export default function CreateFolderModal({ folderId, open, onClose }: CreateFol
         disabled={createFolderMutation.isPending}
       >
         <Form.Item
-          label="Nombre"
+          label={t("files.renameNameLabel")}
           name="name"
-          rules={[{ required: true, message: "Ingresá el nombre de la carpeta" }]}
+          rules={[{ required: true, message: t("files.createFolderNamePlaceholder") }]}
         >
-          <Input placeholder="Ej: Fotos" autoFocus />
+          <Input placeholder={t("files.createFolderExample")} autoFocus />
         </Form.Item>
       </Form>
     </Modal>

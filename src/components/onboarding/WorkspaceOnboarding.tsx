@@ -17,6 +17,7 @@ import {
   Typography,
   theme,
 } from "antd";
+import { useTranslation } from "react-i18next";
 import { useWorkspaces } from "../../hooks/useWorkspaces";
 import type { OnboardingForm } from "../../api/onboarding/onboardinApi";
 
@@ -33,6 +34,7 @@ interface NewEntry {
 }
 
 export default function WorkspaceOnboarding({ initialValues, onNext }: Props) {
+  const { t } = useTranslation();
   const { token } = theme.useToken();
   const { data: existingWorkspaces = [] } = useWorkspaces();
   const [form] = Form.useForm<{ name: string }>();
@@ -113,10 +115,10 @@ export default function WorkspaceOnboarding({ initialValues, onNext }: Props) {
     <Space orientation="vertical" style={{ width: "100%" }}>
       <div style={{ textAlign: "center", marginBottom: 20 }}>
         <Text type="secondary" style={{ display: "block" }}>
-          Elegí en qué workspace vas a guardar tus archivos.
+          {t("onboarding.workspaceStep.intro1")}
         </Text>
         <Text type="secondary" style={{ display: "block" }}>
-          Podés usar uno existente, crear uno nuevo y elegir cuál es tu default.
+          {t("onboarding.workspaceStep.intro2")}
         </Text>
       </div>
 
@@ -127,13 +129,13 @@ export default function WorkspaceOnboarding({ initialValues, onNext }: Props) {
               name="name"
               style={{ margin: 0 }}
               rules={[
-                { required: true, message: "Ingresá el nombre del workspace" },
+                { required: true, message: t("onboarding.workspaceStep.nameRequired") },
                 {
                   validator: (_, value) => {
                     if (!value || !value.trim()) return Promise.resolve();
                     if (!/^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9\s]+$/.test(value)) {
                       return Promise.reject(
-                        new Error("Solo se permiten letras, números y espacios"),
+                        new Error(t("onboarding.workspaceStep.nameInvalid")),
                       );
                     }
                     return Promise.resolve();
@@ -142,7 +144,7 @@ export default function WorkspaceOnboarding({ initialValues, onNext }: Props) {
               ]}
             >
               <Input
-                placeholder="Nombre del workspace..."
+                placeholder={t("onboarding.workspaceStep.namePlaceholder")}
                 style={{ borderRadius: 10, height: 40 }}
               />
             </Form.Item>
@@ -154,7 +156,7 @@ export default function WorkspaceOnboarding({ initialValues, onNext }: Props) {
               htmlType="submit"
               style={{ height: 40, borderRadius: 10, fontWeight: 600 }}
             >
-              Agregar
+              {t("onboarding.workspaceStep.add")}
             </Button>
           </Col>
         </Row>
@@ -175,7 +177,7 @@ export default function WorkspaceOnboarding({ initialValues, onNext }: Props) {
             image={Empty.PRESENTED_IMAGE_SIMPLE}
             description={
               <Text type="secondary" style={{ fontSize: 12 }}>
-                No tenés workspaces todavía. Te creamos uno por defecto.
+                {t("onboarding.workspaceStep.empty")}
               </Text>
             }
             style={{ margin: "8px 0" }}
@@ -222,18 +224,24 @@ export default function WorkspaceOnboarding({ initialValues, onNext }: Props) {
                           lineHeight: "18px",
                         }}
                       >
-                        ★ Default
+                        ★ {t("onboarding.workspaceStep.default")}
                       </span>
                     )}
                   </Flex>
                   <Flex gap={4}>
                     <Tooltip
-                      title={isDefault ? "Ya es tu workspace por defecto" : "Establecer como default"}
+                      title={
+                        isDefault
+                          ? t("onboarding.workspaceStep.alreadyDefaultTooltip")
+                          : t("onboarding.workspaceStep.setAsDefaultTooltip")
+                      }
                     >
                       <Button
                         type="text"
                         size="small"
-                        aria-label={`Marcar ${item.name} como default`}
+                        aria-label={t("onboarding.workspaceStep.markAsDefaultAriaLabel", {
+                          name: item.name,
+                        })}
                         disabled={isDefault}
                         onClick={() => setSelectedKey(item.key)}
                         icon={
@@ -246,12 +254,14 @@ export default function WorkspaceOnboarding({ initialValues, onNext }: Props) {
                       />
                     </Tooltip>
                     {item.removable && (
-                      <Tooltip title="Eliminar workspace">
+                      <Tooltip title={t("onboarding.workspaceStep.removeWorkspaceTooltip")}>
                         <Button
                           type="text"
                           size="small"
                           danger
-                          aria-label={`Eliminar ${item.name}`}
+                          aria-label={t("onboarding.workspaceStep.removeWorkspaceAriaLabel", {
+                            name: item.name,
+                          })}
                           onClick={item.onRemove}
                           icon={<DeleteOutlined />}
                         />
@@ -266,13 +276,13 @@ export default function WorkspaceOnboarding({ initialValues, onNext }: Props) {
       </div>
 
       <Text type="secondary" style={{ fontSize: 12, display: "block", textAlign: "center" }}>
-        Si no agregás ninguno, te creamos un workspace por defecto.
+        {t("onboarding.workspaceStep.footerHint")}
       </Text>
 
       <Row gutter={[16, 10]}>
         <Col xs={24}>
           <Button color="geekblue" block onClick={handleSubmit} variant="filled">
-            Siguiente
+            {t("onboarding.workspaceStep.next")}
           </Button>
         </Col>
       </Row>

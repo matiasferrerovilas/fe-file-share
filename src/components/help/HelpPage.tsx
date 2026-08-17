@@ -7,7 +7,8 @@ import QuestionCircleOutlined from "@ant-design/icons/QuestionCircleOutlined";
 import ShareAltOutlined from "@ant-design/icons/ShareAltOutlined";
 import TeamOutlined from "@ant-design/icons/TeamOutlined";
 import UploadOutlined from "@ant-design/icons/UploadOutlined";
-import { HELP_SECTIONS, type HelpParagraph, type HelpSection } from "./helpContent";
+import { useTranslation } from "react-i18next";
+import { getHelpSections, type HelpParagraph, type HelpSection } from "./helpContent";
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -20,7 +21,7 @@ const ICON_MAP: Record<string, React.ReactNode> = {
   ShareAltOutlined: <ShareAltOutlined />,
 };
 
-function HelpParagraphRenderer({ paragraph }: { paragraph: HelpParagraph }) {
+function HelpParagraphRenderer({ paragraph, tipLabel }: { paragraph: HelpParagraph; tipLabel: string }) {
   const { token } = theme.useToken();
 
   if (paragraph.type === "text") {
@@ -60,7 +61,7 @@ function HelpParagraphRenderer({ paragraph }: { paragraph: HelpParagraph }) {
           marginBottom: 16,
         }}
       >
-        <Text style={{ color: token.colorPrimary, fontWeight: 500 }}>Tip: </Text>
+        <Text style={{ color: token.colorPrimary, fontWeight: 500 }}>{tipLabel}</Text>
         <Text style={{ color: token.colorText }}>{paragraph.content as string}</Text>
       </div>
     );
@@ -69,22 +70,26 @@ function HelpParagraphRenderer({ paragraph }: { paragraph: HelpParagraph }) {
   return null;
 }
 
-function HelpSectionContent({ section }: { section: HelpSection }) {
+function HelpSectionContent({ section, tipLabel }: { section: HelpSection; tipLabel: string }) {
   return (
     <div>
       {section.content.map((paragraph, idx) => (
-        <HelpParagraphRenderer key={idx} paragraph={paragraph} />
+        <HelpParagraphRenderer key={idx} paragraph={paragraph} tipLabel={tipLabel} />
       ))}
     </div>
   );
 }
 
 export function HelpPage() {
+  const { t } = useTranslation();
   const { token } = theme.useToken();
+  const tipLabel = t("help.tipLabel");
+
+  const helpSections = useMemo(() => getHelpSections(t), [t]);
 
   const collapseItems = useMemo(
     () =>
-      HELP_SECTIONS.map((section) => ({
+      helpSections.map((section) => ({
         key: section.key,
         label: (
           <Flex align="center" gap={10}>
@@ -103,9 +108,9 @@ export function HelpPage() {
             </Text>
           </Flex>
         ),
-        children: <HelpSectionContent section={section} />,
+        children: <HelpSectionContent section={section} tipLabel={tipLabel} />,
       })),
-    [token.colorPrimary],
+    [helpSections, tipLabel, token.colorPrimary],
   );
 
   return (
@@ -136,9 +141,9 @@ export function HelpPage() {
           </div>
           <div>
             <Title level={3} style={{ margin: 0 }}>
-              Centro de Ayuda
+              {t("help.pageTitle")}
             </Title>
-            <Text type="secondary">Aprendé a usar todas las funciones de Keep</Text>
+            <Text type="secondary">{t("help.pageSubtitle")}</Text>
           </div>
         </Flex>
 
@@ -163,7 +168,7 @@ export function HelpPage() {
           }}
         >
           <Text type="secondary" style={{ fontSize: 13 }}>
-            Esta es tu instancia personal de Keep
+            {t("help.footer")}
           </Text>
         </Flex>
       </Col>

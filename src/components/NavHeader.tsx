@@ -22,11 +22,13 @@ import UserOutlined from "@ant-design/icons/UserOutlined";
 import { useKeycloak } from "@react-keycloak/web";
 import { useNavigate } from "@tanstack/react-router";
 import { Header } from "antd/es/layout/layout";
+import { useTranslation } from "react-i18next";
 import { useCurrentUser } from "../hooks/useCurrentUser";
 import { useTheme } from "../theme/ThemeContext";
 import { getUserDisplayName } from "../utils/userDisplayName";
 import { AppsGrid } from "./AppsGrid";
 import FileSearch from "./files/FileSearch";
+import LanguageSwitcher from "./LanguageSwitcher";
 import WorkspaceSelector from "./WorkspaceSelector";
 
 const { Text } = Typography;
@@ -103,6 +105,7 @@ function ProfileTile({ icon, label, onClick }: Omit<ProfileMenuItemProps, "dange
 }
 
 export default function NavHeader() {
+  const { t } = useTranslation();
   const screens = useBreakpoint();
   const isMobile = !screens.md;
   const navigate = useNavigate();
@@ -149,10 +152,10 @@ export default function NavHeader() {
       </div>
       <Divider style={{ margin: 0 }} />
       <Flex gap={8} style={{ padding: "8px 16px" }}>
-        <ProfileTile icon={<SettingOutlined />} label="Ajustes" onClick={closeProfile} />
+        <ProfileTile icon={<SettingOutlined />} label={t("nav.settings")} onClick={closeProfile} />
         <ProfileTile
           icon={<QuestionCircleOutlined />}
-          label="Ayuda"
+          label={t("nav.help")}
           onClick={() => {
             navigate({ to: "/help" });
             closeProfile();
@@ -160,7 +163,7 @@ export default function NavHeader() {
         />
         <ProfileTile
           icon={isDark ? <SunOutlined /> : <MoonOutlined />}
-          label={isDark ? "Modo claro" : "Modo oscuro"}
+          label={isDark ? t("nav.lightMode") : t("nav.darkMode")}
           onClick={() => {
             toggleTheme();
             closeProfile();
@@ -169,8 +172,17 @@ export default function NavHeader() {
       </Flex>
       <Divider style={{ margin: 0 }} />
       <div style={{ padding: "12px 16px" }}>
+        <Flex justify="space-between" align="center">
+          <Text type="secondary" style={{ fontSize: 11 }}>
+            {t("nav.language")}
+          </Text>
+          <LanguageSwitcher />
+        </Flex>
+      </div>
+      <Divider style={{ margin: 0 }} />
+      <div style={{ padding: "12px 16px" }}>
         <Text type="secondary" style={{ fontSize: 11 }}>
-          Apps
+          {t("nav.apps")}
         </Text>
         <div style={{ marginTop: 8 }}>
           <AppsGrid />
@@ -180,7 +192,7 @@ export default function NavHeader() {
       <div style={{ padding: "4px 0" }}>
         <ProfileMenuItem
           icon={<LogoutOutlined />}
-          label="Cerrar sesión"
+          label={t("nav.logout")}
           danger
           onClick={() => {
             closeProfile();
@@ -301,13 +313,16 @@ export default function NavHeader() {
               navigate({ to: "/help" });
             }}
           >
-            Ayuda
+            {t("nav.help")}
           </Button>
           <Flex gap={8} style={{ marginBottom: 16 }}>
             {ThemeToggle}
             <Text type="secondary" style={{ lineHeight: "32px", fontSize: 13 }}>
-              {isDark ? "Modo oscuro" : "Modo claro"}
+              {isDark ? t("nav.darkMode") : t("nav.lightMode")}
             </Text>
+          </Flex>
+          <Flex gap={8} style={{ marginBottom: 16 }}>
+            <LanguageSwitcher />
           </Flex>
           <Button
             block
@@ -318,7 +333,7 @@ export default function NavHeader() {
               keycloak.logout();
             }}
           >
-            Cerrar sesión
+            {t("nav.logout")}
           </Button>
         </div>
       </Drawer>

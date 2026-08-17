@@ -1,0 +1,184 @@
+{
+  "nav": {
+    "settings": "Ajustes",
+    "help": "Ayuda",
+    "lightMode": "Modo claro",
+    "darkMode": "Modo oscuro",
+    "apps": "Apps",
+    "logout": "Cerrar sesión",
+    "search": "Buscar archivos y carpetas",
+    "noResults": "Sin resultados",
+    "language": "Idioma"
+  },
+  "files": {
+    "preview": "Vista previa",
+    "download": "Descargar",
+    "rename": "Renombrar",
+    "shareWith": "Compartir con",
+    "delete": "Eliminar",
+    "createFolder": "Crear carpeta",
+    "folder": "Carpeta",
+    "fileWithSize": "Archivo · {{size}}",
+    "sharedWithTooltip": "Compartido con {{apiName}}",
+    "deleteConfirmTitle": "Eliminar \"{{name}}\"",
+    "deleteConfirmFolderContent": "Se eliminará la carpeta y todo su contenido. Esta acción no se puede deshacer.",
+    "deleteConfirmFileContent": "Esta acción no se puede deshacer.",
+    "cancel": "Cancelar",
+    "deleteFailed": "No se pudo eliminar \"{{name}}\"",
+    "downloadFailed": "No se pudo descargar \"{{name}}\"",
+    "sharedSuccess": "\"{{name}}\" compartido con {{apiName}}",
+    "sharedAlready": "\"{{name}}\" ya está compartido con {{apiName}}",
+    "sharedFailed": "No se pudo compartir \"{{name}}\" con {{apiName}}",
+    "uploadSuccess": "Archivo subido correctamente",
+    "uploadSuccessMultiple": "{{count}} archivos subidos correctamente",
+    "uploadFailedCount": "{{failed}} de {{total}} archivo(s) fallaron al subir",
+    "itemsDeletedSuccess": "Elementos eliminados correctamente",
+    "bulkDeleteConfirmTitle": "Eliminar {{count}} elemento(s)",
+    "bulkDeleteConfirmContent": "Se eliminarán las carpetas seleccionadas y todo su contenido. Esta acción no se puede deshacer.",
+    "bulkDeleteFailed": "{{failed}} de {{total}} elemento(s) no se pudieron eliminar",
+    "bulkDownloadFailed": "{{failed}} de {{total}} archivo(s) no se pudieron descargar",
+    "renameNamePlaceholder": "Ingresá un nombre",
+    "renameNameLabel": "Nombre",
+    "createFolderNamePlaceholder": "Ingresá el nombre de la carpeta",
+    "createFolderExample": "Ej: Fotos",
+    "previewLoadFailed": "No se pudo cargar la vista previa.",
+    "selectedCount": "{{count}} seleccionado(s)",
+    "gridView": "Grilla",
+    "listView": "Lista",
+    "sortName": "Nombre",
+    "sortSize": "Tamaño",
+    "sortDate": "Fecha",
+    "sortAscending": "Orden ascendente",
+    "sortDescending": "Orden descendente",
+    "columnName": "Nombre",
+    "columnSize": "Tamaño",
+    "columnModified": "Modificado",
+    "folders": "Carpetas",
+    "uploadFile": "Subir archivo",
+    "dropHint": "Soltá los archivos acá para subirlos",
+    "moveFailed": "No se pudo mover el elemento",
+    "moveIntoSelfError": "No podés mover una carpeta dentro de sí misma",
+    "uploadRejectedMedia": "\"{{name}}\": no se permiten imágenes ni videos",
+    "uploadRejectedTooLarge": "\"{{name}}\": supera el tamaño máximo de {{maxSize}}"
+  },
+  "common": {
+    "loading": "Cargando...",
+    "forbiddenSubtitle": "No tenés permisos para acceder a esta aplicación.",
+    "forbiddenRetry": "Reintentar",
+    "notFoundSubtitle": "La página que buscás no existe.",
+    "notFoundBackHome": "Volver al inicio"
+  },
+  "workspace": {
+    "activeLabel": "Workspace activo",
+    "createWorkspace": "Crear workspace",
+    "newWorkspaceTitle": "Nuevo workspace",
+    "nameLabel": "Nombre",
+    "nameRequired": "Ingresa el nombre del workspace",
+    "namePlaceholder": "Ej: Familia"
+  },
+  "onboarding": {
+    "welcomeTitle": "Bienvenido",
+    "welcomeIntro": "Bienvenido a Keep, {{username}}. Antes de comenzar, necesitamos que completes el proceso de configuración inicial. Esto nos ayudará a personalizar tu experiencia y asegurarnos de que todo esté listo para ti.",
+    "steps": {
+      "workspaceTitle": "Workspace",
+      "workspaceDescription": "Elegí dónde guardar tus archivos",
+      "welcomeStepTitle": "Bienvenido",
+      "welcomeStepDescription": "Organizá tus archivos"
+    },
+    "workspaceStep": {
+      "intro1": "Elegí en qué workspace vas a guardar tus archivos.",
+      "intro2": "Podés usar uno existente, crear uno nuevo y elegir cuál es tu default.",
+      "nameRequired": "Ingresá el nombre del workspace",
+      "nameInvalid": "Solo se permiten letras, números y espacios",
+      "namePlaceholder": "Nombre del workspace...",
+      "add": "Agregar",
+      "empty": "No tenés workspaces todavía. Te creamos uno por defecto.",
+      "default": "Default",
+      "alreadyDefaultTooltip": "Ya es tu workspace por defecto",
+      "setAsDefaultTooltip": "Establecer como default",
+      "markAsDefaultAriaLabel": "Marcar {{name}} como default",
+      "removeWorkspaceTooltip": "Eliminar workspace",
+      "removeWorkspaceAriaLabel": "Eliminar {{name}}",
+      "footerHint": "Si no agregás ninguno, te creamos un workspace por defecto.",
+      "next": "Siguiente"
+    },
+    "welcomeStep": {
+      "intro1": "Subí tus primeros archivos para empezar.",
+      "intro2": "Podés agregarlos más adelante si preferís continuar sin nada.",
+      "selectFiles": "Seleccionar archivos",
+      "back": "Volver",
+      "finish": "Finalizar"
+    }
+  },
+  "help": {
+    "pageTitle": "Centro de Ayuda",
+    "pageSubtitle": "Aprendé a usar todas las funciones de Keep",
+    "tipLabel": "Tip: ",
+    "footer": "Esta es tu instancia personal de Keep",
+    "sections": {
+      "workspace": {
+        "title": "¿Qué es un Workspace?",
+        "text": "Un Workspace es un espacio de archivos independiente, con su propia carpeta raíz. Pensalo como un \"disco\" separado: lo que subís en un workspace no se mezcla con lo que subís en otro.",
+        "list": [
+          "Cada usuario tiene un workspace por defecto al registrarse",
+          "Podés crear varios workspaces para separar contextos (por ejemplo, personal y trabajo)",
+          "Las carpetas y archivos de cada workspace son independientes entre sí"
+        ],
+        "tip": "Cambiá de workspace desde el selector en la barra superior, junto al logo. Para crear uno nuevo, elegí \"Crear workspace\" al final del listado."
+      },
+      "navigation": {
+        "title": "Navegar carpetas",
+        "text": "El explorador de archivos muestra el árbol completo de carpetas a la izquierda y el contenido de la carpeta actual a la derecha.",
+        "list": [
+          "Hacé click en una carpeta del árbol lateral, o en una tarjeta de carpeta, para entrar en ella",
+          "El breadcrumb en la parte superior muestra dónde estás parado y te permite volver a una carpeta anterior",
+          "En mobile, el árbol de carpetas se abre con el botón \"Carpetas\""
+        ],
+        "tip": "Usá el buscador de la barra superior para saltar directo a un archivo o carpeta por nombre, sin navegar carpeta por carpeta."
+      },
+      "upload": {
+        "title": "Subir archivos",
+        "text": "Hay varias formas de subir archivos a la carpeta en la que estás parado.",
+        "list1": [
+          "Botón \"Subir archivo\" en la barra lateral de carpetas",
+          "Arrastrar y soltar uno o varios archivos sobre la pantalla",
+          "En mobile, tocar el fondo vacío del panel de contenido abre el selector de archivos"
+        ],
+        "list2": [
+          "No se permiten imágenes ni videos",
+          "Cada archivo tiene un tamaño máximo permitido",
+          "Las subidas se procesan de a varias a la vez, pero con un límite de simultáneas para no saturar el servidor"
+        ],
+        "tip": "Si subís muchos archivos a la vez y algunos fallan, vas a ver un aviso indicando cuántos no se pudieron subir sin afectar al resto."
+      },
+      "organize": {
+        "title": "Organizar: crear, mover, renombrar y eliminar",
+        "list": [
+          "Click derecho sobre el fondo de una carpeta y elegí \"Crear carpeta\" para agregar una subcarpeta",
+          "Arrastrá una tarjeta de archivo o carpeta y soltala sobre otra carpeta (en el panel o en el árbol lateral) para moverla",
+          "Click derecho sobre un archivo o carpeta para \"Renombrar\", \"Descargar\" o \"Eliminar\""
+        ],
+        "tip": "Eliminar una carpeta borra también todo su contenido. Esta acción no se puede deshacer, así que la app te pide confirmación antes de aplicarla."
+      },
+      "selection": {
+        "title": "Selección múltiple",
+        "text": "Podés seleccionar varios archivos o carpetas a la vez para descargarlos o eliminarlos juntos.",
+        "list": [
+          "Pasá el mouse sobre una tarjeta (o tocala en mobile) para ver el checkbox de selección en la esquina superior izquierda",
+          "Con al menos un elemento seleccionado aparece una barra con las acciones disponibles: Descargar, Eliminar y una opción para limpiar la selección"
+        ],
+        "tip": "Al cambiar de carpeta, la selección se limpia automáticamente."
+      },
+      "share": {
+        "title": "Compartir archivos",
+        "text": "Un archivo puede compartirse con otras aplicaciones para que accedan a él directamente, sin tener que descargarlo y volver a subirlo a mano.",
+        "list": [
+          "Click derecho sobre un archivo y elegí \"Compartir con\"",
+          "Elegí la aplicación de destino en el submenú",
+          "Un pequeño avatar sobre la tarjeta del archivo indica con qué apps está compartido"
+        ],
+        "tip": "Esta opción solo aparece para usuarios con rol de administrador."
+      }
+    }
+  }
+}

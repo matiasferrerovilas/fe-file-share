@@ -1,4 +1,4 @@
-import { api } from "./axios";
+import { api, LARGE_FILE_TIMEOUT_MS } from "./axios";
 import type { FileSystemNode } from "../models/FileSystemNode";
 
 export const ROOT_FOLDER_ID = "root";
@@ -46,6 +46,7 @@ export const uploadFileToFolder = (
       },
       headers: { "Content-Type": undefined },
       signal,
+      timeout: LARGE_FILE_TIMEOUT_MS,
       onUploadProgress: (event) => {
         if (event.total) {
           onProgress(Math.round((event.loaded / event.total) * 100));
@@ -58,6 +59,7 @@ export const uploadFileToFolder = (
 export const downloadFile = async (fileId: string) => {
   const response = await api.get<Blob>(`folders/${fileId}/download`, {
     responseType: "blob",
+    timeout: LARGE_FILE_TIMEOUT_MS,
   });
 
   const contentDisposition = response.headers["content-disposition"] as string | undefined;

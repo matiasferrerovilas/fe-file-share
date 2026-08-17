@@ -4,6 +4,7 @@ import SearchOutlined from "@ant-design/icons/SearchOutlined";
 import FolderOutlined from "@ant-design/icons/FolderOutlined";
 import FileOutlined from "@ant-design/icons/FileOutlined";
 import { useNavigate } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import { ROOT_FOLDER_ID } from "../../api/foldersApi";
 import { useFileSystemTree } from "../../hooks/useFileSystemTree";
 import { FileSystemNodeType } from "../../models/FileSystemNode";
@@ -20,6 +21,7 @@ interface FileSearchProps {
 
 export default function FileSearch({ style, onNavigate }: FileSearchProps) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { token } = theme.useToken();
   const { data: tree = [] } = useFileSystemTree();
   const [query, setQuery] = useState("");
@@ -49,7 +51,7 @@ export default function FileSearch({ style, onNavigate }: FileSearchProps) {
   const content = (
     <div style={{ width: "min(320px, 90vw)" }}>
       {results.length === 0 ? (
-        <Empty description="Sin resultados" image={Empty.PRESENTED_IMAGE_SIMPLE} />
+        <Empty description={t("nav.noResults")} image={Empty.PRESENTED_IMAGE_SIMPLE} />
       ) : (
         results.map(({ node, path }) => {
           const breadcrumb = path
@@ -104,7 +106,7 @@ export default function FileSearch({ style, onNavigate }: FileSearchProps) {
       <Input
         allowClear
         value={query}
-        placeholder="Buscar archivos y carpetas"
+        placeholder={t("nav.search")}
         prefix={<SearchOutlined />}
         style={style}
         onChange={(e) => {
