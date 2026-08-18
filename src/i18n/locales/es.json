@@ -55,11 +55,15 @@
     "columnModified": "Modificado",
     "folders": "Carpetas",
     "uploadFile": "Subir archivo",
+    "uploadProgressTitle": "Subiendo {{count}} archivo(s)",
     "dropHint": "Soltá los archivos acá para subirlos",
     "moveFailed": "No se pudo mover el elemento",
     "moveIntoSelfError": "No podés mover una carpeta dentro de sí misma",
     "uploadRejectedMedia": "\"{{name}}\": no se permiten imágenes ni videos",
-    "uploadRejectedTooLarge": "\"{{name}}\": supera el tamaño máximo de {{maxSize}}"
+    "uploadRejectedTooLarge": "\"{{name}}\": supera el tamaño máximo de {{maxSize}}",
+    "storageUsage": "{{used}} / {{total}} usado",
+    "emptyFolderTitle": "Esta carpeta está vacía",
+    "emptyFolderHint": "Arrastrá archivos acá o usá \"Subir archivo\" para agregar contenido"
   },
   "common": {
     "loading": "Cargando...",

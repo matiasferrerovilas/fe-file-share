@@ -55,11 +55,15 @@
     "columnModified": "Modified",
     "folders": "Folders",
     "uploadFile": "Upload file",
+    "uploadProgressTitle": "Uploading {{count}} file(s)",
     "dropHint": "Drop your files here to upload them",
     "moveFailed": "Couldn't move the item",
     "moveIntoSelfError": "You can't move a folder into itself",
     "uploadRejectedMedia": "\"{{name}}\": images and videos aren't allowed",
-    "uploadRejectedTooLarge": "\"{{name}}\": exceeds the maximum size of {{maxSize}}"
+    "uploadRejectedTooLarge": "\"{{name}}\": exceeds the maximum size of {{maxSize}}",
+    "storageUsage": "{{used}} / {{total}} used",
+    "emptyFolderTitle": "This folder is empty",
+    "emptyFolderHint": "Drag files here or use \"Upload file\" to add content"
   },
   "common": {
     "loading": "Loading...",

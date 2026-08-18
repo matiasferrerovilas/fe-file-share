@@ -1,10 +1,14 @@
 import { api, LARGE_FILE_TIMEOUT_MS } from "./axios";
 import type { FileSystemNode } from "../models/FileSystemNode";
+import type { WorkspaceUsage } from "../models/WorkspaceUsage";
 
 export const ROOT_FOLDER_ID = "root";
 
 export const getFileSystemTree = (workspaceId: number) =>
   api.get<FileSystemNode>("folders/tree", { params: { workspaceId } }).then((r) => [r.data]);
+
+export const getWorkspaceUsage = (workspaceId: number) =>
+  api.get<WorkspaceUsage>("folders/usage", { params: { workspaceId } }).then((r) => r.data);
 
 export const deleteFolder = (folderId: string) =>
   api.delete<void>(`folders/${folderId}`).then((r) => r.data);

@@ -2,9 +2,11 @@ import { useState } from "react";
 import { Button, Drawer, Grid, Layout, theme } from "antd";
 import MenuOutlined from "@ant-design/icons/MenuOutlined";
 import { useTranslation } from "react-i18next";
+import { UploadQueueProvider } from "../../uploads/UploadQueueProvider";
 import FolderTreeSidebar from "./FolderTreeSidebar";
 import FolderContentsPanel from "./FolderContentsPanel";
 import PageDropzone from "./PageDropzone";
+import UploadProgressTray from "./UploadProgressTray";
 
 const { Sider, Content } = Layout;
 const { useBreakpoint } = Grid;
@@ -21,6 +23,7 @@ export default function FileExplorer({ folderId }: FileExplorerProps) {
   const [treeOpen, setTreeOpen] = useState(false);
 
   return (
+    <UploadQueueProvider>
     <PageDropzone folderId={folderId}>
       <Layout style={{ flex: 1, minHeight: 0, background: token.colorBgContainer }}>
         {isMobile ? (
@@ -69,6 +72,8 @@ export default function FileExplorer({ folderId }: FileExplorerProps) {
           <FolderContentsPanel folderId={folderId} />
         </Content>
       </Layout>
+      <UploadProgressTray />
     </PageDropzone>
+    </UploadQueueProvider>
   );
 }

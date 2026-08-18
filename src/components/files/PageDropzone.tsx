@@ -1,10 +1,8 @@
 import { useState, type DragEvent, type ReactNode } from "react";
-import { App as AntdApp, theme } from "antd";
+import { theme } from "antd";
 import InboxOutlined from "@ant-design/icons/InboxOutlined";
 import { useTranslation } from "react-i18next";
-import { useUploadFileToFolder } from "../../hooks/useUploadFileToFolder";
-import { uploadSemaphore } from "../../utils/uploadSemaphore";
-import { partitionUploadableFiles } from "../../utils/uploadValidation";
+import { useUploadQueue } from "../../uploads/UploadQueueContext";
 
 interface PageDropzoneProps {
   folderId: string;
@@ -14,8 +12,7 @@ interface PageDropzoneProps {
 export default function PageDropzone({ folderId, children }: PageDropzoneProps) {
   const { t } = useTranslation();
   const { token } = theme.useToken();
-  const { message } = AntdApp.useApp();
-  const { mutateAsync: uploadFile } = useUploadFileToFolder();
+  const { runUploads } = useUploadQueue();
   const [dragDepth, setDragDepth] = useState(0);
 
   const hasFiles = (e: DragEvent) => Array.from(e.dataTransfer.types).includes("Files");
@@ -39,32 +36,8 @@ export default function PageDropzone({ folderId, children }: PageDropzoneProps) 
     e.preventDefault();
     setDragDepth(0);
 
-    const dropped = Array.from(e.dataTransfer.files);
-    if (dropped.length === 0) return;
-
-    const { valid: files, rejectionReasons } = partitionUploadableFiles(dropped, t);
-    rejectionReasons.forEach((reason) => message.error(reason));
-    if (files.length === 0) return;
-
-    const results = await Promise.allSettled(
-      files.map(async (file) => {
-        const release = await uploadSemaphore.acquire();
-        try {
-          await uploadFile({ folderId, file, onProgress: () => {} });
-        } finally {
-          release();
-        }
-      }),
-    );
-
-    const failed = results.filter((r) => r.status === "rejected").length;
-    if (failed > 0) {
-      message.error(t("files.uploadFailedCount", { failed, total: files.length }));
-    } else {
-      message.success(
-        files.length === 1 ? t("files.uploadSuccess") : t("files.uploadSuccessMultiple", { count: files.length }),
-      );
-    }
+    const dropped = e.dataTransfer.files;
+    await runUploads(folderId, dropped, t);
   };
 
   return (

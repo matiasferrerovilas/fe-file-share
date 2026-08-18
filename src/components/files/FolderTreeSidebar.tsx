@@ -1,5 +1,5 @@
 import { useMemo, useRef } from "react";
-import { App as AntdApp, Button, Tooltip, Tree, type TreeDataNode } from "antd";
+import { Button, Tooltip, Tree, type TreeDataNode } from "antd";
 import FolderOutlined from "@ant-design/icons/FolderOutlined";
 import FileOutlined from "@ant-design/icons/FileOutlined";
 import UploadOutlined from "@ant-design/icons/UploadOutlined";
@@ -7,10 +7,9 @@ import { useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { useFileSystemTree } from "../../hooks/useFileSystemTree";
 import { useMoveNode, MOVE_NODE_DATA_TYPE } from "../../hooks/useMoveNode";
-import { useUploadFileToFolder } from "../../hooks/useUploadFileToFolder";
-import { uploadSemaphore } from "../../utils/uploadSemaphore";
-import { partitionUploadableFiles } from "../../utils/uploadValidation";
+import { useUploadQueue } from "../../uploads/UploadQueueContext";
 import type { FileSystemNode } from "../../models/FileSystemNode";
+import WorkspaceUsageIndicator from "./WorkspaceUsageIndicator";
 
 interface FolderTreeSidebarProps {
   activeFolderId: string;
@@ -44,10 +43,9 @@ function toTreeData(nodes: FileSystemNode[]): TreeDataNode[] {
 export default function FolderTreeSidebar({ activeFolderId, onNavigate }: FolderTreeSidebarProps) {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { message } = AntdApp.useApp();
   const { data: tree = [] } = useFileSystemTree();
   const { moveIfValid } = useMoveNode();
-  const { mutateAsync: uploadFile } = useUploadFileToFolder();
+  const { runUploads } = useUploadQueue();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // El primer nodo es la carpeta raíz ("Home") del backend — la sidebar la trata como
@@ -55,32 +53,7 @@ export default function FolderTreeSidebar({ activeFolderId, onNavigate }: Folder
   const treeData: TreeDataNode[] = useMemo(() => toTreeData(tree[0]?.children ?? []), [tree]);
 
   const handleFilesSelected = async (fileList: FileList | null) => {
-    const selected = Array.from(fileList ?? []);
-    if (selected.length === 0) return;
-
-    const { valid: files, rejectionReasons } = partitionUploadableFiles(selected, t);
-    rejectionReasons.forEach((reason) => message.error(reason));
-    if (files.length === 0) return;
-
-    const results = await Promise.allSettled(
-      files.map(async (file) => {
-        const release = await uploadSemaphore.acquire();
-        try {
-          await uploadFile({ folderId: activeFolderId, file, onProgress: () => {} });
-        } finally {
-          release();
-        }
-      }),
-    );
-
-    const failed = results.filter((r) => r.status === "rejected").length;
-    if (failed > 0) {
-      message.error(t("files.uploadFailedCount", { failed, total: files.length }));
-    } else {
-      message.success(
-        files.length === 1 ? t("files.uploadSuccess") : t("files.uploadSuccessMultiple", { count: files.length }),
-      );
-    }
+    await runUploads(activeFolderId, fileList, t);
   };
 
   return (
@@ -129,6 +102,7 @@ export default function FolderTreeSidebar({ activeFolderId, onNavigate }: Folder
           onNavigate?.();
         }}
       />
+      <WorkspaceUsageIndicator />
     </>
   );
 }

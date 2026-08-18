@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState, type MouseEvent } from "react";
-import { App as AntdApp, Breadcrumb, Button, Col, Dropdown, Flex, Grid, Segmented, Space, Typography, theme, type MenuProps } from "antd";
+import { App as AntdApp, Breadcrumb, Button, Col, Dropdown, Empty, Flex, Grid, Segmented, Space, Typography, theme, type MenuProps } from "antd";
 import { useNavigate } from "@tanstack/react-router";
 import FolderAddOutlined from "@ant-design/icons/FolderAddOutlined";
 import DownloadOutlined from "@ant-design/icons/DownloadOutlined";
@@ -15,9 +15,7 @@ import { findNode, findPath } from "../../utils/fileSystemTree";
 import { ROOT_FOLDER_ID } from "../../api/foldersApi";
 import { useDeleteFolder } from "../../hooks/useDeleteFolder";
 import { useDownloadFile } from "../../hooks/useDownloadFile";
-import { useUploadFileToFolder } from "../../hooks/useUploadFileToFolder";
-import { uploadSemaphore } from "../../utils/uploadSemaphore";
-import { partitionUploadableFiles } from "../../utils/uploadValidation";
+import { useUploadQueue } from "../../uploads/UploadQueueContext";
 import { FileSystemNodeType, type FileSystemNode } from "../../models/FileSystemNode";
 import FolderContentCard from "./FolderContentCard";
 import FolderContentRow from "./FolderContentRow";
@@ -73,7 +71,7 @@ export default function FolderContentsPanel({ folderId }: FolderContentsPanelPro
   const isMobile = !screens.md;
   const deleteMutation = useDeleteFolder();
   const downloadMutation = useDownloadFile();
-  const { mutateAsync: uploadFile } = useUploadFileToFolder();
+  const { runUploads } = useUploadQueue();
   const uploadInputRef = useRef<HTMLInputElement>(null);
 
   const rows = useMemo(() => {
@@ -133,32 +131,7 @@ export default function FolderContentsPanel({ folderId }: FolderContentsPanelPro
   };
 
   const handleFilesSelected = async (fileList: FileList | null) => {
-    const selected = Array.from(fileList ?? []);
-    if (selected.length === 0) return;
-
-    const { valid: files, rejectionReasons } = partitionUploadableFiles(selected, t);
-    rejectionReasons.forEach((reason) => message.error(reason));
-    if (files.length === 0) return;
-
-    const results = await Promise.allSettled(
-      files.map(async (file) => {
-        const release = await uploadSemaphore.acquire();
-        try {
-          await uploadFile({ folderId, file, onProgress: () => {} });
-        } finally {
-          release();
-        }
-      }),
-    );
-
-    const failed = results.filter((r) => r.status === "rejected").length;
-    if (failed > 0) {
-      message.error(t("files.uploadFailedCount", { failed, total: files.length }));
-    } else {
-      message.success(
-        files.length === 1 ? t("files.uploadSuccess") : t("files.uploadSuccessMultiple", { count: files.length }),
-      );
-    }
+    await runUploads(folderId, fileList, t);
   };
 
   // En mobile no hay drag&drop ni menú contextual accesible: tocar el fondo
@@ -257,7 +230,21 @@ export default function FolderContentsPanel({ folderId }: FolderContentsPanelPro
         trigger={["contextMenu"]}
       >
         <div style={{ flex: 1, minHeight: "60vh" }} onClick={handleEmptyAreaTap}>
-          {viewMode === "grid" ? (
+          {rows.length === 0 ? (
+            <Flex vertical align="center" justify="center" style={{ minHeight: "50vh" }}>
+              <Empty
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+                description={
+                  <Flex vertical gap={4} align="center">
+                    <Text>{t("files.emptyFolderTitle")}</Text>
+                    <Text type="secondary" style={{ fontSize: 13 }}>
+                      {t("files.emptyFolderHint")}
+                    </Text>
+                  </Flex>
+                }
+              />
+            </Flex>
+          ) : viewMode === "grid" ? (
             <Space wrap style={isMobile ? { width: "100%", justifyContent: "center" } : undefined}>
               {rows.map((node, index) => (
                 <Col

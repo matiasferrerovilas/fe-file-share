@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { uploadFileToFolder } from "../api/foldersApi";
 import { FILE_SYSTEM_TREE_QUERY_KEY } from "./useFileSystemTree";
+import { WORKSPACE_USAGE_QUERY_KEY } from "./useWorkspaceUsage";
 import { useCurrentWorkspace } from "../workspace/WorkspaceContext";
 
 interface UploadFileToFolderVariables {
@@ -19,6 +20,7 @@ export const useUploadFileToFolder = () => {
       uploadFileToFolder(currentWorkspace!.workspaceId, folderId, file, onProgress, signal),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: FILE_SYSTEM_TREE_QUERY_KEY });
+      queryClient.invalidateQueries({ queryKey: WORKSPACE_USAGE_QUERY_KEY });
     },
   });
 };
