@@ -6,6 +6,7 @@ import FolderTreeSidebar from "./FolderTreeSidebar";
 import TrashContentsPanel from "./TrashContentsPanel";
 import { ROOT_FOLDER_ID } from "../../api/foldersApi";
 import type { FileSystemNode } from "../../models/FileSystemNode";
+import { UploadQueueProvider } from "../../uploads/UploadQueueProvider";
 
 const { Sider, Content } = Layout;
 const { useBreakpoint } = Grid;
@@ -29,6 +30,7 @@ export default function TrashExplorer({ nodes, title, isLoading }: TrashExplorer
   const [treeOpen, setTreeOpen] = useState(false);
 
   return (
+    <UploadQueueProvider>
     <Layout style={{ flex: 1, minHeight: 0, background: token.colorBgContainer }}>
       {isMobile ? (
         <Drawer
@@ -73,5 +75,6 @@ export default function TrashExplorer({ nodes, title, isLoading }: TrashExplorer
         <TrashContentsPanel nodes={nodes} title={title} isLoading={isLoading} />
       </Content>
     </Layout>
+    </UploadQueueProvider>
   );
 }
