@@ -1,5 +1,6 @@
 {
   "nav": {
+    "home": "Go to home",
     "settings": "Settings",
     "help": "Help",
     "lightMode": "Light mode",
@@ -105,10 +106,28 @@
     "welcomeTitle": "Welcome",
     "welcomeIntro": "Welcome to Keep, {{username}}. Before you start, we need you to complete the initial setup process. This will help us personalize your experience and make sure everything is ready for you.",
     "steps": {
+      "introTitle": "Welcome",
+      "introDescription": "Why this app",
       "workspaceTitle": "Workspace",
       "workspaceDescription": "Choose where to store your files",
       "welcomeStepTitle": "Welcome",
       "welcomeStepDescription": "Organize your files"
+    },
+    "intro": {
+      "headline": "Your files, in order — and accessible from the whole suite",
+      "subheadline": "1 minute to set up. After that, it just works.",
+      "value1Title": "Real organization",
+      "value1Description": "Folders, favorites, and recents — not a junk drawer.",
+      "value2Title": "Search that actually finds things",
+      "value2Description": "By name and by content, not just the file title.",
+      "value3Title": "Trash with a safety net",
+      "value3Description": "One day to recover anything you deleted by mistake.",
+      "value4Title": "Synced instantly",
+      "value4Description": "Upload a file and it shows up right away on all your devices.",
+      "value5Title": "Connected to the rest of the suite",
+      "value5Description": "Share folders across your apps without duplicating anything.",
+      "ctaButton": "Get started",
+      "footnote": "You can change all of this later, anytime."
     },
     "workspaceStep": {
       "intro1": "Choose which workspace you'll use to store your files.",

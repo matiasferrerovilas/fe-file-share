@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { finishOnboarding, type OnboardingForm } from "../api/onboarding/onboardinApi";
+import IntroOnboarding from "../components/onboarding/IntroOnboarding";
 import WelcomeOnboarding from "../components/onboarding/WelcomeOnboarding";
 import WorkspaceOnboarding from "../components/onboarding/WorkspaceOnboarding";
 import { CURRENT_USER_QUERY_KEY } from "../hooks/useCurrentUser";
@@ -56,9 +57,16 @@ function RouteComponent() {
 
   const steps = [
     {
+      title: t("onboarding.steps.introTitle"),
+      description: t("onboarding.steps.introDescription"),
+      content: <IntroOnboarding onNext={() => handleNext({})} />,
+    },
+    {
       title: t("onboarding.steps.workspaceTitle"),
       description: t("onboarding.steps.workspaceDescription"),
-      content: <WorkspaceOnboarding initialValues={formData} onNext={handleNext} />,
+      content: (
+        <WorkspaceOnboarding initialValues={formData} onNext={handleNext} onPrev={handlePrev} />
+      ),
     },
     {
       title: t("onboarding.steps.welcomeStepTitle"),
@@ -92,16 +100,18 @@ function RouteComponent() {
             animation: "onboarding-card-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)",
           }}
         >
-          <div style={{ textAlign: "center", marginBottom: 30 }}>
-            <Title level={2} style={{ margin: 0 }}>
-              {t("onboarding.welcomeTitle")}
-            </Title>
-            <Text type="secondary">
-              {t("onboarding.welcomeIntro", {
-                username: keycloak?.tokenParsed?.preferred_username,
-              })}
-            </Text>
-          </div>
+          {currentStep > 0 && (
+            <div style={{ textAlign: "center", marginBottom: 30 }}>
+              <Title level={2} style={{ margin: 0 }}>
+                {t("onboarding.welcomeTitle")}
+              </Title>
+              <Text type="secondary">
+                {t("onboarding.welcomeIntro", {
+                  username: keycloak?.tokenParsed?.preferred_username,
+                })}
+              </Text>
+            </div>
+          )}
 
           <Steps
             current={currentStep}

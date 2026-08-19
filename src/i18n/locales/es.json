@@ -1,5 +1,6 @@
 {
   "nav": {
+    "home": "Ir al inicio",
     "settings": "Ajustes",
     "help": "Ayuda",
     "lightMode": "Modo claro",
@@ -105,10 +106,28 @@
     "welcomeTitle": "Bienvenido",
     "welcomeIntro": "Bienvenido a Keep, {{username}}. Antes de comenzar, necesitamos que completes el proceso de configuración inicial. Esto nos ayudará a personalizar tu experiencia y asegurarnos de que todo esté listo para ti.",
     "steps": {
+      "introTitle": "Bienvenida",
+      "introDescription": "Por qué esta app",
       "workspaceTitle": "Workspace",
       "workspaceDescription": "Elegí dónde guardar tus archivos",
       "welcomeStepTitle": "Bienvenido",
       "welcomeStepDescription": "Organizá tus archivos"
+    },
+    "intro": {
+      "headline": "Tus archivos, en orden — y accesibles desde toda la suite",
+      "subheadline": "1 minuto de configuración. Después, todo pasa solo.",
+      "value1Title": "Organización real",
+      "value1Description": "Carpetas, favoritos y recientes — no un cajón de sastre.",
+      "value2Title": "Búsqueda que encuentra de verdad",
+      "value2Description": "Por nombre y por contenido, no solo el título del archivo.",
+      "value3Title": "Papelera con red de seguridad",
+      "value3Description": "Un día para recuperar lo que borraste sin querer.",
+      "value4Title": "Sincronizado al instante",
+      "value4Description": "Subís un archivo y aparece al momento en todos tus dispositivos.",
+      "value5Title": "Conectado con el resto de la suite",
+      "value5Description": "Compartí carpetas entre tus apps sin duplicar nada.",
+      "ctaButton": "Empezar",
+      "footnote": "Podés cambiar todo esto después, en cualquier momento."
     },
     "workspaceStep": {
       "intro1": "Elegí en qué workspace vas a guardar tus archivos.",

@@ -261,6 +261,7 @@ export default function NavHeader() {
             />
             <button
               onClick={() => navigate({ to: "/" })}
+              aria-label={t("nav.home")}
               style={{
                 position: "absolute",
                 left: "50%",
@@ -281,7 +282,21 @@ export default function NavHeader() {
         ) : (
           <>
             <Flex style={{ flex: 1 }} align="center" gap={12}>
-              <img src="/logo.png" alt="Logo" style={{ height: 44, width: 44, borderRadius: 10 }} />
+              <button
+                onClick={() => navigate({ to: "/" })}
+                aria-label={t("nav.home")}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  cursor: "pointer",
+                  padding: 0,
+                  display: "flex",
+                  alignItems: "center",
+                  borderRadius: token.borderRadiusSM,
+                }}
+              >
+                <img src="/logo.png" alt="Logo" style={{ height: 44, width: 44, borderRadius: 10 }} />
+              </button>
               <WorkspaceSelector />
             </Flex>
             <Flex

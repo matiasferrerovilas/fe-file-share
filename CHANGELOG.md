@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- New onboarding intro screen (`IntroOnboarding`): a first, form-free step before the workspace/upload
+  wizard that states the app's value proposition (real organization, content search, trash with a
+  safety net, instant sync, connected to the rest of the suite) with a single "Empezar" CTA. Mirrors
+  the same addition in fe-movements/movements-mobile.
+
+### Fixed
+- Desktop `NavHeader`: the logo was a plain `<img>` with no click handler, so there was no way to
+  get back to the home screen from a deeper page without using the browser's back button. Now
+  wrapped in a button that navigates to `/` (matching the mobile header, which already had this).
+
 ## [1.4.0] - 2026-08-18
 
 ### Added

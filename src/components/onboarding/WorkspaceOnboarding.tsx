@@ -26,6 +26,7 @@ const { Text } = Typography;
 interface Props {
   initialValues: Partial<OnboardingForm>;
   onNext: (values: Pick<OnboardingForm, "existingDefaultWorkspaceId" | "workspacesToAdd">) => void;
+  onPrev?: () => void;
 }
 
 interface NewEntry {
@@ -33,7 +34,7 @@ interface NewEntry {
   name: string;
 }
 
-export default function WorkspaceOnboarding({ initialValues, onNext }: Props) {
+export default function WorkspaceOnboarding({ initialValues, onNext, onPrev }: Props) {
   const { t } = useTranslation();
   const { token } = theme.useToken();
   const { data: existingWorkspaces = [] } = useWorkspaces();
@@ -280,7 +281,14 @@ export default function WorkspaceOnboarding({ initialValues, onNext }: Props) {
       </Text>
 
       <Row gutter={[16, 10]}>
-        <Col xs={24}>
+        {onPrev && (
+          <Col xs={12}>
+            <Button block onClick={onPrev}>
+              {t("onboarding.welcomeStep.back")}
+            </Button>
+          </Col>
+        )}
+        <Col xs={onPrev ? 12 : 24}>
           <Button color="geekblue" block onClick={handleSubmit} variant="filled">
             {t("onboarding.workspaceStep.next")}
           </Button>
