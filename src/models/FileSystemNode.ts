@@ -20,6 +20,6 @@ export interface FileSystemNode {
   id: string;
   name: string;
   children: FileSystemNode[] | null;
-  shareWith: string[];
+  shareWith: string[] | null;
   metadata: FileSystemNodeMetadata;
 }

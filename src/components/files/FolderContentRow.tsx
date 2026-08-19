@@ -104,7 +104,7 @@ export default function FolderContentRow({
           <Text style={{ flex: 1, minWidth: 0 }} ellipsis={{ tooltip: node.name }}>
             {node.name}
           </Text>
-          {node.shareWith.length > 0 && (
+          {node.shareWith && node.shareWith.length > 0 && (
             <div onClick={(e) => e.stopPropagation()}>
               <Avatar.Group>
                 {node.shareWith.map((apiName) => (

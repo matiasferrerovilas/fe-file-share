@@ -82,7 +82,7 @@ export default function FolderContentCard({
           }}
           onClick={(e) => e.stopPropagation()}
         >
-          {node.shareWith.length > 0 && (
+          {node.shareWith && node.shareWith.length > 0 && (
             <Avatar.Group>
               {node.shareWith.map((apiName) => (
                 <Tooltip key={apiName} title={t("files.sharedWithTooltip", { apiName })}>
