@@ -6,6 +6,7 @@ import FolderTreeSidebar from "./FolderTreeSidebar";
 import FolderContentsPanel from "./FolderContentsPanel";
 import { ROOT_FOLDER_ID } from "../../api/foldersApi";
 import type { FileSystemNode } from "../../models/FileSystemNode";
+import { UploadQueueProvider } from "../../uploads/UploadQueueProvider";
 
 const { Sider, Content } = Layout;
 const { useBreakpoint } = Grid;
@@ -19,8 +20,10 @@ interface SmartFileListExplorerProps {
 
 /**
  * Same Sider+Content shell as FileExplorer, but for a fixed list of nodes rather than a real
- * folder position (Favoritos/Recientes) — no upload dropzone/queue here, since there's no
- * meaningful upload target for either view.
+ * folder position (Favoritos/Recientes) — no upload dropzone/tray here, since there's no
+ * meaningful upload target for the panel itself. Still needs UploadQueueProvider though:
+ * FolderTreeSidebar and FolderContentsPanel call useUploadQueue() unconditionally (the sidebar
+ * supports drag-and-drop uploads onto real folders even from this view).
  */
 export default function SmartFileListExplorer({ nodes, title, isLoading, emptyDescription }: SmartFileListExplorerProps) {
   const { t } = useTranslation();
@@ -30,6 +33,7 @@ export default function SmartFileListExplorer({ nodes, title, isLoading, emptyDe
   const [treeOpen, setTreeOpen] = useState(false);
 
   return (
+    <UploadQueueProvider>
     <Layout style={{ flex: 1, minHeight: 0, background: token.colorBgContainer }}>
       {isMobile ? (
         <Drawer
@@ -80,5 +84,6 @@ export default function SmartFileListExplorer({ nodes, title, isLoading, emptyDe
         />
       </Content>
     </Layout>
+    </UploadQueueProvider>
   );
 }
