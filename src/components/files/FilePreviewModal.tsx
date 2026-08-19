@@ -1,8 +1,9 @@
 import { Modal, Spin, Typography } from "antd";
 import { useTranslation } from "react-i18next";
+import ReactMarkdown from "react-markdown";
 import type { FileSystemNode } from "../../models/FileSystemNode";
 import { useFilePreview } from "../../hooks/useFilePreview";
-import { isImageContentType, isPdfContentType } from "../../utils/filePreview";
+import { isImageContentType, isPdfContentType, isMarkdownFile, isPlainTextFile } from "../../utils/filePreview";
 
 const { Text } = Typography;
 
@@ -13,10 +14,13 @@ interface FilePreviewModalProps {
 
 export default function FilePreviewModal({ node, onClose }: FilePreviewModalProps) {
   const { t } = useTranslation();
-  const { url, loading, error } = useFilePreview(node?.id ?? null);
   const contentType = node?.metadata.contentType ?? null;
   const isImage = isImageContentType(contentType);
   const isPdf = isPdfContentType(contentType);
+  const isMarkdown = node !== null && isMarkdownFile(node.name, contentType);
+  const isPlainText = node !== null && !isMarkdown && isPlainTextFile(node.name, contentType);
+  const isText = isMarkdown || isPlainText;
+  const { url, text, loading, error } = useFilePreview(node?.id ?? null, { asText: isText });
 
   return (
     <Modal
@@ -24,7 +28,7 @@ export default function FilePreviewModal({ node, onClose }: FilePreviewModalProp
       onCancel={onClose}
       footer={null}
       title={node?.name}
-      width={isPdf ? 860 : 720}
+      width={isPdf || isText ? 860 : 720}
       centered
       destroyOnHidden
     >
@@ -46,6 +50,29 @@ export default function FilePreviewModal({ node, onClose }: FilePreviewModalProp
 
         {!loading && !error && url && isPdf && (
           <iframe title={node?.name} src={url} style={{ width: "100%", height: "75vh", border: "none" }} />
+        )}
+
+        {!loading && !error && text !== null && isMarkdown && (
+          <div style={{ width: "100%", maxHeight: "70vh", overflow: "auto", textAlign: "left" }}>
+            <ReactMarkdown>{text}</ReactMarkdown>
+          </div>
+        )}
+
+        {!loading && !error && text !== null && isPlainText && (
+          <pre
+            style={{
+              width: "100%",
+              maxHeight: "70vh",
+              overflow: "auto",
+              whiteSpace: "pre-wrap",
+              wordBreak: "break-word",
+              fontFamily: "monospace",
+              textAlign: "left",
+              margin: 0,
+            }}
+          >
+            {text}
+          </pre>
         )}
       </div>
     </Modal>

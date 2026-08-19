@@ -21,8 +21,8 @@
     "fileWithSize": "File · {{size}}",
     "sharedWithTooltip": "Shared with {{apiName}}",
     "deleteConfirmTitle": "Delete \"{{name}}\"",
-    "deleteConfirmFolderContent": "The folder and everything in it will be deleted. This can't be undone.",
-    "deleteConfirmFileContent": "This can't be undone.",
+    "deleteConfirmFolderContent": "The folder and everything in it will be moved to Trash and permanently deleted the next day.",
+    "deleteConfirmFileContent": "The file will be moved to Trash and permanently deleted the next day.",
     "cancel": "Cancel",
     "deleteFailed": "Couldn't delete \"{{name}}\"",
     "downloadFailed": "Couldn't download \"{{name}}\"",
@@ -34,7 +34,7 @@
     "uploadFailedCount": "{{failed}} of {{total}} file(s) failed to upload",
     "itemsDeletedSuccess": "Items deleted successfully",
     "bulkDeleteConfirmTitle": "Delete {{count}} item(s)",
-    "bulkDeleteConfirmContent": "The selected folders and everything in them will be deleted. This can't be undone.",
+    "bulkDeleteConfirmContent": "The selected items will be moved to Trash and permanently deleted the next day.",
     "bulkDeleteFailed": "{{failed}} of {{total}} item(s) couldn't be deleted",
     "bulkDownloadFailed": "{{failed}} of {{total}} file(s) couldn't be downloaded",
     "renameNamePlaceholder": "Enter a name",
@@ -63,7 +63,28 @@
     "uploadRejectedTooLarge": "\"{{name}}\": exceeds the maximum size of {{maxSize}}",
     "storageUsage": "{{used}} / {{total}} used",
     "emptyFolderTitle": "This folder is empty",
-    "emptyFolderHint": "Drag files here or use \"Upload file\" to add content"
+    "emptyFolderHint": "Drag files here or use \"Upload file\" to add content",
+    "favoritesTitle": "Favorites",
+    "recentTitle": "Recent",
+    "emptyFavorites": "You haven't marked any file as favorite yet",
+    "emptyRecent": "You haven't opened any file yet",
+    "addToFavorites": "Add to favorites",
+    "removeFromFavorites": "Remove from favorites",
+    "favoriteToggleFailed": "Couldn't update the favorite status of \"{{name}}\"",
+    "moveToTitle": "Move to...",
+    "moveHere": "Move here",
+    "itemsMovedSuccess": "Items moved successfully",
+    "bulkMoveFailed": "{{failed}} of {{total}} item(s) couldn't be moved",
+    "renameFailed": "Couldn't rename",
+    "nameConflict": "A file named \"{{name}}\" already exists in that destination.",
+    "useAlternativeName": "use \"{{name}}\"",
+    "trashTitle": "Trash",
+    "emptyTrash": "Trash is empty",
+    "trashRetentionHint": "Items in Trash are permanently deleted the day after being sent here.",
+    "restore": "Restore",
+    "restoreFailed": "Couldn't restore \"{{name}}\"",
+    "itemsRestoredSuccess": "Items restored successfully",
+    "bulkRestoreFailed": "{{failed}} of {{total}} item(s) couldn't be restored"
   },
   "common": {
     "loading": "Loading...",
@@ -183,6 +204,28 @@
         ],
         "tip": "This option only appears for users with the administrator role."
       }
+    }
+  },
+  "tour": {
+    "upload": {
+      "title": "Your file tree",
+      "description": "Here you'll see all your folders, and you can upload new files with this button, or just by dragging them onto the screen."
+    },
+    "search": {
+      "title": "Search by name and content",
+      "description": "Search files and folders by name, and also inside the content of your plain-text (.txt) and Markdown (.md) notes, without navigating folder by folder."
+    },
+    "favorites": {
+      "title": "Favorites and Recent",
+      "description": "Mark your important files as favorites to find them quickly, or check the ones you opened recently from \"Recent\"."
+    },
+    "storage": {
+      "title": "Storage usage",
+      "description": "Here you can see how much space you're using against your workspace's quota."
+    },
+    "share": {
+      "title": "Sharing files",
+      "description": "From a file's context menu (right-click) you can share it with other apps in the suite, like Movements."
     }
   }
 }

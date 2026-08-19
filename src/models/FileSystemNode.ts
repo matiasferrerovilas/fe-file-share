@@ -12,6 +12,8 @@ export interface FileSystemNodeMetadata {
   type: FileSystemNodeType;
   contentType: string | null;
   checksum: string | null;
+  favorite: boolean;
+  lastAccessedAt: string | null;
 }
 
 export interface FileSystemNode {

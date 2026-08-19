@@ -1,18 +1,16 @@
-import { useMemo, useState } from "react";
-import { Empty, Flex, Input, Popover, theme, Typography } from "antd";
+import { useState } from "react";
+import { Empty, Flex, Input, Popover, Spin, theme, Typography } from "antd";
 import SearchOutlined from "@ant-design/icons/SearchOutlined";
 import FolderOutlined from "@ant-design/icons/FolderOutlined";
 import FileOutlined from "@ant-design/icons/FileOutlined";
 import { useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { ROOT_FOLDER_ID } from "../../api/foldersApi";
-import { useFileSystemTree } from "../../hooks/useFileSystemTree";
+import { useFileSearch } from "../../hooks/useFileSearch";
 import { FileSystemNodeType } from "../../models/FileSystemNode";
-import { searchFileSystemTree } from "../../utils/searchFileSystemTree";
+import type { FileSearchResult } from "../../models/FileSearchResult";
 
 const { Text } = Typography;
-
-const MAX_RESULTS = 20;
 
 interface FileSearchProps {
   style?: React.CSSProperties;
@@ -23,24 +21,12 @@ export default function FileSearch({ style, onNavigate }: FileSearchProps) {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { token } = theme.useToken();
-  const { data: tree = [] } = useFileSystemTree();
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
+  const { results, isSearching } = useFileSearch(query);
 
-  const results = useMemo(
-    () => searchFileSystemTree(tree[0]?.children ?? [], query).slice(0, MAX_RESULTS),
-    [tree, query],
-  );
-
-  const handleSelect = (nodeId: string) => {
-    const match = results.find(({ node }) => node.id === nodeId);
-    if (!match) return;
-
-    const { node, path } = match;
-    const folderId =
-      node.metadata.type === FileSystemNodeType.FOLDER
-        ? node.id
-        : (path[path.length - 2]?.id ?? ROOT_FOLDER_ID);
+  const handleSelect = (result: FileSearchResult) => {
+    const folderId = result.type === FileSystemNodeType.FOLDER ? result.id : (result.parentId ?? ROOT_FOLDER_ID);
 
     navigate({ to: "/files/$folderId", params: { folderId } });
     setQuery("");
@@ -50,19 +36,20 @@ export default function FileSearch({ style, onNavigate }: FileSearchProps) {
 
   const content = (
     <div style={{ width: "min(320px, 90vw)" }}>
-      {results.length === 0 ? (
+      {isSearching ? (
+        <Flex justify="center" style={{ padding: 16 }}>
+          <Spin size="small" />
+        </Flex>
+      ) : results.length === 0 ? (
         <Empty description={t("nav.noResults")} image={Empty.PRESENTED_IMAGE_SIMPLE} />
       ) : (
-        results.map(({ node, path }) => {
-          const breadcrumb = path
-            .slice(0, -1)
-            .map((ancestor) => ancestor.name)
-            .join(" / ");
+        results.map((result) => {
+          const breadcrumb = result.path.join(" / ");
 
           return (
             <div
-              key={node.id}
-              onClick={() => handleSelect(node.id)}
+              key={result.id}
+              onClick={() => handleSelect(result)}
               style={{
                 display: "flex",
                 alignItems: "center",
@@ -78,9 +65,9 @@ export default function FileSearch({ style, onNavigate }: FileSearchProps) {
                 e.currentTarget.style.background = "transparent";
               }}
             >
-              {node.metadata.type === FileSystemNodeType.FOLDER ? <FolderOutlined /> : <FileOutlined />}
+              {result.type === FileSystemNodeType.FOLDER ? <FolderOutlined /> : <FileOutlined />}
               <Flex vertical style={{ minWidth: 0, flex: 1 }}>
-                <Text ellipsis>{node.name}</Text>
+                <Text ellipsis>{result.name}</Text>
                 {breadcrumb && (
                   <Text type="secondary" ellipsis style={{ fontSize: 11 }}>
                     {breadcrumb}

@@ -21,3 +21,5 @@ export async function finishOnboarding(form: OnboardingForm) {
       throw error;
     });
 }
+
+export const markTourAsSeen = (): Promise<void> => api.put("/onboarding/tour").then(() => undefined);

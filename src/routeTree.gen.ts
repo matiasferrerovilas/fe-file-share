@@ -10,13 +10,21 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as HelpRouteImport } from './routes/help'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
+import { Route as RecentRouteImport } from './routes/recent'
+import { Route as TrashRouteImport } from './routes/trash'
 import { Route as FilesFolderIdRouteImport } from './routes/files.$folderId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FavoritesRoute = FavoritesRouteImport.update({
+  id: '/favorites',
+  path: '/favorites',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HelpRoute = HelpRouteImport.update({
@@ -29,6 +37,16 @@ const OnboardingRoute = OnboardingRouteImport.update({
   path: '/onboarding',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RecentRoute = RecentRouteImport.update({
+  id: '/recent',
+  path: '/recent',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TrashRoute = TrashRouteImport.update({
+  id: '/trash',
+  path: '/trash',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const FilesFolderIdRoute = FilesFolderIdRouteImport.update({
   id: '/files/$folderId',
   path: '/files/$folderId',
@@ -37,35 +55,69 @@ const FilesFolderIdRoute = FilesFolderIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/favorites': typeof FavoritesRoute
   '/help': typeof HelpRoute
   '/onboarding': typeof OnboardingRoute
+  '/recent': typeof RecentRoute
+  '/trash': typeof TrashRoute
   '/files/$folderId': typeof FilesFolderIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/favorites': typeof FavoritesRoute
   '/help': typeof HelpRoute
   '/onboarding': typeof OnboardingRoute
+  '/recent': typeof RecentRoute
+  '/trash': typeof TrashRoute
   '/files/$folderId': typeof FilesFolderIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/favorites': typeof FavoritesRoute
   '/help': typeof HelpRoute
   '/onboarding': typeof OnboardingRoute
+  '/recent': typeof RecentRoute
+  '/trash': typeof TrashRoute
   '/files/$folderId': typeof FilesFolderIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/help' | '/onboarding' | '/files/$folderId'
+  fullPaths:
+    | '/'
+    | '/favorites'
+    | '/help'
+    | '/onboarding'
+    | '/recent'
+    | '/trash'
+    | '/files/$folderId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/help' | '/onboarding' | '/files/$folderId'
-  id: '__root__' | '/' | '/help' | '/onboarding' | '/files/$folderId'
+  to:
+    | '/'
+    | '/favorites'
+    | '/help'
+    | '/onboarding'
+    | '/recent'
+    | '/trash'
+    | '/files/$folderId'
+  id:
+    | '__root__'
+    | '/'
+    | '/favorites'
+    | '/help'
+    | '/onboarding'
+    | '/recent'
+    | '/trash'
+    | '/files/$folderId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  FavoritesRoute: typeof FavoritesRoute
   HelpRoute: typeof HelpRoute
   OnboardingRoute: typeof OnboardingRoute
+  RecentRoute: typeof RecentRoute
+  TrashRoute: typeof TrashRoute
   FilesFolderIdRoute: typeof FilesFolderIdRoute
 }
 
@@ -76,6 +128,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/favorites': {
+      id: '/favorites'
+      path: '/favorites'
+      fullPath: '/favorites'
+      preLoaderRoute: typeof FavoritesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/help': {
@@ -92,6 +151,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OnboardingRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/recent': {
+      id: '/recent'
+      path: '/recent'
+      fullPath: '/recent'
+      preLoaderRoute: typeof RecentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/trash': {
+      id: '/trash'
+      path: '/trash'
+      fullPath: '/trash'
+      preLoaderRoute: typeof TrashRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/files/$folderId': {
       id: '/files/$folderId'
       path: '/files/$folderId'
@@ -104,8 +177,11 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  FavoritesRoute: FavoritesRoute,
   HelpRoute: HelpRoute,
   OnboardingRoute: OnboardingRoute,
+  RecentRoute: RecentRoute,
+  TrashRoute: TrashRoute,
   FilesFolderIdRoute: FilesFolderIdRoute,
 }
 export const routeTree = rootRouteImport

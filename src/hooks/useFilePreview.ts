@@ -1,6 +1,7 @@
-import { useQuery } from "@tanstack/react-query";
-import { useEffect, useMemo } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useMemo, useState } from "react";
 import { api, LARGE_FILE_TIMEOUT_MS } from "../api/axios";
+import { RECENT_FILES_QUERY_KEY } from "./useRecentFiles";
 
 const fetchFileBlob = async (fileId: string): Promise<Blob> => {
   const response = await api.get<Blob>(`folders/${fileId}/download`, {
@@ -10,8 +11,15 @@ const fetchFileBlob = async (fileId: string): Promise<Blob> => {
   return response.data;
 };
 
+interface UseFilePreviewOptions {
+  // Plain-text/Markdown previews need the raw text, not an object URL — reading the blob as text
+  // is opt-in so image/PDF previews (the common case) never pay for it.
+  asText?: boolean;
+}
+
 interface UseFilePreviewResult {
   url: string | null;
+  text: string | null;
   loading: boolean;
   error: boolean;
 }
@@ -22,15 +30,23 @@ interface UseFilePreviewResult {
  * rather than tracked in its own state, so there's no setState-during-effect involved; the effect
  * only revokes the previous URL once a new one replaces it (or the hook unmounts).
  */
-export function useFilePreview(fileId: string | null): UseFilePreviewResult {
+export function useFilePreview(fileId: string | null, options?: UseFilePreviewOptions): UseFilePreviewResult {
+  const queryClient = useQueryClient();
+  const asText = options?.asText ?? false;
+
   const { data, isLoading, isError } = useQuery({
     queryKey: ["file-preview", fileId],
-    queryFn: () => fetchFileBlob(fileId!),
+    // La vista previa usa el mismo endpoint de descarga que "Recientes" usa para saber qué se
+    // abrió de verdad — el backend actualiza lastAccessedAt acá también.
+    queryFn: () => fetchFileBlob(fileId!).then((blob) => {
+      queryClient.invalidateQueries({ queryKey: RECENT_FILES_QUERY_KEY });
+      return blob;
+    }),
     enabled: fileId !== null,
     gcTime: 0,
   });
 
-  const url = useMemo(() => (data ? URL.createObjectURL(data) : null), [data]);
+  const url = useMemo(() => (data && !asText ? URL.createObjectURL(data) : null), [data, asText]);
 
   useEffect(() => {
     return () => {
@@ -38,9 +54,27 @@ export function useFilePreview(fileId: string | null): UseFilePreviewResult {
     };
   }, [url]);
 
+  // fileId (y por lo tanto `data`) es estable durante la vida de una instancia de este hook —
+  // cada FilePreviewModal se monta para un único archivo (destroyOnHidden), así que no hace falta
+  // resetear `text` sincrónicamente al reingresar al efecto; el estado inicial ya es null.
+  const [text, setText] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!asText || !data) return;
+
+    let cancelled = false;
+    data.text().then((value) => {
+      if (!cancelled) setText(value);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [data, asText]);
+
   return {
     url,
-    loading: fileId !== null && isLoading,
+    text,
+    loading: fileId !== null && (isLoading || (asText && text === null)),
     error: fileId !== null && isError,
   };
 }

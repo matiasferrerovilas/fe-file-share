@@ -1,9 +1,10 @@
 import { useMemo, useRef, useState, type MouseEvent } from "react";
-import { App as AntdApp, Breadcrumb, Button, Col, Dropdown, Empty, Flex, Grid, Segmented, Space, Typography, theme, type MenuProps } from "antd";
+import { App as AntdApp, Breadcrumb, Button, Col, Dropdown, Empty, Flex, Grid, Segmented, Space, Spin, Typography, theme, type MenuProps } from "antd";
 import { useNavigate } from "@tanstack/react-router";
 import FolderAddOutlined from "@ant-design/icons/FolderAddOutlined";
 import DownloadOutlined from "@ant-design/icons/DownloadOutlined";
 import DeleteOutlined from "@ant-design/icons/DeleteOutlined";
+import FolderOutlined from "@ant-design/icons/FolderOutlined";
 import CloseOutlined from "@ant-design/icons/CloseOutlined";
 import AppstoreOutlined from "@ant-design/icons/AppstoreOutlined";
 import UnorderedListOutlined from "@ant-design/icons/UnorderedListOutlined";
@@ -15,16 +16,25 @@ import { findNode, findPath } from "../../utils/fileSystemTree";
 import { ROOT_FOLDER_ID } from "../../api/foldersApi";
 import { useDeleteFolder } from "../../hooks/useDeleteFolder";
 import { useDownloadFile } from "../../hooks/useDownloadFile";
+import { useMoveNode } from "../../hooks/useMoveNode";
 import { useUploadQueue } from "../../uploads/UploadQueueContext";
 import { FileSystemNodeType, type FileSystemNode } from "../../models/FileSystemNode";
 import FolderContentCard from "./FolderContentCard";
 import FolderContentRow from "./FolderContentRow";
 import CreateFolderModal from "./CreateFolderModal";
+import MoveToFolderModal from "./MoveToFolderModal";
 
 const { Text } = Typography;
 
 interface FolderContentsPanelProps {
   folderId: string;
+  // Cuando se proveen, el panel renderiza esta lista fija en vez de derivar los hijos de
+  // `folderId` en el árbol — usado por las vistas "Favoritos"/"Recientes", que no son una carpeta
+  // real: no tienen breadcrumb, no aceptan subida ni "Crear carpeta" en esa posición.
+  nodes?: FileSystemNode[];
+  title?: string;
+  isLoading?: boolean;
+  emptyDescription?: string;
 }
 
 const { useBreakpoint } = Grid;
@@ -47,16 +57,24 @@ function compareNodes(a: FileSystemNode, b: FileSystemNode, field: SortField, di
   return sign * a.name.localeCompare(b.name);
 }
 
-export default function FolderContentsPanel({ folderId }: FolderContentsPanelProps) {
+export default function FolderContentsPanel({
+  folderId,
+  nodes: explicitNodes,
+  title,
+  isLoading,
+  emptyDescription,
+}: FolderContentsPanelProps) {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { token } = theme.useToken();
   const { modal, message } = AntdApp.useApp();
+  const isSmartView = explicitNodes !== undefined;
   const contextMenuItems: MenuProps["items"] = [
     { key: "create-folder", label: t("files.createFolder"), icon: <FolderAddOutlined /> },
   ];
   const { data: tree = [] } = useFileSystemTree();
   const [creatingFolder, setCreatingFolder] = useState(false);
+  const [movingSelection, setMovingSelection] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [sortField, setSortField] = useState<SortField>("name");
@@ -71,16 +89,20 @@ export default function FolderContentsPanel({ folderId }: FolderContentsPanelPro
   const isMobile = !screens.md;
   const deleteMutation = useDeleteFolder();
   const downloadMutation = useDownloadFile();
+  const { moveNodeAsync, isMoving } = useMoveNode();
   const { runUploads } = useUploadQueue();
   const uploadInputRef = useRef<HTMLInputElement>(null);
 
   const rows = useMemo(() => {
+    if (explicitNodes) {
+      return [...explicitNodes].sort((a, b) => compareNodes(a, b, sortField, sortDirection));
+    }
     // El primer nodo es la carpeta raíz del backend — al verla se muestran
     // directamente sus hijos en vez de listarla como si fuera una carpeta más.
     const children =
       folderId === ROOT_FOLDER_ID ? (tree[0]?.children ?? []) : (findNode(tree, folderId)?.children ?? []);
     return [...children].sort((a, b) => compareNodes(a, b, sortField, sortDirection));
-  }, [tree, folderId, sortField, sortDirection]);
+  }, [tree, folderId, explicitNodes, sortField, sortDirection]);
 
   const selectedNodes = useMemo(
     () => rows.filter((node) => selectedIds.has(node.id)),
@@ -130,6 +152,20 @@ export default function FolderContentsPanel({ folderId }: FolderContentsPanelPro
     });
   };
 
+  const handleBulkMove = async (targetFolderId: string) => {
+    const results = await Promise.allSettled(
+      selectedNodes.map((node) => moveNodeAsync({ nodeId: node.id, targetFolderId })),
+    );
+    const failed = results.filter((r) => r.status === "rejected").length;
+    if (failed > 0) {
+      message.error(t("files.bulkMoveFailed", { failed, total: selectedNodes.length }));
+    } else {
+      message.success(t("files.itemsMovedSuccess"));
+    }
+    setMovingSelection(false);
+    clearSelection();
+  };
+
   const handleFilesSelected = async (fileList: FileList | null) => {
     await runUploads(folderId, fileList, t);
   };
@@ -137,17 +173,17 @@ export default function FolderContentsPanel({ folderId }: FolderContentsPanelPro
   // En mobile no hay drag&drop ni menú contextual accesible: tocar el fondo
   // del panel (fuera de una tarjeta) dispara directamente el selector de archivos.
   const handleEmptyAreaTap = (e: MouseEvent<HTMLDivElement>) => {
-    if (!isMobile) return;
+    if (!isMobile || isSmartView) return;
     if ((e.target as HTMLElement).closest(".ant-card")) return;
     uploadInputRef.current?.click();
   };
 
   const ancestors = useMemo(() => {
-    if (folderId === ROOT_FOLDER_ID) return [];
+    if (isSmartView || folderId === ROOT_FOLDER_ID) return [];
     // Busca desde los hijos de la raíz: el nodo raíz ya se muestra como el
     // primer item del breadcrumb, no hace falta repetirlo en ancestors.
     return findPath(tree[0]?.children ?? [], folderId);
-  }, [tree, folderId]);
+  }, [tree, folderId, isSmartView]);
 
   const goToFolder = (id: string) => navigate({ to: "/files/$folderId", params: { folderId: id } });
 
@@ -165,7 +201,13 @@ export default function FolderContentsPanel({ folderId }: FolderContentsPanelPro
 
   return (
     <>
-      <Breadcrumb items={breadcrumbItems} style={{ marginBottom: 16 }} />
+      {isSmartView ? (
+        <Typography.Title level={4} style={{ marginTop: 0, marginBottom: 16 }}>
+          {title}
+        </Typography.Title>
+      ) : (
+        <Breadcrumb items={breadcrumbItems} style={{ marginBottom: 16 }} />
+      )}
       {selectedNodes.length > 0 && (
         <Flex
           align="center"
@@ -181,6 +223,9 @@ export default function FolderContentsPanel({ folderId }: FolderContentsPanelPro
           <Text strong>{t("files.selectedCount", { count: selectedNodes.length })}</Text>
           <Button icon={<DownloadOutlined />} onClick={handleBulkDownload}>
             {t("files.download")}
+          </Button>
+          <Button icon={<FolderOutlined />} onClick={() => setMovingSelection(true)}>
+            {t("files.moveToTitle")}
           </Button>
           <Button danger icon={<DeleteOutlined />} onClick={handleBulkDelete}>
             {t("files.delete")}
@@ -215,32 +260,42 @@ export default function FolderContentsPanel({ folderId }: FolderContentsPanelPro
           ]}
         />
       </Flex>
-      <input
-        ref={uploadInputRef}
-        type="file"
-        multiple
-        hidden
-        onChange={(e) => {
-          void handleFilesSelected(e.target.files);
-          e.target.value = "";
-        }}
-      />
+      {!isSmartView && (
+        <input
+          ref={uploadInputRef}
+          type="file"
+          multiple
+          hidden
+          onChange={(e) => {
+            void handleFilesSelected(e.target.files);
+            e.target.value = "";
+          }}
+        />
+      )}
       <Dropdown
         menu={{ items: contextMenuItems, onClick: () => setCreatingFolder(true) }}
-        trigger={["contextMenu"]}
+        trigger={isSmartView ? [] : ["contextMenu"]}
       >
         <div style={{ flex: 1, minHeight: "60vh" }} onClick={handleEmptyAreaTap}>
-          {rows.length === 0 ? (
+          {isLoading ? (
+            <Flex align="center" justify="center" style={{ minHeight: "50vh" }}>
+              <Spin />
+            </Flex>
+          ) : rows.length === 0 ? (
             <Flex vertical align="center" justify="center" style={{ minHeight: "50vh" }}>
               <Empty
                 image={Empty.PRESENTED_IMAGE_SIMPLE}
                 description={
-                  <Flex vertical gap={4} align="center">
-                    <Text>{t("files.emptyFolderTitle")}</Text>
-                    <Text type="secondary" style={{ fontSize: 13 }}>
-                      {t("files.emptyFolderHint")}
-                    </Text>
-                  </Flex>
+                  isSmartView ? (
+                    <Text>{emptyDescription}</Text>
+                  ) : (
+                    <Flex vertical gap={4} align="center">
+                      <Text>{t("files.emptyFolderTitle")}</Text>
+                      <Text type="secondary" style={{ fontSize: 13 }}>
+                        {t("files.emptyFolderHint")}
+                      </Text>
+                    </Flex>
+                  )
                 }
               />
             </Flex>
@@ -298,10 +353,18 @@ export default function FolderContentsPanel({ folderId }: FolderContentsPanelPro
           )}
         </div>
       </Dropdown>
-      <CreateFolderModal
-        folderId={folderId}
-        open={creatingFolder}
-        onClose={() => setCreatingFolder(false)}
+      {!isSmartView && (
+        <CreateFolderModal
+          folderId={folderId}
+          open={creatingFolder}
+          onClose={() => setCreatingFolder(false)}
+        />
+      )}
+      <MoveToFolderModal
+        open={movingSelection}
+        onClose={() => setMovingSelection(false)}
+        onConfirm={handleBulkMove}
+        confirmLoading={isMoving}
       />
     </>
   );

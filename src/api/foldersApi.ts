@@ -1,5 +1,6 @@
 import { api, LARGE_FILE_TIMEOUT_MS } from "./axios";
 import type { FileSystemNode } from "../models/FileSystemNode";
+import type { FileSearchResult } from "../models/FileSearchResult";
 import type { WorkspaceUsage } from "../models/WorkspaceUsage";
 
 export const ROOT_FOLDER_ID = "root";
@@ -10,6 +11,26 @@ export const getFileSystemTree = (workspaceId: number) =>
 export const getWorkspaceUsage = (workspaceId: number) =>
   api.get<WorkspaceUsage>("folders/usage", { params: { workspaceId } }).then((r) => r.data);
 
+export const searchFiles = (workspaceId: number, query: string) =>
+  api.get<FileSearchResult[]>("folders/search", { params: { workspaceId, query } }).then((r) => r.data);
+
+export const setFavorite = (nodeId: string, favorite: boolean) =>
+  api.patch<FileSystemNode>(`folders/${nodeId}/favorite`, { favorite }).then((r) => r.data);
+
+export const getFavorites = (workspaceId: number) =>
+  api.get<FileSystemNode[]>("folders/favorites", { params: { workspaceId } }).then((r) => r.data);
+
+export const getRecentFiles = (workspaceId: number, limit?: number) =>
+  api.get<FileSystemNode[]>("folders/recent", { params: { workspaceId, limit } }).then((r) => r.data);
+
+export const getTrash = (workspaceId: number) =>
+  api.get<FileSystemNode[]>("folders/trash", { params: { workspaceId } }).then((r) => r.data);
+
+export const restoreNode = (nodeId: string) =>
+  api.post<FileSystemNode>(`folders/${nodeId}/restore`).then((r) => r.data);
+
+// Soft-delete: el nodo queda en la papelera y se purga automáticamente al día siguiente si no
+// se restaura antes (ver getTrash/restoreNode).
 export const deleteFolder = (folderId: string) =>
   api.delete<void>(`folders/${folderId}`).then((r) => r.data);
 

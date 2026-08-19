@@ -14,6 +14,7 @@ import { useDownloadFile } from "./useDownloadFile";
 import { useMoveNode, MOVE_NODE_DATA_TYPE } from "./useMoveNode";
 import { useUserRoles } from "./useUserRoles";
 import { useShareFile } from "./useShareFile";
+import { useToggleFavorite } from "./useFavorites";
 import { SharePermission } from "../models/FileShare";
 import { isPreviewableContentType } from "../utils/filePreview";
 import { getFileTypeIcon } from "../utils/getFileTypeIcon";
@@ -35,14 +36,26 @@ export function useFolderContentActions(node: FileSystemNode) {
   const deleteMutation = useDeleteFolder();
   const downloadMutation = useDownloadFile();
   const shareMutation = useShareFile();
+  const toggleFavoriteMutation = useToggleFavorite();
   const { moveIfValid } = useMoveNode();
   const [renaming, setRenaming] = useState(false);
   const [previewing, setPreviewing] = useState(false);
   const [dragDepth, setDragDepth] = useState(0);
 
   const isFolder = node.metadata.type === FileSystemNodeType.FOLDER;
-  const previewable = !isFolder && isPreviewableContentType(node.metadata.contentType);
+  const previewable = !isFolder && isPreviewableContentType(node.name, node.metadata.contentType);
   const fileTypeIcon = getFileTypeIcon(node.metadata.contentType);
+  const isFavorite = node.metadata.favorite;
+
+  const handleToggleFavorite = (domEvent: { stopPropagation: () => void }) => {
+    domEvent.stopPropagation();
+    toggleFavoriteMutation.mutate(
+      { nodeId: node.id, favorite: !isFavorite },
+      {
+        onError: () => message.error(t("files.favoriteToggleFailed", { name: node.name })),
+      },
+    );
+  };
 
   const handleDelete = () => {
     modal.confirm({
@@ -154,5 +167,7 @@ export function useFolderContentActions(node: FileSystemNode) {
     setRenaming,
     previewing,
     setPreviewing,
+    isFavorite,
+    handleToggleFavorite,
   };
 }

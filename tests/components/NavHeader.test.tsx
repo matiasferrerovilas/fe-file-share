@@ -5,6 +5,7 @@ import { ConfigProvider } from "antd";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 import { ThemeContext } from "../../src/theme/ThemeContext";
+import { TourRefsProvider } from "../../src/tour/TourRefsProvider";
 
 vi.mock("@react-keycloak/web", () => ({
   useKeycloak: vi.fn(),
@@ -39,7 +40,9 @@ function makeWrapper(isDark: boolean, toggleTheme = vi.fn()) {
   return ({ children }: { children: ReactNode }) => (
     <QueryClientProvider client={queryClient}>
       <ThemeContext.Provider value={{ isDark, toggleTheme }}>
-        <ConfigProvider>{children}</ConfigProvider>
+        <ConfigProvider>
+          <TourRefsProvider>{children}</TourRefsProvider>
+        </ConfigProvider>
       </ThemeContext.Provider>
     </QueryClientProvider>
   );

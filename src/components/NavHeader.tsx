@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Avatar,
   Button,
@@ -26,10 +26,12 @@ import { useTranslation } from "react-i18next";
 import { useCurrentUser } from "../hooks/useCurrentUser";
 import { useTheme } from "../theme/ThemeContext";
 import { getUserDisplayName } from "../utils/userDisplayName";
+import { useTourRefs } from "../tour/TourRefsContext";
 import { AppsGrid } from "./AppsGrid";
 import FileSearch from "./files/FileSearch";
 import LanguageSwitcher from "./LanguageSwitcher";
 import WorkspaceSelector from "./WorkspaceSelector";
+import AppTour from "./onboarding/AppTour";
 
 const { Text } = Typography;
 const { useBreakpoint } = Grid;
@@ -115,11 +117,24 @@ export default function NavHeader() {
   const { data: currentUser } = useCurrentUser();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const { registerRef } = useTourRefs();
 
   const displayName = currentUser ? getUserDisplayName(currentUser) : null;
   const email = currentUser?.email;
 
   const closeProfile = () => setProfileOpen(false);
+
+  // Tour: se muestra una única vez, automáticamente, la primera vez que un usuario entra (solo
+  // en desktop — los targets de la sidebar no están visibles en mobile).
+  const [tourOpen, setTourOpen] = useState(false);
+  const shouldShowTour = !isMobile && currentUser?.metadata?.hasSeenTour === false;
+
+  useEffect(() => {
+    if (shouldShowTour && !tourOpen) {
+      const timer = setTimeout(() => setTourOpen(true), 500);
+      return () => clearTimeout(timer);
+    }
+  }, [shouldShowTour, tourOpen]);
 
   const ThemeToggle = (
     <Segmented
@@ -269,7 +284,12 @@ export default function NavHeader() {
               <img src="/logo.png" alt="Logo" style={{ height: 44, width: 44, borderRadius: 10 }} />
               <WorkspaceSelector />
             </Flex>
-            <Flex style={{ flex: 1 }} align="center" gap={12}>
+            <Flex
+              ref={(el: HTMLElement | null) => registerRef("search", el)}
+              style={{ flex: 1 }}
+              align="center"
+              gap={12}
+            >
               <FileSearch />
             </Flex>
             <Flex style={{ flex: 1 }} justify="flex-end" align="center">
@@ -337,6 +357,7 @@ export default function NavHeader() {
           </Button>
         </div>
       </Drawer>
+      {!isMobile && <AppTour open={tourOpen} onClose={() => setTourOpen(false)} />}
     </>
   );
 }

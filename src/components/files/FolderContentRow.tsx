@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Avatar, Checkbox, Dropdown, Flex, Tooltip, Typography, theme } from "antd";
 import { useTranslation } from "react-i18next";
 import FolderOutlined from "@ant-design/icons/FolderOutlined";
+import StarFilled from "@ant-design/icons/StarFilled";
+import StarOutlined from "@ant-design/icons/StarOutlined";
 import { formatFileSize } from "../../utils/formatFileSize";
 import { shareAbbreviation } from "../../utils/shareAbbreviation";
 import type { FileSystemNode } from "../../models/FileSystemNode";
@@ -39,6 +41,8 @@ export default function FolderContentRow({
     setRenaming,
     previewing,
     setPreviewing,
+    isFavorite,
+    handleToggleFavorite,
   } = useFolderContentActions(node);
 
   const formattedDate = new Date(node.metadata.lastModified).toLocaleDateString(i18n.language, {
@@ -79,6 +83,24 @@ export default function FolderContentRow({
           <div style={{ fontSize: 20, width: 24, display: "flex", justifyContent: "center" }}>
             {isFolder ? <FolderOutlined /> : fileTypeIcon}
           </div>
+          <Tooltip title={t(isFavorite ? "files.removeFromFavorites" : "files.addToFavorites")}>
+            <span
+              role="button"
+              aria-label={t(isFavorite ? "files.removeFromFavorites" : "files.addToFavorites")}
+              onClick={handleToggleFavorite}
+              style={{
+                cursor: "pointer",
+                fontSize: 15,
+                color: isFavorite ? token.colorWarning : token.colorTextTertiary,
+                opacity: isFavorite || hovering ? 1 : 0,
+                transition: "opacity 0.15s ease",
+                lineHeight: 0,
+                flexShrink: 0,
+              }}
+            >
+              {isFavorite ? <StarFilled /> : <StarOutlined />}
+            </span>
+          </Tooltip>
           <Text style={{ flex: 1, minWidth: 0 }} ellipsis={{ tooltip: node.name }}>
             {node.name}
           </Text>

@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Avatar, Card, Checkbox, Dropdown, Tag, Tooltip, theme } from "antd";
 import { useTranslation } from "react-i18next";
 import FolderOutlined from "@ant-design/icons/FolderOutlined";
+import StarFilled from "@ant-design/icons/StarFilled";
+import StarOutlined from "@ant-design/icons/StarOutlined";
 import { formatFileSize } from "../../utils/formatFileSize";
 import { shareAbbreviation } from "../../utils/shareAbbreviation";
 import type { FileSystemNode } from "../../models/FileSystemNode";
@@ -37,6 +39,8 @@ export default function FolderContentCard({
     setRenaming,
     previewing,
     setPreviewing,
+    isFavorite,
+    handleToggleFavorite,
   } = useFolderContentActions(node);
 
   return (
@@ -66,11 +70,19 @@ export default function FolderContentCard({
         >
           <Checkbox checked={selected} />
         </div>
-        {node.shareWith.length > 0 && (
-          <div
-            style={{ position: "absolute", top: 8, right: 8, zIndex: 2 }}
-            onClick={(e) => e.stopPropagation()}
-          >
+        <div
+          style={{
+            position: "absolute",
+            top: 8,
+            right: 8,
+            zIndex: 2,
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
+          }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {node.shareWith.length > 0 && (
             <Avatar.Group>
               {node.shareWith.map((apiName) => (
                 <Tooltip key={apiName} title={t("files.sharedWithTooltip", { apiName })}>
@@ -88,8 +100,28 @@ export default function FolderContentCard({
                 </Tooltip>
               ))}
             </Avatar.Group>
-          </div>
-        )}
+          )}
+          <Tooltip title={t(isFavorite ? "files.removeFromFavorites" : "files.addToFavorites")}>
+            <span
+              role="button"
+              aria-label={t(isFavorite ? "files.removeFromFavorites" : "files.addToFavorites")}
+              onClick={handleToggleFavorite}
+              style={{
+                cursor: "pointer",
+                fontSize: 18,
+                color: isFavorite ? token.colorWarning : token.colorTextTertiary,
+                opacity: isFavorite || selected || selectionActive || hovering ? 1 : 0,
+                transition: "opacity 0.15s ease",
+                background: token.colorBgContainer,
+                borderRadius: token.borderRadiusSM,
+                lineHeight: 0,
+                padding: 2,
+              }}
+            >
+              {isFavorite ? <StarFilled /> : <StarOutlined />}
+            </span>
+          </Tooltip>
+        </div>
         <Dropdown menu={{ items: menuItems, onClick: handleMenuClick }} trigger={["contextMenu"]}>
           <Card
             hoverable

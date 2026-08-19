@@ -21,8 +21,8 @@
     "fileWithSize": "Archivo · {{size}}",
     "sharedWithTooltip": "Compartido con {{apiName}}",
     "deleteConfirmTitle": "Eliminar \"{{name}}\"",
-    "deleteConfirmFolderContent": "Se eliminará la carpeta y todo su contenido. Esta acción no se puede deshacer.",
-    "deleteConfirmFileContent": "Esta acción no se puede deshacer.",
+    "deleteConfirmFolderContent": "La carpeta y todo su contenido se moverán a la papelera y se eliminarán definitivamente al día siguiente.",
+    "deleteConfirmFileContent": "El archivo se moverá a la papelera y se eliminará definitivamente al día siguiente.",
     "cancel": "Cancelar",
     "deleteFailed": "No se pudo eliminar \"{{name}}\"",
     "downloadFailed": "No se pudo descargar \"{{name}}\"",
@@ -34,7 +34,7 @@
     "uploadFailedCount": "{{failed}} de {{total}} archivo(s) fallaron al subir",
     "itemsDeletedSuccess": "Elementos eliminados correctamente",
     "bulkDeleteConfirmTitle": "Eliminar {{count}} elemento(s)",
-    "bulkDeleteConfirmContent": "Se eliminarán las carpetas seleccionadas y todo su contenido. Esta acción no se puede deshacer.",
+    "bulkDeleteConfirmContent": "Los elementos seleccionados se moverán a la papelera y se eliminarán definitivamente al día siguiente.",
     "bulkDeleteFailed": "{{failed}} de {{total}} elemento(s) no se pudieron eliminar",
     "bulkDownloadFailed": "{{failed}} de {{total}} archivo(s) no se pudieron descargar",
     "renameNamePlaceholder": "Ingresá un nombre",
@@ -63,7 +63,28 @@
     "uploadRejectedTooLarge": "\"{{name}}\": supera el tamaño máximo de {{maxSize}}",
     "storageUsage": "{{used}} / {{total}} usado",
     "emptyFolderTitle": "Esta carpeta está vacía",
-    "emptyFolderHint": "Arrastrá archivos acá o usá \"Subir archivo\" para agregar contenido"
+    "emptyFolderHint": "Arrastrá archivos acá o usá \"Subir archivo\" para agregar contenido",
+    "favoritesTitle": "Favoritos",
+    "recentTitle": "Recientes",
+    "emptyFavorites": "No marcaste ningún archivo como favorito todavía",
+    "emptyRecent": "Todavía no abriste ningún archivo",
+    "addToFavorites": "Agregar a favoritos",
+    "removeFromFavorites": "Quitar de favoritos",
+    "favoriteToggleFailed": "No se pudo actualizar el favorito de \"{{name}}\"",
+    "moveToTitle": "Mover a...",
+    "moveHere": "Mover acá",
+    "itemsMovedSuccess": "Elementos movidos correctamente",
+    "bulkMoveFailed": "{{failed}} de {{total}} elemento(s) no se pudieron mover",
+    "renameFailed": "No se pudo renombrar",
+    "nameConflict": "Ya existe un archivo con el nombre \"{{name}}\" en ese destino.",
+    "useAlternativeName": "usar \"{{name}}\"",
+    "trashTitle": "Papelera",
+    "emptyTrash": "La papelera está vacía",
+    "trashRetentionHint": "Los elementos de la papelera se eliminan definitivamente al día siguiente de haber sido enviados acá.",
+    "restore": "Restaurar",
+    "restoreFailed": "No se pudo restaurar \"{{name}}\"",
+    "itemsRestoredSuccess": "Elementos restaurados correctamente",
+    "bulkRestoreFailed": "{{failed}} de {{total}} elemento(s) no se pudieron restaurar"
   },
   "common": {
     "loading": "Cargando...",
@@ -183,6 +204,28 @@
         ],
         "tip": "Esta opción solo aparece para usuarios con rol de administrador."
       }
+    }
+  },
+  "tour": {
+    "upload": {
+      "title": "Tu árbol de archivos",
+      "description": "Acá vas a ver todas tus carpetas y podés subir archivos nuevos con este botón, o simplemente arrastrándolos a la pantalla."
+    },
+    "search": {
+      "title": "Buscar por nombre y contenido",
+      "description": "Buscá archivos y carpetas por nombre, y también dentro del contenido de tus notas de texto (.txt) y Markdown (.md), sin tener que navegar carpeta por carpeta."
+    },
+    "favorites": {
+      "title": "Favoritos y Recientes",
+      "description": "Marcá tus archivos importantes como favoritos para encontrarlos rápido, o consultá los que abriste hace poco desde \"Recientes\"."
+    },
+    "storage": {
+      "title": "Uso de almacenamiento",
+      "description": "Acá ves cuánto espacio ocupás sobre la cuota de tu workspace."
+    },
+    "share": {
+      "title": "Compartir archivos",
+      "description": "Desde el menú contextual de un archivo (click derecho) podés compartirlo con otras apps de la suite, como Movimientos."
     }
   }
 }
