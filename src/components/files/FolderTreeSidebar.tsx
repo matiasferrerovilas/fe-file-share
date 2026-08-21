@@ -108,6 +108,7 @@ export default function FolderTreeSidebar({ activeFolderId, onNavigate }: Folder
         </Button>
       </Flex>
       <Button
+        ref={(el) => registerRef("trash", el)}
         icon={<DeleteOutlined />}
         block
         style={{ marginBottom: 12 }}

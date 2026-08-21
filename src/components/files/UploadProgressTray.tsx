@@ -53,6 +53,9 @@ export default function UploadProgressTray() {
                 showInfo={false}
                 status={item.status === "error" ? "exception" : item.status === "done" ? "success" : "active"}
               />
+              {item.status === "error" && item.errorMessage && (
+                <Text style={{ fontSize: 11.5, color: token.colorError }}>{item.errorMessage}</Text>
+              )}
             </div>
           ))}
         </Space>

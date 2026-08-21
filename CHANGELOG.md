@@ -8,6 +8,65 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Revoking a share now has UI: today's `DELETE /v1/shares/{id}` backend endpoint had zero callers
+  in the frontend — `sharesApi.ts` only exported `shareFile`/`getShares`, and `getShares` itself was
+  never imported anywhere. New `revokeShare` API function + `useRevokeShare` hook (resolves the
+  share id by re-fetching the file's shares and matching on `apiName`, since revoke is by id but the
+  UI only knows file + target app). The existing "Compartir con" context-menu submenu now shows
+  "Dejar de compartir con X" for a target the file is already shared with (via `node.shareWith`,
+  already on the tree — no extra fetch needed to know current state), toggling share/unshare on
+  click. Both `useShareFile` and `useRevokeShare` invalidate the file tree on success so the menu
+  reflects the new state immediately.
+- Help Center gained sections for Favoritos, Recientes, and Papelera — previously these three
+  features only existed as UI labels, with zero explanation anywhere (`helpContent.ts` only covered
+  workspace/navigation/upload/organize/selection/share).
+- Onboarding tour gained 3 steps it was missing: the grid/list view toggle (with sort), the Papelera
+  sidebar button (new ref registered for it), and a closing step pointing to the Help Center — none
+  of these existed when the tour was first built, plus "Papelera" itself didn't exist yet at the time.
+
+### Changed
+- Bulk delete/move/download (`FolderContentsPanel`) and trash restore (`TrashContentsPanel`) now
+  report *which* items failed, not just a count — switched from a `message.error("N de M fallaron")`
+  toast to `notification.error` with a description listing the failed items' names (new
+  `describeBulkFailures` util, reused across all four operations).
+- A failed upload now shows a specific reason next to the file in the progress tray instead of
+  being unexplained — name collision and checksum-duplicate (409, "el contenido ya existe como 'X'")
+  each get their own message (new `parseChecksumConflict` in `conflictResolution.ts`, the upload
+  counterpart to the existing `parseNameConflict`); anything else falls back to a generic per-item
+  message. Previously only the aggregate "N of M subidas fallaron" toast existed — true for every
+  failure reason alike, checksum duplicates included, and without saying which file.
+
+### Tests
+- Added coverage for four of the newest, previously-untested pieces: `useFileSearch` (debounce
+  timing, trimming, workspace-gating), `MoveToFolderModal` (folder-only tree, selection, root as a
+  valid target), `AppTour` (step order and content, finish/close both mark the tour seen), and
+  `UploadQueueProvider`'s error paths (per-item error status/message, partial-batch failure count,
+  pre-upload rejection for oversized/media files, TTL-based removal from the queue).
+- Workspace member invitations, mirroring fe-movements — previously nonexistent in fe-keep despite
+  api-identity supporting them: no button, no screen, so "sharing a workspace" only existed on the
+  backend. New `/settings` page (wires up the "Ajustes" nav item, previously a dead end that just
+  closed the profile popover) with an "Invitaciones Pendientes" panel and a workspace panel showing
+  members, an invite-member modal, remove-member (OWNER only), and leave-workspace. Live updates via
+  two new hooks, `useInvitationSubscription`/`useWorkspacesSubscription`, subscribing to the new
+  STOMP topics api-keep now pushes to. `Workspace`/`WorkspaceMetadata` gained `memberDetails`
+  (userId/email/role per member). Cleaned up `websocket/EventWrapper.ts` in the process — it was an
+  unused copy-paste leftover from fe-movements, still carrying `MOVEMENT_ADDED`/`SERVICE_PAID`/
+  `INVESTMENT_UPDATED` event types that mean nothing here and a fictional `ACCOUNT_LEFT` value
+  nothing ever published (the exact same dead-topic bug found and fixed in fe-movements this same
+  session) — now scoped to just the three event types api-keep's backend actually emits.
+
+### Changed
+- Explained *why* photo/video uploads get rejected instead of just rejecting them, across all three
+  places a new user hits this: the upload-rejection toast (`files.uploadRejectedMedia`, shown by
+  both the main upload flow and the onboarding welcome step, since both share
+  `getUploadRejectionReason`), the onboarding welcome step (new third intro line), and the Help
+  Center's "Subir archivos" section (new dedicated tip). All three now say the same thing: Keep is
+  for important documents (PDFs, contracts, notes) you don't want to lose, not a photo library —
+  photos/videos are Immich's job, a separate app in the suite. Previously this was never stated
+  anywhere, so the rejection read as a broken/arbitrary limitation instead of a deliberate scope
+  decision.
+
+### Added
 - New onboarding intro screen (`IntroOnboarding`): a first, form-free step before the workspace/upload
   wizard that states the app's value proposition (real organization, content search, trash with a
   safety net, instant sync, connected to the rest of the suite) with a single "Empezar" CTA. Mirrors

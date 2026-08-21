@@ -14,6 +14,7 @@ import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as HelpRouteImport } from './routes/help'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as RecentRouteImport } from './routes/recent'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as TrashRouteImport } from './routes/trash'
 import { Route as FilesFolderIdRouteImport } from './routes/files.$folderId'
 
@@ -42,6 +43,11 @@ const RecentRoute = RecentRouteImport.update({
   path: '/recent',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TrashRoute = TrashRouteImport.update({
   id: '/trash',
   path: '/trash',
@@ -59,6 +65,7 @@ export interface FileRoutesByFullPath {
   '/help': typeof HelpRoute
   '/onboarding': typeof OnboardingRoute
   '/recent': typeof RecentRoute
+  '/settings': typeof SettingsRoute
   '/trash': typeof TrashRoute
   '/files/$folderId': typeof FilesFolderIdRoute
 }
@@ -68,6 +75,7 @@ export interface FileRoutesByTo {
   '/help': typeof HelpRoute
   '/onboarding': typeof OnboardingRoute
   '/recent': typeof RecentRoute
+  '/settings': typeof SettingsRoute
   '/trash': typeof TrashRoute
   '/files/$folderId': typeof FilesFolderIdRoute
 }
@@ -78,6 +86,7 @@ export interface FileRoutesById {
   '/help': typeof HelpRoute
   '/onboarding': typeof OnboardingRoute
   '/recent': typeof RecentRoute
+  '/settings': typeof SettingsRoute
   '/trash': typeof TrashRoute
   '/files/$folderId': typeof FilesFolderIdRoute
 }
@@ -89,6 +98,7 @@ export interface FileRouteTypes {
     | '/help'
     | '/onboarding'
     | '/recent'
+    | '/settings'
     | '/trash'
     | '/files/$folderId'
   fileRoutesByTo: FileRoutesByTo
@@ -98,6 +108,7 @@ export interface FileRouteTypes {
     | '/help'
     | '/onboarding'
     | '/recent'
+    | '/settings'
     | '/trash'
     | '/files/$folderId'
   id:
@@ -107,6 +118,7 @@ export interface FileRouteTypes {
     | '/help'
     | '/onboarding'
     | '/recent'
+    | '/settings'
     | '/trash'
     | '/files/$folderId'
   fileRoutesById: FileRoutesById
@@ -117,6 +129,7 @@ export interface RootRouteChildren {
   HelpRoute: typeof HelpRoute
   OnboardingRoute: typeof OnboardingRoute
   RecentRoute: typeof RecentRoute
+  SettingsRoute: typeof SettingsRoute
   TrashRoute: typeof TrashRoute
   FilesFolderIdRoute: typeof FilesFolderIdRoute
 }
@@ -158,6 +171,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RecentRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/trash': {
       id: '/trash'
       path: '/trash'
@@ -181,6 +201,7 @@ const rootRouteChildren: RootRouteChildren = {
   HelpRoute: HelpRoute,
   OnboardingRoute: OnboardingRoute,
   RecentRoute: RecentRoute,
+  SettingsRoute: SettingsRoute,
   TrashRoute: TrashRoute,
   FilesFolderIdRoute: FilesFolderIdRoute,
 }

@@ -30,6 +30,9 @@
     "sharedSuccess": "\"{{name}}\" compartido con {{apiName}}",
     "sharedAlready": "\"{{name}}\" ya está compartido con {{apiName}}",
     "sharedFailed": "No se pudo compartir \"{{name}}\" con {{apiName}}",
+    "unshareWith": "Dejar de compartir con {{apiName}}",
+    "unsharedSuccess": "\"{{name}}\" dejó de compartirse con {{apiName}}",
+    "unsharedFailed": "No se pudo dejar de compartir \"{{name}}\" con {{apiName}}",
     "uploadSuccess": "Archivo subido correctamente",
     "uploadSuccessMultiple": "{{count}} archivos subidos correctamente",
     "uploadFailedCount": "{{failed}} de {{total}} archivo(s) fallaron al subir",
@@ -60,7 +63,7 @@
     "dropHint": "Soltá los archivos acá para subirlos",
     "moveFailed": "No se pudo mover el elemento",
     "moveIntoSelfError": "No podés mover una carpeta dentro de sí misma",
-    "uploadRejectedMedia": "\"{{name}}\": no se permiten imágenes ni videos",
+    "uploadRejectedMedia": "\"{{name}}\": las fotos y videos se gestionan en Immich, no en Keep",
     "uploadRejectedTooLarge": "\"{{name}}\": supera el tamaño máximo de {{maxSize}}",
     "storageUsage": "{{used}} / {{total}} usado",
     "emptyFolderTitle": "Esta carpeta está vacía",
@@ -79,6 +82,8 @@
     "renameFailed": "No se pudo renombrar",
     "nameConflict": "Ya existe un archivo con el nombre \"{{name}}\" en ese destino.",
     "useAlternativeName": "usar \"{{name}}\"",
+    "checksumConflict": "El contenido ya existe como \"{{name}}\"",
+    "uploadItemFailed": "No se pudo subir",
     "trashTitle": "Papelera",
     "emptyTrash": "La papelera está vacía",
     "trashRetentionHint": "Los elementos de la papelera se eliminan definitivamente al día siguiente de haber sido enviados acá.",
@@ -100,7 +105,37 @@
     "newWorkspaceTitle": "Nuevo workspace",
     "nameLabel": "Nombre",
     "nameRequired": "Ingresa el nombre del workspace",
-    "namePlaceholder": "Ej: Familia"
+    "namePlaceholder": "Ej: Familia",
+    "noWorkspaceSelected": "No hay workspace seleccionado",
+    "manageWorkspace": "Gestioná el workspace actual",
+    "members": "Miembros",
+    "noMembers": "No hay miembros en este workspace",
+    "memberCount_one": "{{count}} miembro",
+    "memberCount_other": "{{count}} miembros",
+    "ownerTag": "Owner",
+    "ownerTooltip": "Es quien creó este workspace",
+    "inviteMember": "Invitar miembro",
+    "sendInvitation": "Enviar invitación",
+    "memberEmailLabel": "Correo electrónico",
+    "emailRequired": "Por favor ingresá un correo",
+    "emailInvalid": "Ingresá un correo válido",
+    "emailPlaceholder": "usuario@ejemplo.com",
+    "pendingInvitationsTitle": "Invitaciones Pendientes",
+    "invitedByLabel": "Invitado por",
+    "acceptButton": "Aceptar",
+    "rejectButton": "Rechazar",
+    "exitButton": "Salir del workspace",
+    "exitConfirmTitle": "¿Estás seguro de que querés salir de este workspace?",
+    "exitConfirmOk": "Sí",
+    "exitConfirmCancel": "No",
+    "removeMemberTooltip": "Eliminar del workspace",
+    "removeMemberAriaLabel": "Eliminar a {{email}} del workspace",
+    "removeMemberConfirmTitle": "¿Eliminar a {{email}} del workspace?",
+    "removeMemberConfirmDescription": "Va a perder acceso a este workspace de inmediato.",
+    "removeMemberConfirmOk": "Eliminar",
+    "removeMemberConfirmCancel": "Cancelar",
+    "removeMemberSuccess": "{{email}} fue eliminado del workspace",
+    "removeMemberError": "No se pudo eliminar a {{email}} del workspace"
   },
   "onboarding": {
     "welcomeTitle": "Bienvenido",
@@ -149,6 +184,7 @@
     "welcomeStep": {
       "intro1": "Subí tus primeros archivos para empezar.",
       "intro2": "Podés agregarlos más adelante si preferís continuar sin nada.",
+      "intro3": "Keep es para documentos importantes (PDFs, contratos, notas), no fotos ni videos — esos se gestionan en Immich.",
       "selectFiles": "Seleccionar archivos",
       "back": "Volver",
       "finish": "Finalizar"
@@ -189,11 +225,12 @@
           "En mobile, tocar el fondo vacío del panel de contenido abre el selector de archivos"
         ],
         "list2": [
-          "No se permiten imágenes ni videos",
+          "No se permiten imágenes ni videos — se gestionan en Immich, no en Keep",
           "Cada archivo tiene un tamaño máximo permitido",
           "Las subidas se procesan de a varias a la vez, pero con un límite de simultáneas para no saturar el servidor"
         ],
-        "tip": "Si subís muchos archivos a la vez y algunos fallan, vas a ver un aviso indicando cuántos no se pudieron subir sin afectar al resto."
+        "tip": "Si subís muchos archivos a la vez y algunos fallan, vas a ver un aviso indicando cuántos no se pudieron subir sin afectar al resto.",
+        "tipMedia": "Esto no es un límite roto: Keep es para documentos importantes que no querés perder (PDFs, contratos, notas), no para tu fototeca. Las fotos y videos tienen su propia app en la suite, Immich, pensada para eso."
       },
       "organize": {
         "title": "Organizar: crear, mover, renombrar y eliminar",
@@ -219,9 +256,36 @@
         "list": [
           "Click derecho sobre un archivo y elegí \"Compartir con\"",
           "Elegí la aplicación de destino en el submenú",
-          "Un pequeño avatar sobre la tarjeta del archivo indica con qué apps está compartido"
+          "Un pequeño avatar sobre la tarjeta del archivo indica con qué apps está compartido",
+          "Para dejar de compartirlo, volvé al mismo submenú y elegí \"Dejar de compartir con\""
         ],
         "tip": "Esta opción solo aparece para usuarios con rol de administrador."
+      },
+      "favorites": {
+        "title": "Favoritos",
+        "text": "Marcá los archivos o carpetas que usás seguido para encontrarlos sin tener que navegar hasta ellos.",
+        "list": [
+          "Pasá el mouse sobre una tarjeta (o tocala en mobile) y hacé click en la estrella para marcarla como favorita",
+          "\"Favoritos\", en la barra lateral, junta todos tus elementos marcados en una sola vista, sin importar en qué carpeta estén"
+        ],
+        "tip": "Un favorito sigue viviendo en su carpeta original — marcarlo no lo mueve de lugar, solo lo agrega a esta vista."
+      },
+      "recent": {
+        "title": "Recientes",
+        "text": "\"Recientes\", en la barra lateral, muestra los últimos archivos que abriste o descargaste, sin tener que recordar en qué carpeta los dejaste.",
+        "list": [
+          "El orden es por último acceso, no por fecha de subida",
+          "Solo cuenta abrir o descargar un archivo — navegar por una carpeta que lo contiene no lo hace aparecer acá"
+        ]
+      },
+      "trash": {
+        "title": "Papelera",
+        "text": "Eliminar un archivo o carpeta no lo borra al instante: primero pasa por la papelera.",
+        "list": [
+          "\"Papelera\", en la barra lateral, lista todo lo eliminado a la espera de su borrado definitivo",
+          "Seleccioná uno o varios elementos y usá \"Restaurar\" para devolverlos a su carpeta original"
+        ],
+        "tip": "Los elementos de la papelera se eliminan definitivamente al día siguiente de haber sido enviados acá — restaurá antes de que pase ese plazo."
       }
     }
   },
@@ -242,9 +306,21 @@
       "title": "Uso de almacenamiento",
       "description": "Acá ves cuánto espacio ocupás sobre la cuota de tu workspace."
     },
+    "viewToggle": {
+      "title": "Vista de grilla o lista",
+      "description": "Cambiá entre ver tus archivos como tarjetas o como lista, y ordená por nombre, tamaño o fecha con el selector de al lado."
+    },
+    "trash": {
+      "title": "Papelera",
+      "description": "Lo que eliminás pasa por acá antes de borrarse para siempre — tenés hasta el día siguiente para restaurarlo."
+    },
     "share": {
       "title": "Compartir archivos",
       "description": "Desde el menú contextual de un archivo (click derecho) podés compartirlo con otras apps de la suite, como Movimientos."
+    },
+    "help": {
+      "title": "¿Necesitás más ayuda?",
+      "description": "Encontrá esta guía y más detalles en cualquier momento desde el ícono de tu perfil (arriba a la derecha) → Ayuda."
     }
   }
 }

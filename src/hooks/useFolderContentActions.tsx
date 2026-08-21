@@ -14,6 +14,7 @@ import { useDownloadFile } from "./useDownloadFile";
 import { useMoveNode, MOVE_NODE_DATA_TYPE } from "./useMoveNode";
 import { useUserRoles } from "./useUserRoles";
 import { useShareFile } from "./useShareFile";
+import { useRevokeShare } from "./useRevokeShare";
 import { useToggleFavorite } from "./useFavorites";
 import { SharePermission } from "../models/FileShare";
 import { isPreviewableContentType } from "../utils/filePreview";
@@ -36,6 +37,7 @@ export function useFolderContentActions(node: FileSystemNode) {
   const deleteMutation = useDeleteFolder();
   const downloadMutation = useDownloadFile();
   const shareMutation = useShareFile();
+  const revokeShareMutation = useRevokeShare();
   const toggleFavoriteMutation = useToggleFavorite();
   const { moveIfValid } = useMoveNode();
   const [renaming, setRenaming] = useState(false);
@@ -81,10 +83,12 @@ export function useFolderContentActions(node: FileSystemNode) {
             key: "share",
             label: t("files.shareWith"),
             icon: <ShareAltOutlined />,
-            children: SHARE_TARGETS.map((target) => ({
-              key: `share:${target.key}`,
-              label: target.label,
-            })),
+            children: SHARE_TARGETS.map((target) => {
+              const isShared = node.shareWith?.includes(target.key) ?? false;
+              return isShared
+                ? { key: `unshare:${target.key}`, label: t("files.unshareWith", { apiName: target.label }) }
+                : { key: `share:${target.key}`, label: target.label };
+            }),
           },
         ]
       : []),
@@ -101,7 +105,16 @@ export function useFolderContentActions(node: FileSystemNode) {
     }
     if (key === "rename") setRenaming(true);
     if (key === "delete") handleDelete();
-    if (key.startsWith("share:")) {
+    if (key.startsWith("unshare:")) {
+      const apiName = key.slice("unshare:".length);
+      revokeShareMutation.mutate(
+        { fileId: node.id, apiName },
+        {
+          onSuccess: () => message.success(t("files.unsharedSuccess", { name: node.name, apiName })),
+          onError: () => message.error(t("files.unsharedFailed", { name: node.name, apiName })),
+        },
+      );
+    } else if (key.startsWith("share:")) {
       const apiName = key.slice("share:".length);
       shareMutation.mutate(
         { fileId: node.id, apiName, permission: SharePermission.READ_WRITE },

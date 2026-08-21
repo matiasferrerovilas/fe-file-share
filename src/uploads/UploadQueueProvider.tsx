@@ -4,11 +4,27 @@ import { App as AntdApp } from "antd";
 import { useUploadFileToFolder } from "../hooks/useUploadFileToFolder";
 import { uploadSemaphore } from "../utils/uploadSemaphore";
 import { partitionUploadableFiles } from "../utils/uploadValidation";
+import { parseChecksumConflict, parseNameConflict } from "../utils/conflictResolution";
 import { UploadQueueContext, type UploadQueueItem } from "./UploadQueueContext";
 
 // Cuánto queda visible en la bandeja una subida ya terminada (o fallida) antes de
 // sacarla sola — da tiempo a leer el resultado sin que el usuario tenga que cerrarla.
 const COMPLETED_ITEM_TTL_MS = 3000;
+
+/**
+ * Turns a failed upload into a specific, per-file reason instead of leaving the item's failure
+ * unexplained — a name collision and a checksum duplicate are both "it failed", but they mean
+ * different things and point to different fixes (rename vs. it's already there).
+ */
+function describeUploadError(error: unknown, t: TFunction): string {
+  const nameConflict = parseNameConflict(error);
+  if (nameConflict) return t("files.nameConflict", { name: nameConflict });
+
+  const checksumConflict = parseChecksumConflict(error);
+  if (checksumConflict) return t("files.checksumConflict", { name: checksumConflict });
+
+  return t("files.uploadItemFailed");
+}
 
 /**
  * Punto único de subida: antes esta lógica (validación, semáforo, agregación de
@@ -54,7 +70,7 @@ export function UploadQueueProvider({ children }: { children: ReactNode }) {
             });
             updateItem(id, { progress: 100, status: "done" });
           } catch (error) {
-            updateItem(id, { status: "error" });
+            updateItem(id, { status: "error", errorMessage: describeUploadError(error, t) });
             throw error;
           } finally {
             release();

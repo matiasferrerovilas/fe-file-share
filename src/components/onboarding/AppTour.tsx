@@ -50,8 +50,22 @@ export default function AppTour({ open, onClose }: AppTourProps) {
       target: () => refsMap.current.storage as HTMLElement,
     },
     {
+      title: t("tour.viewToggle.title"),
+      description: t("tour.viewToggle.description"),
+      target: () => refsMap.current.viewToggle as HTMLElement,
+    },
+    {
+      title: t("tour.trash.title"),
+      description: t("tour.trash.description"),
+      target: () => refsMap.current.trash as HTMLElement,
+    },
+    {
       title: t("tour.share.title"),
       description: t("tour.share.description"),
+    },
+    {
+      title: t("tour.help.title"),
+      description: t("tour.help.description"),
     },
   ];
 

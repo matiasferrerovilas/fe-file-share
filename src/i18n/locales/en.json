@@ -30,6 +30,9 @@
     "sharedSuccess": "\"{{name}}\" shared with {{apiName}}",
     "sharedAlready": "\"{{name}}\" is already shared with {{apiName}}",
     "sharedFailed": "Couldn't share \"{{name}}\" with {{apiName}}",
+    "unshareWith": "Stop sharing with {{apiName}}",
+    "unsharedSuccess": "\"{{name}}\" is no longer shared with {{apiName}}",
+    "unsharedFailed": "Couldn't stop sharing \"{{name}}\" with {{apiName}}",
     "uploadSuccess": "File uploaded successfully",
     "uploadSuccessMultiple": "{{count}} files uploaded successfully",
     "uploadFailedCount": "{{failed}} of {{total}} file(s) failed to upload",
@@ -60,7 +63,7 @@
     "dropHint": "Drop your files here to upload them",
     "moveFailed": "Couldn't move the item",
     "moveIntoSelfError": "You can't move a folder into itself",
-    "uploadRejectedMedia": "\"{{name}}\": images and videos aren't allowed",
+    "uploadRejectedMedia": "\"{{name}}\": photos and videos are managed in Immich, not Keep",
     "uploadRejectedTooLarge": "\"{{name}}\": exceeds the maximum size of {{maxSize}}",
     "storageUsage": "{{used}} / {{total}} used",
     "emptyFolderTitle": "This folder is empty",
@@ -79,6 +82,8 @@
     "renameFailed": "Couldn't rename",
     "nameConflict": "A file named \"{{name}}\" already exists in that destination.",
     "useAlternativeName": "use \"{{name}}\"",
+    "checksumConflict": "The content already exists as \"{{name}}\"",
+    "uploadItemFailed": "Couldn't upload",
     "trashTitle": "Trash",
     "emptyTrash": "Trash is empty",
     "trashRetentionHint": "Items in Trash are permanently deleted the day after being sent here.",
@@ -100,7 +105,37 @@
     "newWorkspaceTitle": "New workspace",
     "nameLabel": "Name",
     "nameRequired": "Enter the workspace name",
-    "namePlaceholder": "E.g.: Family"
+    "namePlaceholder": "E.g.: Family",
+    "noWorkspaceSelected": "No workspace selected",
+    "manageWorkspace": "Manage the current workspace",
+    "members": "Members",
+    "noMembers": "There are no members in this workspace",
+    "memberCount_one": "{{count}} member",
+    "memberCount_other": "{{count}} members",
+    "ownerTag": "Owner",
+    "ownerTooltip": "The person who created this workspace",
+    "inviteMember": "Invite member",
+    "sendInvitation": "Send invitation",
+    "memberEmailLabel": "Email",
+    "emailRequired": "Please enter an email",
+    "emailInvalid": "Enter a valid email",
+    "emailPlaceholder": "user@example.com",
+    "pendingInvitationsTitle": "Pending Invitations",
+    "invitedByLabel": "Invited by",
+    "acceptButton": "Accept",
+    "rejectButton": "Reject",
+    "exitButton": "Leave workspace",
+    "exitConfirmTitle": "Are you sure you want to leave this workspace?",
+    "exitConfirmOk": "Yes",
+    "exitConfirmCancel": "No",
+    "removeMemberTooltip": "Remove from workspace",
+    "removeMemberAriaLabel": "Remove {{email}} from the workspace",
+    "removeMemberConfirmTitle": "Remove {{email}} from the workspace?",
+    "removeMemberConfirmDescription": "They will lose access to this workspace immediately.",
+    "removeMemberConfirmOk": "Remove",
+    "removeMemberConfirmCancel": "Cancel",
+    "removeMemberSuccess": "{{email}} was removed from the workspace",
+    "removeMemberError": "Couldn't remove {{email}} from the workspace"
   },
   "onboarding": {
     "welcomeTitle": "Welcome",
@@ -149,6 +184,7 @@
     "welcomeStep": {
       "intro1": "Upload your first files to get started.",
       "intro2": "You can add them later if you'd rather continue without any.",
+      "intro3": "Keep is for important documents (PDFs, contracts, notes), not photos or videos — those are managed in Immich.",
       "selectFiles": "Select files",
       "back": "Back",
       "finish": "Finish"
@@ -189,11 +225,12 @@
           "On mobile, tapping the empty background of the content panel opens the file picker"
         ],
         "list2": [
-          "Images and videos aren't allowed",
+          "Images and videos aren't allowed — they're managed in Immich, not Keep",
           "Each file has a maximum allowed size",
           "Uploads are processed several at a time, but with a concurrency limit to avoid overloading the server"
         ],
-        "tip": "If you upload many files at once and some fail, you'll see a notice indicating how many couldn't be uploaded, without affecting the rest."
+        "tip": "If you upload many files at once and some fail, you'll see a notice indicating how many couldn't be uploaded, without affecting the rest.",
+        "tipMedia": "This isn't a broken limitation: Keep is for important documents you don't want to lose (PDFs, contracts, notes), not your photo library. Photos and videos have their own app in the suite, Immich, built for that."
       },
       "organize": {
         "title": "Organize: create, move, rename and delete",
@@ -219,9 +256,36 @@
         "list": [
           "Right-click on a file and choose \"Share with\"",
           "Choose the target application from the submenu",
-          "A small avatar on the file card shows which apps it's shared with"
+          "A small avatar on the file card shows which apps it's shared with",
+          "To stop sharing it, go back to the same submenu and choose \"Stop sharing with\""
         ],
         "tip": "This option only appears for users with the administrator role."
+      },
+      "favorites": {
+        "title": "Favorites",
+        "text": "Star the files or folders you use often so you can find them without navigating to them.",
+        "list": [
+          "Hover over a card (or tap it on mobile) and click the star to mark it as a favorite",
+          "\"Favorites\", in the sidebar, gathers everything you've starred into one view, regardless of which folder it's in"
+        ],
+        "tip": "A favorite still lives in its original folder — starring it doesn't move it, it just adds it to this view."
+      },
+      "recent": {
+        "title": "Recent",
+        "text": "\"Recent\", in the sidebar, shows the files you've opened or downloaded most recently, so you don't have to remember which folder you left them in.",
+        "list": [
+          "Sorted by last access, not upload date",
+          "Only opening or downloading a file counts — browsing a folder that contains it doesn't make it show up here"
+        ]
+      },
+      "trash": {
+        "title": "Trash",
+        "text": "Deleting a file or folder doesn't remove it instantly — it goes to the trash first.",
+        "list": [
+          "\"Trash\", in the sidebar, lists everything deleted and awaiting permanent removal",
+          "Select one or more items and use \"Restore\" to send them back to their original folder"
+        ],
+        "tip": "Items in the trash are permanently deleted the day after being sent here — restore before that window closes."
       }
     }
   },
@@ -242,9 +306,21 @@
       "title": "Storage usage",
       "description": "Here you can see how much space you're using against your workspace's quota."
     },
+    "viewToggle": {
+      "title": "Grid or list view",
+      "description": "Switch between viewing your files as cards or as a list, and sort by name, size, or date with the selector next to it."
+    },
+    "trash": {
+      "title": "Trash",
+      "description": "Anything you delete goes here before it's gone for good — you have until the next day to restore it."
+    },
     "share": {
       "title": "Sharing files",
       "description": "From a file's context menu (right-click) you can share it with other apps in the suite, like Movements."
+    },
+    "help": {
+      "title": "Need more help?",
+      "description": "Find this guide and more details anytime from your profile icon (top right) → Help."
     }
   }
 }

@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { AxiosError } from "axios";
-import { parseNameConflict, suggestAlternativeName } from "../../src/utils/conflictResolution";
+import { parseChecksumConflict, parseNameConflict, suggestAlternativeName } from "../../src/utils/conflictResolution";
 
 function axiosErrorWithDetail(status: number, detail?: string): AxiosError {
   const error = new AxiosError("Request failed");
@@ -36,6 +36,30 @@ describe("parseNameConflict", () => {
 
   it("returns null for a non-axios error", () => {
     expect(parseNameConflict(new Error("boom"))).toBeNull();
+  });
+});
+
+describe("parseChecksumConflict", () => {
+  it("extracts the existing file's name from a 409 checksum-duplicate response", () => {
+    const error = axiosErrorWithDetail(409, "El contenido ya existe en este workspace como 'Vacaciones.txt'");
+
+    expect(parseChecksumConflict(error)).toBe("Vacaciones.txt");
+  });
+
+  it("returns null for a 409 that isn't a checksum duplicate", () => {
+    const error = axiosErrorWithDetail(409, "Ya existe un share con esa api para este archivo");
+
+    expect(parseChecksumConflict(error)).toBeNull();
+  });
+
+  it("returns null for a non-409 error, even a name collision", () => {
+    const error = axiosErrorWithDetail(400, "Ya existe un archivo con el nombre 'Notas.txt' en ese destino");
+
+    expect(parseChecksumConflict(error)).toBeNull();
+  });
+
+  it("returns null for a non-axios error", () => {
+    expect(parseChecksumConflict(new Error("boom"))).toBeNull();
   });
 });
 

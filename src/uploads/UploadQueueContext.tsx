@@ -6,6 +6,10 @@ export interface UploadQueueItem {
   fileName: string;
   progress: number;
   status: "uploading" | "done" | "error";
+  // Solo presente cuando status es "error" — por qué falló específicamente este archivo (nombre
+  // repetido, contenido duplicado, o un mensaje genérico si no matchea ningún conflicto conocido),
+  // no solo un conteo agregado de la subida en lote.
+  errorMessage?: string;
 }
 
 export interface UploadQueueContextValue {

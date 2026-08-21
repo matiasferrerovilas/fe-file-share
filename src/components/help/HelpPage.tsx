@@ -1,10 +1,13 @@
 import React, { useMemo } from "react";
 import { Col, Collapse, Flex, Row, theme, Typography } from "antd";
 import CheckSquareOutlined from "@ant-design/icons/CheckSquareOutlined";
+import DeleteOutlined from "@ant-design/icons/DeleteOutlined";
 import FolderAddOutlined from "@ant-design/icons/FolderAddOutlined";
 import FolderOutlined from "@ant-design/icons/FolderOutlined";
+import HistoryOutlined from "@ant-design/icons/HistoryOutlined";
 import QuestionCircleOutlined from "@ant-design/icons/QuestionCircleOutlined";
 import ShareAltOutlined from "@ant-design/icons/ShareAltOutlined";
+import StarOutlined from "@ant-design/icons/StarOutlined";
 import TeamOutlined from "@ant-design/icons/TeamOutlined";
 import UploadOutlined from "@ant-design/icons/UploadOutlined";
 import { useTranslation } from "react-i18next";
@@ -19,6 +22,9 @@ const ICON_MAP: Record<string, React.ReactNode> = {
   FolderAddOutlined: <FolderAddOutlined />,
   CheckSquareOutlined: <CheckSquareOutlined />,
   ShareAltOutlined: <ShareAltOutlined />,
+  StarOutlined: <StarOutlined />,
+  HistoryOutlined: <HistoryOutlined />,
+  DeleteOutlined: <DeleteOutlined />,
 };
 
 function HelpParagraphRenderer({ paragraph, tipLabel }: { paragraph: HelpParagraph; tipLabel: string }) {

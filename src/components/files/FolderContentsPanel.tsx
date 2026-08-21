@@ -18,6 +18,8 @@ import { useDeleteFolder } from "../../hooks/useDeleteFolder";
 import { useDownloadFile } from "../../hooks/useDownloadFile";
 import { useMoveNode } from "../../hooks/useMoveNode";
 import { useUploadQueue } from "../../uploads/UploadQueueContext";
+import { useTourRefs } from "../../tour/TourRefsContext";
+import { describeBulkFailures } from "../../utils/describeBulkFailures";
 import { FileSystemNodeType, type FileSystemNode } from "../../models/FileSystemNode";
 import FolderContentCard from "./FolderContentCard";
 import FolderContentRow from "./FolderContentRow";
@@ -67,7 +69,8 @@ export default function FolderContentsPanel({
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { token } = theme.useToken();
-  const { modal, message } = AntdApp.useApp();
+  const { modal, message, notification } = AntdApp.useApp();
+  const { registerRef } = useTourRefs();
   const isSmartView = explicitNodes !== undefined;
   const contextMenuItems: MenuProps["items"] = [
     { key: "create-folder", label: t("files.createFolder"), icon: <FolderAddOutlined /> },
@@ -126,7 +129,10 @@ export default function FolderContentsPanel({
     );
     const failed = results.filter((r) => r.status === "rejected").length;
     if (failed > 0) {
-      message.error(t("files.bulkDownloadFailed", { failed, total: selectedNodes.length }));
+      notification.error({
+        message: t("files.bulkDownloadFailed", { failed, total: selectedNodes.length }),
+        description: describeBulkFailures(selectedNodes, results),
+      });
     }
   };
 
@@ -143,7 +149,10 @@ export default function FolderContentsPanel({
         );
         const failed = results.filter((r) => r.status === "rejected").length;
         if (failed > 0) {
-          message.error(t("files.bulkDeleteFailed", { failed, total: selectedNodes.length }));
+          notification.error({
+            message: t("files.bulkDeleteFailed", { failed, total: selectedNodes.length }),
+            description: describeBulkFailures(selectedNodes, results),
+          });
         } else {
           message.success(t("files.itemsDeletedSuccess"));
         }
@@ -158,7 +167,10 @@ export default function FolderContentsPanel({
     );
     const failed = results.filter((r) => r.status === "rejected").length;
     if (failed > 0) {
-      message.error(t("files.bulkMoveFailed", { failed, total: selectedNodes.length }));
+      notification.error({
+        message: t("files.bulkMoveFailed", { failed, total: selectedNodes.length }),
+        description: describeBulkFailures(selectedNodes, results),
+      });
     } else {
       message.success(t("files.itemsMovedSuccess"));
     }
@@ -251,14 +263,16 @@ export default function FolderContentsPanel({
             onClick={() => setSortDirection((d) => (d === "asc" ? "desc" : "asc"))}
           />
         </Flex>
-        <Segmented
-          value={viewMode}
-          onChange={(value) => setViewMode(value as ViewMode)}
-          options={[
-            { label: t("files.gridView"), value: "grid", icon: <AppstoreOutlined /> },
-            { label: t("files.listView"), value: "list", icon: <UnorderedListOutlined /> },
-          ]}
-        />
+        <div ref={(el) => registerRef("viewToggle", el)}>
+          <Segmented
+            value={viewMode}
+            onChange={(value) => setViewMode(value as ViewMode)}
+            options={[
+              { label: t("files.gridView"), value: "grid", icon: <AppstoreOutlined /> },
+              { label: t("files.listView"), value: "list", icon: <UnorderedListOutlined /> },
+            ]}
+          />
+        </div>
       </Flex>
       {!isSmartView && (
         <input

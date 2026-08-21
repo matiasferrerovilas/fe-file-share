@@ -5,6 +5,7 @@ import RollbackOutlined from "@ant-design/icons/RollbackOutlined";
 import { useTranslation } from "react-i18next";
 import type { FileSystemNode } from "../../models/FileSystemNode";
 import { useRestoreNode } from "../../hooks/useTrash";
+import { describeBulkFailures } from "../../utils/describeBulkFailures";
 import TrashContentRow from "./TrashContentRow";
 
 const { Text } = Typography;
@@ -18,7 +19,7 @@ interface TrashContentsPanelProps {
 export default function TrashContentsPanel({ nodes, title, isLoading }: TrashContentsPanelProps) {
   const { t } = useTranslation();
   const { token } = theme.useToken();
-  const { message } = AntdApp.useApp();
+  const { message, notification } = AntdApp.useApp();
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const restoreMutation = useRestoreNode();
 
@@ -40,7 +41,10 @@ export default function TrashContentsPanel({ nodes, title, isLoading }: TrashCon
     const results = await Promise.allSettled(selectedNodes.map((node) => restoreMutation.mutateAsync(node.id)));
     const failed = results.filter((r) => r.status === "rejected").length;
     if (failed > 0) {
-      message.error(t("files.bulkRestoreFailed", { failed, total: selectedNodes.length }));
+      notification.error({
+        message: t("files.bulkRestoreFailed", { failed, total: selectedNodes.length }),
+        description: describeBulkFailures(selectedNodes, results),
+      });
     } else {
       message.success(t("files.itemsRestoredSuccess"));
     }

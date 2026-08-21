@@ -60,6 +60,9 @@ export default function WelcomeOnboarding({ onFinish, onPrev, isLoading }: Props
         <Text type="secondary" style={{ display: "block" }}>
           {t("onboarding.welcomeStep.intro2")}
         </Text>
+        <Text type="secondary" style={{ display: "block", marginTop: 8 }}>
+          {t("onboarding.welcomeStep.intro3")}
+        </Text>
       </div>
 
       <Upload {...uploadProps}>

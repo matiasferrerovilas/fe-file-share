@@ -6,3 +6,5 @@ export const shareFile = (fileId: string, apiName: string, permission: SharePerm
 
 export const getShares = (fileId: string) =>
   api.get<FileShare[]>("shares", { params: { fileId } }).then((r) => r.data);
+
+export const revokeShare = (shareId: string) => api.delete(`shares/${shareId}`).then(() => undefined);

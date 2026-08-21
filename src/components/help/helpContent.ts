@@ -47,6 +47,7 @@ export function getHelpSections(t: TFunction): HelpSection[] {
         { type: "text", content: t("help.sections.upload.text") },
         { type: "list", content: t("help.sections.upload.list1", { returnObjects: true }) as string[] },
         { type: "list", content: t("help.sections.upload.list2", { returnObjects: true }) as string[] },
+        { type: "tip", content: t("help.sections.upload.tipMedia") },
         { type: "tip", content: t("help.sections.upload.tip") },
       ],
     },
@@ -77,6 +78,35 @@ export function getHelpSections(t: TFunction): HelpSection[] {
         { type: "text", content: t("help.sections.share.text") },
         { type: "list", content: t("help.sections.share.list", { returnObjects: true }) as string[] },
         { type: "tip", content: t("help.sections.share.tip") },
+      ],
+    },
+    {
+      key: "favorites",
+      title: t("help.sections.favorites.title"),
+      icon: "StarOutlined",
+      content: [
+        { type: "text", content: t("help.sections.favorites.text") },
+        { type: "list", content: t("help.sections.favorites.list", { returnObjects: true }) as string[] },
+        { type: "tip", content: t("help.sections.favorites.tip") },
+      ],
+    },
+    {
+      key: "recent",
+      title: t("help.sections.recent.title"),
+      icon: "HistoryOutlined",
+      content: [
+        { type: "text", content: t("help.sections.recent.text") },
+        { type: "list", content: t("help.sections.recent.list", { returnObjects: true }) as string[] },
+      ],
+    },
+    {
+      key: "trash",
+      title: t("help.sections.trash.title"),
+      icon: "DeleteOutlined",
+      content: [
+        { type: "text", content: t("help.sections.trash.text") },
+        { type: "list", content: t("help.sections.trash.list", { returnObjects: true }) as string[] },
+        { type: "tip", content: t("help.sections.trash.tip") },
       ],
     },
   ];

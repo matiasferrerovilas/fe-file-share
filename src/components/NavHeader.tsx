@@ -167,7 +167,14 @@ export default function NavHeader() {
       </div>
       <Divider style={{ margin: 0 }} />
       <Flex gap={8} style={{ padding: "8px 16px" }}>
-        <ProfileTile icon={<SettingOutlined />} label={t("nav.settings")} onClick={closeProfile} />
+        <ProfileTile
+          icon={<SettingOutlined />}
+          label={t("nav.settings")}
+          onClick={() => {
+            navigate({ to: "/settings" });
+            closeProfile();
+          }}
+        />
         <ProfileTile
           icon={<QuestionCircleOutlined />}
           label={t("nav.help")}
