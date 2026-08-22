@@ -90,7 +90,13 @@
     "restore": "Restore",
     "restoreFailed": "Couldn't restore \"{{name}}\"",
     "itemsRestoredSuccess": "Items restored successfully",
-    "bulkRestoreFailed": "{{failed}} of {{total}} item(s) couldn't be restored"
+    "bulkRestoreFailed": "{{failed}} of {{total}} item(s) couldn't be restored",
+    "customize": "Customize",
+    "customizeTitle": "Customize \"{{name}}\"",
+    "customizeColorLabel": "Color",
+    "customizeIconLabel": "Icon",
+    "customizeReset": "Reset",
+    "customizeFailed": "Couldn't customize \"{{name}}\""
   },
   "common": {
     "loading": "Loading...",

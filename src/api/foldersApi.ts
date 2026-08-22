@@ -17,6 +17,9 @@ export const searchFiles = (workspaceId: number, query: string) =>
 export const setFavorite = (nodeId: string, favorite: boolean) =>
   api.patch<FileSystemNode>(`folders/${nodeId}/favorite`, { favorite }).then((r) => r.data);
 
+export const setFolderCustomization = (nodeId: string, color: string | null, icon: string | null) =>
+  api.patch<FileSystemNode>(`folders/${nodeId}/customization`, { color, icon }).then((r) => r.data);
+
 export const getFavorites = (workspaceId: number) =>
   api.get<FileSystemNode[]>("folders/favorites", { params: { workspaceId } }).then((r) => r.data);
 

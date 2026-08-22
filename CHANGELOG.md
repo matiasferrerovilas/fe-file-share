@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Custom color/icon per folder, via a new "Personalizar" context-menu item (folder rows/cards
+  only) opening `FolderCustomizeModal` — a fixed palette of 8 colors and a fixed set of 10 icons
+  (closed sets, not user-extensible; the backend doesn't validate them either, so an unrecognized
+  stored value just falls back to the default `FolderOutlined`/no tint). Applied to the folder's
+  cover icon and its type `Tag` in both grid (`FolderContentCard`) and list (`FolderContentRow`)
+  views. New `useSetFolderCustomization` hook, `setFolderCustomization` API call
+  (`PATCH folders/{id}/customization`), `folderColor`/`folderIcon` on `FileSystemNodeMetadata`.
+
 ### Changed
 - Every protected route now requires `ADMIN` or `FAMILY` — `GUEST` dropped from all 7 routes'
   `protectedRouteGuard` role lists (previously all three roles were allowed everywhere). Matches the

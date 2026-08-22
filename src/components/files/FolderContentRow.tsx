@@ -1,14 +1,15 @@
 import { useState } from "react";
 import { Avatar, Checkbox, Dropdown, Flex, Tooltip, Typography, theme } from "antd";
 import { useTranslation } from "react-i18next";
-import FolderOutlined from "@ant-design/icons/FolderOutlined";
 import StarFilled from "@ant-design/icons/StarFilled";
 import StarOutlined from "@ant-design/icons/StarOutlined";
 import { formatFileSize } from "../../utils/formatFileSize";
 import { shareAbbreviation } from "../../utils/shareAbbreviation";
+import { getFolderIcon } from "../../utils/folderCustomization";
 import type { FileSystemNode } from "../../models/FileSystemNode";
 import { useFolderContentActions } from "../../hooks/useFolderContentActions";
 import FilePreviewModal from "./FilePreviewModal";
+import FolderCustomizeModal from "./FolderCustomizeModal";
 import RenameNodeModal from "./RenameNodeModal";
 
 const { Text } = Typography;
@@ -41,9 +42,13 @@ export default function FolderContentRow({
     setRenaming,
     previewing,
     setPreviewing,
+    customizing,
+    setCustomizing,
     isFavorite,
     handleToggleFavorite,
   } = useFolderContentActions(node);
+  const folderIcon = getFolderIcon(node.metadata.folderIcon);
+  const folderColor = node.metadata.folderColor;
 
   const formattedDate = new Date(node.metadata.lastModified).toLocaleDateString(i18n.language, {
     year: "numeric",
@@ -80,8 +85,16 @@ export default function FolderContentRow({
               onChange={() => onToggleSelect(node.id)}
             />
           </div>
-          <div style={{ fontSize: 20, width: 24, display: "flex", justifyContent: "center" }}>
-            {isFolder ? <FolderOutlined /> : fileTypeIcon}
+          <div
+            style={{
+              fontSize: 20,
+              width: 24,
+              display: "flex",
+              justifyContent: "center",
+              color: isFolder ? (folderColor ?? undefined) : undefined,
+            }}
+          >
+            {isFolder ? folderIcon : fileTypeIcon}
           </div>
           <Tooltip title={t(isFavorite ? "files.removeFromFavorites" : "files.addToFavorites")}>
             <span
@@ -135,6 +148,15 @@ export default function FolderContentRow({
       </Dropdown>
       <RenameNodeModal node={renaming ? node : null} onClose={() => setRenaming(false)} />
       <FilePreviewModal node={previewing ? node : null} onClose={() => setPreviewing(false)} />
+      <FolderCustomizeModal
+        key={customizing ? node.id : "closed"}
+        node={
+          customizing
+            ? { id: node.id, name: node.name, color: node.metadata.folderColor, icon: node.metadata.folderIcon }
+            : null
+        }
+        onClose={() => setCustomizing(false)}
+      />
     </>
   );
 }

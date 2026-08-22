@@ -2,6 +2,7 @@ import { useState, type DragEvent } from "react";
 import axios from "axios";
 import { App as AntdApp, type MenuProps } from "antd";
 import { useTranslation } from "react-i18next";
+import BgColorsOutlined from "@ant-design/icons/BgColorsOutlined";
 import DeleteOutlined from "@ant-design/icons/DeleteOutlined";
 import DownloadOutlined from "@ant-design/icons/DownloadOutlined";
 import EditOutlined from "@ant-design/icons/EditOutlined";
@@ -42,6 +43,7 @@ export function useFolderContentActions(node: FileSystemNode) {
   const { moveIfValid } = useMoveNode();
   const [renaming, setRenaming] = useState(false);
   const [previewing, setPreviewing] = useState(false);
+  const [customizing, setCustomizing] = useState(false);
   const [dragDepth, setDragDepth] = useState(0);
 
   const isFolder = node.metadata.type === FileSystemNodeType.FOLDER;
@@ -77,6 +79,7 @@ export function useFolderContentActions(node: FileSystemNode) {
     ...(previewable ? [{ key: "preview", label: t("files.preview"), icon: <EyeOutlined /> }] : []),
     { key: "download", label: t("files.download"), icon: <DownloadOutlined /> },
     { key: "rename", label: t("files.rename"), icon: <EditOutlined /> },
+    ...(isFolder ? [{ key: "customize", label: t("files.customize"), icon: <BgColorsOutlined /> }] : []),
     ...(isAdmin
       ? [
           {
@@ -104,6 +107,7 @@ export function useFolderContentActions(node: FileSystemNode) {
       });
     }
     if (key === "rename") setRenaming(true);
+    if (key === "customize") setCustomizing(true);
     if (key === "delete") handleDelete();
     if (key.startsWith("unshare:")) {
       const apiName = key.slice("unshare:".length);
@@ -180,6 +184,8 @@ export function useFolderContentActions(node: FileSystemNode) {
     setRenaming,
     previewing,
     setPreviewing,
+    customizing,
+    setCustomizing,
     isFavorite,
     handleToggleFavorite,
   };

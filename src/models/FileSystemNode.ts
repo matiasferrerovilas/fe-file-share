@@ -14,6 +14,9 @@ export interface FileSystemNodeMetadata {
   checksum: string | null;
   favorite: boolean;
   lastAccessedAt: string | null;
+  /** Solo aplica a carpetas (`type === "FOLDER"`) — siempre null en archivos. */
+  folderColor: string | null;
+  folderIcon: string | null;
 }
 
 export interface FileSystemNode {

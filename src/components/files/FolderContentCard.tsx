@@ -1,14 +1,15 @@
 import { useState } from "react";
 import { Avatar, Card, Checkbox, Dropdown, Tag, Tooltip, theme } from "antd";
 import { useTranslation } from "react-i18next";
-import FolderOutlined from "@ant-design/icons/FolderOutlined";
 import StarFilled from "@ant-design/icons/StarFilled";
 import StarOutlined from "@ant-design/icons/StarOutlined";
 import { formatFileSize } from "../../utils/formatFileSize";
 import { shareAbbreviation } from "../../utils/shareAbbreviation";
+import { getFolderIcon } from "../../utils/folderCustomization";
 import type { FileSystemNode } from "../../models/FileSystemNode";
 import { useFolderContentActions } from "../../hooks/useFolderContentActions";
 import FilePreviewModal from "./FilePreviewModal";
+import FolderCustomizeModal from "./FolderCustomizeModal";
 import RenameNodeModal from "./RenameNodeModal";
 
 interface FolderContentCardProps {
@@ -39,9 +40,13 @@ export default function FolderContentCard({
     setRenaming,
     previewing,
     setPreviewing,
+    customizing,
+    setCustomizing,
     isFavorite,
     handleToggleFavorite,
   } = useFolderContentActions(node);
+  const folderIcon = getFolderIcon(node.metadata.folderIcon);
+  const folderColor = node.metadata.folderColor;
 
   return (
     <>
@@ -146,17 +151,18 @@ export default function FolderContentCard({
                   justifyContent: "center",
                   fontSize: 64,
                   cursor: "pointer",
+                  color: isFolder ? (folderColor ?? undefined) : undefined,
                 }}
               >
-                {isFolder ? <FolderOutlined /> : fileTypeIcon}
+                {isFolder ? folderIcon : fileTypeIcon}
               </div>
             }
           >
             <Card.Meta title={node.name} style={{ textAlign: "center" }} />
             <div style={{ textAlign: "center", marginTop: 8 }}>
               <Tag
-                icon={isFolder ? <FolderOutlined /> : fileTypeIcon}
-                color={isFolder ? "blue" : "default"}
+                icon={isFolder ? folderIcon : fileTypeIcon}
+                color={isFolder ? (folderColor ?? "blue") : "default"}
                 style={{ borderRadius: 16, fontWeight: 600 }}
               >
                 {isFolder ? t("files.folder") : t("files.fileWithSize", { size: formatFileSize(node.metadata.size ?? 0) })}
@@ -167,6 +173,15 @@ export default function FolderContentCard({
       </div>
       <RenameNodeModal node={renaming ? node : null} onClose={() => setRenaming(false)} />
       <FilePreviewModal node={previewing ? node : null} onClose={() => setPreviewing(false)} />
+      <FolderCustomizeModal
+        key={customizing ? node.id : "closed"}
+        node={
+          customizing
+            ? { id: node.id, name: node.name, color: node.metadata.folderColor, icon: node.metadata.folderIcon }
+            : null
+        }
+        onClose={() => setCustomizing(false)}
+      />
     </>
   );
 }
