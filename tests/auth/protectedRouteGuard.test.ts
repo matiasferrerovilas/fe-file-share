@@ -51,10 +51,10 @@ describe("protectedRouteGuard", () => {
     await expect(guard({ context: makeContext({ roles: ["ADMIN"] }) })).resolves.toBeUndefined();
   });
 
-  it("redirige a '/' cuando el usuario no tiene ninguno de los roles requeridos", async () => {
+  it("redirige a '/403' cuando el usuario no tiene ninguno de los roles requeridos", async () => {
     const guard = protectedRouteGuard({ roles: ["ADMIN"] });
     await expect(guard({ context: makeContext({ roles: ["GUEST"] }) })).rejects.toMatchObject({
-      options: { to: "/" },
+      options: { to: "/403" },
     });
   });
 

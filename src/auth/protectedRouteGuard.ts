@@ -23,7 +23,7 @@ export const protectedRouteGuard = (options?: ProtectedRouteGuardOptions) => {
       });
 
       if (!hasRequiredRole) {
-        throw redirect({ to: options.redirectTo || "/" });
+        throw redirect({ to: options.redirectTo || "/403" });
       }
     }
   };

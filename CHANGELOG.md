@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Every protected route now requires `ADMIN` or `FAMILY` — `GUEST` dropped from all 7 routes'
+  `protectedRouteGuard` role lists (previously all three roles were allowed everywhere). Matches the
+  same gate just added on api-keep's `SecurityConfiguration`, and fe-movements no longer showing the
+  Keep link to a `GUEST` user.
+- `protectedRouteGuard`'s default redirect on a failed role check changed from `/` to a new `/403`
+  route (`Forbidden`, the same component already used for a Keycloak auth failure) — landing back on
+  `/` for a role you don't have just looked like nothing happened; now it's an actual explanation.
+
 ### Added
 - Revoking a share now has UI: today's `DELETE /v1/shares/{id}` backend endpoint had zero callers
   in the frontend — `sharesApi.ts` only exported `shareFile`/`getShares`, and `getShares` itself was

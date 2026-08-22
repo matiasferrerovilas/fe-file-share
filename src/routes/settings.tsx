@@ -10,7 +10,7 @@ const { Title } = Typography;
 
 export const Route = createFileRoute("/settings")({
   beforeLoad: protectedRouteGuard({
-    roles: [RoleEnum.ADMIN, RoleEnum.FAMILY, RoleEnum.GUEST],
+    roles: [RoleEnum.ADMIN, RoleEnum.FAMILY],
   }),
   component: RouteComponent,
 });

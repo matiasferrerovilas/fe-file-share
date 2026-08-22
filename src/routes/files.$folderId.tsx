@@ -5,7 +5,7 @@ import { protectedRouteGuard } from "../auth/protectedRouteGuard";
 
 export const Route = createFileRoute("/files/$folderId")({
   beforeLoad: protectedRouteGuard({
-    roles: [RoleEnum.ADMIN, RoleEnum.FAMILY, RoleEnum.GUEST],
+    roles: [RoleEnum.ADMIN, RoleEnum.FAMILY],
   }),
   component: RouteComponent,
 });

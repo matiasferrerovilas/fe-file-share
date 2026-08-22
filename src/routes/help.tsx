@@ -5,7 +5,7 @@ import { HelpPage } from "../components/help/HelpPage";
 
 export const Route = createFileRoute("/help")({
   beforeLoad: protectedRouteGuard({
-    roles: [RoleEnum.ADMIN, RoleEnum.FAMILY, RoleEnum.GUEST],
+    roles: [RoleEnum.ADMIN, RoleEnum.FAMILY],
   }),
   component: RouteComponent,
 });
