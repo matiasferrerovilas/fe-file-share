@@ -16,8 +16,10 @@ import { Route as HelpRouteImport } from './routes/help'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as RecentRouteImport } from './routes/recent'
 import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as SharedWithMeRouteImport } from './routes/shared-with-me'
 import { Route as TrashRouteImport } from './routes/trash'
 import { Route as FilesFolderIdRouteImport } from './routes/files.$folderId'
+import { Route as SharedNodeIdRouteImport } from './routes/shared.$nodeId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -54,6 +56,11 @@ const SettingsRoute = SettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SharedWithMeRoute = SharedWithMeRouteImport.update({
+  id: '/shared-with-me',
+  path: '/shared-with-me',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TrashRoute = TrashRouteImport.update({
   id: '/trash',
   path: '/trash',
@@ -62,6 +69,11 @@ const TrashRoute = TrashRouteImport.update({
 const FilesFolderIdRoute = FilesFolderIdRouteImport.update({
   id: '/files/$folderId',
   path: '/files/$folderId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SharedNodeIdRoute = SharedNodeIdRouteImport.update({
+  id: '/shared/$nodeId',
+  path: '/shared/$nodeId',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -73,8 +85,10 @@ export interface FileRoutesByFullPath {
   '/onboarding': typeof OnboardingRoute
   '/recent': typeof RecentRoute
   '/settings': typeof SettingsRoute
+  '/shared-with-me': typeof SharedWithMeRoute
   '/trash': typeof TrashRoute
   '/files/$folderId': typeof FilesFolderIdRoute
+  '/shared/$nodeId': typeof SharedNodeIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -84,8 +98,10 @@ export interface FileRoutesByTo {
   '/onboarding': typeof OnboardingRoute
   '/recent': typeof RecentRoute
   '/settings': typeof SettingsRoute
+  '/shared-with-me': typeof SharedWithMeRoute
   '/trash': typeof TrashRoute
   '/files/$folderId': typeof FilesFolderIdRoute
+  '/shared/$nodeId': typeof SharedNodeIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -96,8 +112,10 @@ export interface FileRoutesById {
   '/onboarding': typeof OnboardingRoute
   '/recent': typeof RecentRoute
   '/settings': typeof SettingsRoute
+  '/shared-with-me': typeof SharedWithMeRoute
   '/trash': typeof TrashRoute
   '/files/$folderId': typeof FilesFolderIdRoute
+  '/shared/$nodeId': typeof SharedNodeIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -109,8 +127,10 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/recent'
     | '/settings'
+    | '/shared-with-me'
     | '/trash'
     | '/files/$folderId'
+    | '/shared/$nodeId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -120,8 +140,10 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/recent'
     | '/settings'
+    | '/shared-with-me'
     | '/trash'
     | '/files/$folderId'
+    | '/shared/$nodeId'
   id:
     | '__root__'
     | '/'
@@ -131,8 +153,10 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/recent'
     | '/settings'
+    | '/shared-with-me'
     | '/trash'
     | '/files/$folderId'
+    | '/shared/$nodeId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -143,8 +167,10 @@ export interface RootRouteChildren {
   OnboardingRoute: typeof OnboardingRoute
   RecentRoute: typeof RecentRoute
   SettingsRoute: typeof SettingsRoute
+  SharedWithMeRoute: typeof SharedWithMeRoute
   TrashRoute: typeof TrashRoute
   FilesFolderIdRoute: typeof FilesFolderIdRoute
+  SharedNodeIdRoute: typeof SharedNodeIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -198,6 +224,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/shared-with-me': {
+      id: '/shared-with-me'
+      path: '/shared-with-me'
+      fullPath: '/shared-with-me'
+      preLoaderRoute: typeof SharedWithMeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/trash': {
       id: '/trash'
       path: '/trash'
@@ -212,6 +245,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FilesFolderIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/shared/$nodeId': {
+      id: '/shared/$nodeId'
+      path: '/shared/$nodeId'
+      fullPath: '/shared/$nodeId'
+      preLoaderRoute: typeof SharedNodeIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -223,8 +263,10 @@ const rootRouteChildren: RootRouteChildren = {
   OnboardingRoute: OnboardingRoute,
   RecentRoute: RecentRoute,
   SettingsRoute: SettingsRoute,
+  SharedWithMeRoute: SharedWithMeRoute,
   TrashRoute: TrashRoute,
   FilesFolderIdRoute: FilesFolderIdRoute,
+  SharedNodeIdRoute: SharedNodeIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

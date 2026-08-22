@@ -12,3 +12,15 @@ export interface FileShare {
   apiName: string;
   permission: SharePermission;
 }
+
+/** A share with a specific person (by email), as opposed to FileShare which shares with another
+ * app in the suite. `expiresAt` null means it never expires. */
+export interface UserFileShare {
+  id: string;
+  fileId: string;
+  sharedWithUserId: string;
+  sharedWithEmail: string;
+  permission: SharePermission;
+  expiresAt: string | null;
+  createdAt: string;
+}

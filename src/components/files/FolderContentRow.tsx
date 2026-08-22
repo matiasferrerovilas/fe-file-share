@@ -3,14 +3,17 @@ import { Avatar, Checkbox, Dropdown, Flex, Tooltip, Typography, theme } from "an
 import { useTranslation } from "react-i18next";
 import StarFilled from "@ant-design/icons/StarFilled";
 import StarOutlined from "@ant-design/icons/StarOutlined";
+import UsergroupAddOutlined from "@ant-design/icons/UsergroupAddOutlined";
 import { formatFileSize } from "../../utils/formatFileSize";
 import { shareAbbreviation } from "../../utils/shareAbbreviation";
 import { getFolderIcon } from "../../utils/folderCustomization";
 import type { FileSystemNode } from "../../models/FileSystemNode";
 import { useFolderContentActions } from "../../hooks/useFolderContentActions";
+import FileActivityModal from "./FileActivityModal";
 import FilePreviewModal from "./FilePreviewModal";
 import FolderCustomizeModal from "./FolderCustomizeModal";
 import RenameNodeModal from "./RenameNodeModal";
+import ShareWithPersonModal from "./ShareWithPersonModal";
 
 const { Text } = Typography;
 
@@ -44,6 +47,10 @@ export default function FolderContentRow({
     setPreviewing,
     customizing,
     setCustomizing,
+    sharingWithPerson,
+    setSharingWithPerson,
+    viewingActivity,
+    setViewingActivity,
     isFavorite,
     handleToggleFavorite,
   } = useFolderContentActions(node);
@@ -138,6 +145,13 @@ export default function FolderContentRow({
               </Avatar.Group>
             </div>
           )}
+          {node.metadata.sharedWithUserCount > 0 && (
+            <Tooltip title={t("files.shareWithPerson.sharedWithCountTooltip", { count: node.metadata.sharedWithUserCount })}>
+              <span style={{ display: "flex", alignItems: "center", fontSize: 14, color: token.colorPrimary, flexShrink: 0 }}>
+                <UsergroupAddOutlined />
+              </span>
+            </Tooltip>
+          )}
           <Text type="secondary" style={{ width: 90, textAlign: "right", flexShrink: 0 }}>
             {isFolder ? "—" : formatFileSize(node.metadata.size ?? 0)}
           </Text>
@@ -156,6 +170,14 @@ export default function FolderContentRow({
             : null
         }
         onClose={() => setCustomizing(false)}
+      />
+      <ShareWithPersonModal
+        node={sharingWithPerson ? { id: node.id, name: node.name } : null}
+        onClose={() => setSharingWithPerson(false)}
+      />
+      <FileActivityModal
+        node={viewingActivity ? { id: node.id, name: node.name } : null}
+        onClose={() => setViewingActivity(false)}
       />
     </>
   );

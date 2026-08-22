@@ -96,7 +96,55 @@
     "customizeColorLabel": "Color",
     "customizeIconLabel": "Icon",
     "customizeReset": "Reset",
-    "customizeFailed": "Couldn't customize \"{{name}}\""
+    "customizeFailed": "Couldn't customize \"{{name}}\"",
+    "shareWithPerson": {
+      "menuLabel": "Share with a person",
+      "title": "Share \"{{name}}\"",
+      "emailLabel": "Email",
+      "emailPlaceholder": "person@example.com",
+      "emailRequired": "Email is required",
+      "emailInvalid": "Email is not valid",
+      "permissionLabel": "Permission",
+      "permissionRead": "Read",
+      "permissionWrite": "Write",
+      "permissionReadWrite": "Read and write",
+      "expiresAtLabel": "Expires on (optional)",
+      "expiresAtPlaceholder": "Never expires",
+      "shareButton": "Share",
+      "shareSuccess": "Shared with {{email}}",
+      "noAccountForEmail": "No account exists with the email {{email}}",
+      "alreadyShared": "Already shared with {{email}}",
+      "shareFailed": "Couldn't share with {{email}}",
+      "revokeSuccess": "Stopped sharing with {{email}}",
+      "revokeFailed": "Couldn't stop sharing with {{email}}",
+      "revokeConfirmTitle": "Stop sharing with {{email}}?",
+      "empty": "You haven't shared this with anyone yet",
+      "expiresOn": "Expires on {{date}}",
+      "noExpiration": "Never expires",
+      "sharedWithCountTooltip_one": "Shared with {{count}} person",
+      "sharedWithCountTooltip_other": "Shared with {{count}} people"
+    },
+    "sharedWithMe": {
+      "title": "Shared with me",
+      "empty": "No one has shared anything with you yet",
+      "backLink": "Shared with me",
+      "browserTitle": "Shared with me",
+      "emptyFolder": "This folder is empty"
+    },
+    "activity": {
+      "menuLabel": "View activity",
+      "title": "Activity for \"{{name}}\"",
+      "empty": "No activity recorded yet",
+      "verb": {
+        "UPLOADED": "{{email}} uploaded",
+        "RENAMED": "{{email}} renamed",
+        "MOVED": "{{email}} moved",
+        "DELETED": "{{email}} deleted",
+        "RESTORED": "{{email}} restored",
+        "SHARED": "{{email}} shared",
+        "UNSHARED": "{{email}} unshared"
+      }
+    }
   },
   "common": {
     "loading": "Loading...",

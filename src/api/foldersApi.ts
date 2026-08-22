@@ -1,4 +1,5 @@
 import { api, LARGE_FILE_TIMEOUT_MS } from "./axios";
+import type { FileActivity } from "../models/FileActivity";
 import type { FileSystemNode } from "../models/FileSystemNode";
 import type { FileSearchResult } from "../models/FileSearchResult";
 import type { WorkspaceUsage } from "../models/WorkspaceUsage";
@@ -19,6 +20,9 @@ export const setFavorite = (nodeId: string, favorite: boolean) =>
 
 export const setFolderCustomization = (nodeId: string, color: string | null, icon: string | null) =>
   api.patch<FileSystemNode>(`folders/${nodeId}/customization`, { color, icon }).then((r) => r.data);
+
+export const getFileActivity = (nodeId: string) =>
+  api.get<FileActivity[]>(`folders/${nodeId}/activity`).then((r) => r.data);
 
 export const getFavorites = (workspaceId: number) =>
   api.get<FileSystemNode[]>("folders/favorites", { params: { workspaceId } }).then((r) => r.data);

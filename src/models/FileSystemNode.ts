@@ -17,6 +17,9 @@ export interface FileSystemNodeMetadata {
   /** Solo aplica a carpetas (`type === "FOLDER"`) — siempre null en archivos. */
   folderColor: string | null;
   folderIcon: string | null;
+  /** Con cuántas personas (no apps) está compartido este nodo ahora mismo — solo una señal para
+   * la UI del dueño, el listado completo de a quién se lo compartió se pide aparte. */
+  sharedWithUserCount: number;
 }
 
 export interface FileSystemNode {

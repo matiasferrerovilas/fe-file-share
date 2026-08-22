@@ -7,7 +7,9 @@ import DeleteOutlined from "@ant-design/icons/DeleteOutlined";
 import DownloadOutlined from "@ant-design/icons/DownloadOutlined";
 import EditOutlined from "@ant-design/icons/EditOutlined";
 import EyeOutlined from "@ant-design/icons/EyeOutlined";
+import HistoryOutlined from "@ant-design/icons/HistoryOutlined";
 import ShareAltOutlined from "@ant-design/icons/ShareAltOutlined";
+import UsergroupAddOutlined from "@ant-design/icons/UsergroupAddOutlined";
 import { useNavigate } from "@tanstack/react-router";
 import { FileSystemNodeType, type FileSystemNode } from "../models/FileSystemNode";
 import { useDeleteFolder } from "./useDeleteFolder";
@@ -44,6 +46,8 @@ export function useFolderContentActions(node: FileSystemNode) {
   const [renaming, setRenaming] = useState(false);
   const [previewing, setPreviewing] = useState(false);
   const [customizing, setCustomizing] = useState(false);
+  const [sharingWithPerson, setSharingWithPerson] = useState(false);
+  const [viewingActivity, setViewingActivity] = useState(false);
   const [dragDepth, setDragDepth] = useState(0);
 
   const isFolder = node.metadata.type === FileSystemNodeType.FOLDER;
@@ -79,6 +83,7 @@ export function useFolderContentActions(node: FileSystemNode) {
     ...(previewable ? [{ key: "preview", label: t("files.preview"), icon: <EyeOutlined /> }] : []),
     { key: "download", label: t("files.download"), icon: <DownloadOutlined /> },
     { key: "rename", label: t("files.rename"), icon: <EditOutlined /> },
+    { key: "activity", label: t("files.activity.menuLabel"), icon: <HistoryOutlined /> },
     ...(isFolder ? [{ key: "customize", label: t("files.customize"), icon: <BgColorsOutlined /> }] : []),
     ...(isAdmin
       ? [
@@ -92,6 +97,11 @@ export function useFolderContentActions(node: FileSystemNode) {
                 ? { key: `unshare:${target.key}`, label: t("files.unshareWith", { apiName: target.label }) }
                 : { key: `share:${target.key}`, label: target.label };
             }),
+          },
+          {
+            key: "share-with-person",
+            label: t("files.shareWithPerson.menuLabel"),
+            icon: <UsergroupAddOutlined />,
           },
         ]
       : []),
@@ -107,7 +117,9 @@ export function useFolderContentActions(node: FileSystemNode) {
       });
     }
     if (key === "rename") setRenaming(true);
+    if (key === "activity") setViewingActivity(true);
     if (key === "customize") setCustomizing(true);
+    if (key === "share-with-person") setSharingWithPerson(true);
     if (key === "delete") handleDelete();
     if (key.startsWith("unshare:")) {
       const apiName = key.slice("unshare:".length);
@@ -186,6 +198,10 @@ export function useFolderContentActions(node: FileSystemNode) {
     setPreviewing,
     customizing,
     setCustomizing,
+    sharingWithPerson,
+    setSharingWithPerson,
+    viewingActivity,
+    setViewingActivity,
     isFavorite,
     handleToggleFavorite,
   };

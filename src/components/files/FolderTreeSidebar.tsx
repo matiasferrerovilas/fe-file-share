@@ -6,6 +6,7 @@ import UploadOutlined from "@ant-design/icons/UploadOutlined";
 import StarOutlined from "@ant-design/icons/StarOutlined";
 import HistoryOutlined from "@ant-design/icons/HistoryOutlined";
 import DeleteOutlined from "@ant-design/icons/DeleteOutlined";
+import UsergroupAddOutlined from "@ant-design/icons/UsergroupAddOutlined";
 import { useNavigate, useLocation } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { useFileSystemTree } from "../../hooks/useFileSystemTree";
@@ -62,7 +63,7 @@ export default function FolderTreeSidebar({ activeFolderId, onNavigate }: Folder
     await runUploads(activeFolderId, fileList, t);
   };
 
-  const goTo = (to: "/favorites" | "/recent" | "/trash") => {
+  const goTo = (to: "/favorites" | "/recent" | "/trash" | "/shared-with-me") => {
     navigate({ to });
     onNavigate?.();
   };
@@ -107,6 +108,15 @@ export default function FolderTreeSidebar({ activeFolderId, onNavigate }: Folder
           {t("files.recentTitle")}
         </Button>
       </Flex>
+      <Button
+        icon={<UsergroupAddOutlined />}
+        block
+        style={{ marginBottom: 12 }}
+        type={location.pathname.startsWith("/shared") ? "primary" : "default"}
+        onClick={() => goTo("/shared-with-me")}
+      >
+        {t("files.sharedWithMe.title")}
+      </Button>
       <Button
         ref={(el) => registerRef("trash", el)}
         icon={<DeleteOutlined />}

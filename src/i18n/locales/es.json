@@ -96,7 +96,55 @@
     "customizeColorLabel": "Color",
     "customizeIconLabel": "Ícono",
     "customizeReset": "Restablecer",
-    "customizeFailed": "No se pudo personalizar \"{{name}}\""
+    "customizeFailed": "No se pudo personalizar \"{{name}}\"",
+    "shareWithPerson": {
+      "menuLabel": "Compartir con una persona",
+      "title": "Compartir \"{{name}}\"",
+      "emailLabel": "Email",
+      "emailPlaceholder": "persona@ejemplo.com",
+      "emailRequired": "El email es requerido",
+      "emailInvalid": "El email no es válido",
+      "permissionLabel": "Permiso",
+      "permissionRead": "Lectura",
+      "permissionWrite": "Escritura",
+      "permissionReadWrite": "Lectura y escritura",
+      "expiresAtLabel": "Vence el (opcional)",
+      "expiresAtPlaceholder": "Sin vencimiento",
+      "shareButton": "Compartir",
+      "shareSuccess": "Compartido con {{email}}",
+      "noAccountForEmail": "No existe ninguna cuenta con el email {{email}}",
+      "alreadyShared": "Ya está compartido con {{email}}",
+      "shareFailed": "No se pudo compartir con {{email}}",
+      "revokeSuccess": "Se dejó de compartir con {{email}}",
+      "revokeFailed": "No se pudo dejar de compartir con {{email}}",
+      "revokeConfirmTitle": "¿Dejar de compartir con {{email}}?",
+      "empty": "Todavía no compartiste esto con nadie",
+      "expiresOn": "Vence el {{date}}",
+      "noExpiration": "Sin vencimiento",
+      "sharedWithCountTooltip_one": "Compartido con {{count}} persona",
+      "sharedWithCountTooltip_other": "Compartido con {{count}} personas"
+    },
+    "sharedWithMe": {
+      "title": "Compartido conmigo",
+      "empty": "Nadie compartió nada con vos todavía",
+      "backLink": "Compartido conmigo",
+      "browserTitle": "Compartido conmigo",
+      "emptyFolder": "Esta carpeta está vacía"
+    },
+    "activity": {
+      "menuLabel": "Ver actividad",
+      "title": "Actividad de \"{{name}}\"",
+      "empty": "Todavía no hay actividad registrada",
+      "verb": {
+        "UPLOADED": "{{email}} subió",
+        "RENAMED": "{{email}} renombró",
+        "MOVED": "{{email}} movió",
+        "DELETED": "{{email}} eliminó",
+        "RESTORED": "{{email}} restauró",
+        "SHARED": "{{email}} compartió",
+        "UNSHARED": "{{email}} dejó de compartir"
+      }
+    }
   },
   "common": {
     "loading": "Cargando...",

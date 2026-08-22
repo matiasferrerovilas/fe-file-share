@@ -3,14 +3,17 @@ import { Avatar, Card, Checkbox, Dropdown, Tag, Tooltip, theme } from "antd";
 import { useTranslation } from "react-i18next";
 import StarFilled from "@ant-design/icons/StarFilled";
 import StarOutlined from "@ant-design/icons/StarOutlined";
+import UsergroupAddOutlined from "@ant-design/icons/UsergroupAddOutlined";
 import { formatFileSize } from "../../utils/formatFileSize";
 import { shareAbbreviation } from "../../utils/shareAbbreviation";
 import { getFolderIcon } from "../../utils/folderCustomization";
 import type { FileSystemNode } from "../../models/FileSystemNode";
 import { useFolderContentActions } from "../../hooks/useFolderContentActions";
+import FileActivityModal from "./FileActivityModal";
 import FilePreviewModal from "./FilePreviewModal";
 import FolderCustomizeModal from "./FolderCustomizeModal";
 import RenameNodeModal from "./RenameNodeModal";
+import ShareWithPersonModal from "./ShareWithPersonModal";
 
 interface FolderContentCardProps {
   node: FileSystemNode;
@@ -42,6 +45,10 @@ export default function FolderContentCard({
     setPreviewing,
     customizing,
     setCustomizing,
+    sharingWithPerson,
+    setSharingWithPerson,
+    viewingActivity,
+    setViewingActivity,
     isFavorite,
     handleToggleFavorite,
   } = useFolderContentActions(node);
@@ -105,6 +112,24 @@ export default function FolderContentCard({
                 </Tooltip>
               ))}
             </Avatar.Group>
+          )}
+          {node.metadata.sharedWithUserCount > 0 && (
+            <Tooltip title={t("files.shareWithPerson.sharedWithCountTooltip", { count: node.metadata.sharedWithUserCount })}>
+              <span
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  fontSize: 16,
+                  color: token.colorPrimary,
+                  background: token.colorBgContainer,
+                  borderRadius: token.borderRadiusSM,
+                  lineHeight: 0,
+                  padding: 2,
+                }}
+              >
+                <UsergroupAddOutlined />
+              </span>
+            </Tooltip>
           )}
           <Tooltip title={t(isFavorite ? "files.removeFromFavorites" : "files.addToFavorites")}>
             <span
@@ -181,6 +206,14 @@ export default function FolderContentCard({
             : null
         }
         onClose={() => setCustomizing(false)}
+      />
+      <ShareWithPersonModal
+        node={sharingWithPerson ? { id: node.id, name: node.name } : null}
+        onClose={() => setSharingWithPerson(false)}
+      />
+      <FileActivityModal
+        node={viewingActivity ? { id: node.id, name: node.name } : null}
+        onClose={() => setViewingActivity(false)}
       />
     </>
   );

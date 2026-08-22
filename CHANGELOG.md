@@ -8,6 +8,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **File/folder activity log** — new "Ver actividad" context-menu item (available to anyone with
+  access to the node, not admin-gated) opens `FileActivityModal`: a read-only timeline of who
+  uploaded, renamed, moved, deleted, restored, or (un)shared it, and when. New
+  `GET folders/{id}/activity` call, `useFileActivity` hook, `FileActivity` model.
+- **Share a file/folder with another person**, not just another app — the biggest gap Keep had per
+  the roadmap. New "Compartir con una persona" context-menu item (admin-gated, same as the
+  existing app-share item) opens `ShareWithPersonModal`: an email field (resolved to an account
+  server-side, 404s if none exists), a permission select, and an optional expiry date — past that
+  date the recipient loses access, including to everything inside a shared folder. A small people
+  icon (`sharedWithUserCount`) shows on a card/row already shared with someone.
+  - **Discovering shared content**: a new "Compartido conmigo" sidebar entry (next to Favoritos/
+    Recientes/Papelera) lists what other people have shared with you — you don't have to be a
+    member of their workspace to see it. Opening a shared file previews/downloads it directly;
+    opening a shared folder goes to a new in-app browser (`/shared/$nodeId`) that fetches the whole
+    subtree once and lets you navigate its subfolders locally, no extra round trips per level.
+  - New `SharedNodeRow`/`SharedFolderBrowser` — deliberately not a reuse of `FolderContentCard`/
+    `FolderContentsPanel`, which are wired to the *caller's own* workspace tree and carry an
+    owner-centric menu (rename/delete/customize/share) that doesn't apply to someone else's shared
+    content.
+  - New `userSharesApi.ts`, `useUserShares`/`useSharedWithMe`/`useFolderSubtree` hooks,
+    `UserFileShare` model, `sharedWithUserCount` on `FileSystemNodeMetadata`.
 - Custom color/icon per folder, via a new "Personalizar" context-menu item (folder rows/cards
   only) opening `FolderCustomizeModal` — a fixed palette of 8 colors and a fixed set of 10 icons
   (closed sets, not user-extensible; the backend doesn't validate them either, so an unrecognized
