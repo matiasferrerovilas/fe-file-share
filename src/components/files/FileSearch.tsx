@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Empty, Flex, Input, Popover, Spin, theme, Typography } from "antd";
 import SearchOutlined from "@ant-design/icons/SearchOutlined";
 import FolderOutlined from "@ant-design/icons/FolderOutlined";
@@ -26,9 +26,11 @@ export default function FileSearch({ style, onNavigate }: FileSearchProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const { results, isSearching } = useFileSearch(query);
 
-  useEffect(() => {
+  const [prevResults, setPrevResults] = useState(results);
+  if (results !== prevResults) {
+    setPrevResults(results);
     setActiveIndex(0);
-  }, [results]);
+  }
 
   const handleSelect = (result: FileSearchResult) => {
     const folderId = result.type === FileSystemNodeType.FOLDER ? result.id : (result.parentId ?? ROOT_FOLDER_ID);
