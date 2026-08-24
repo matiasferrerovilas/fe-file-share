@@ -122,7 +122,15 @@
       "expiresOn": "Vence el {{date}}",
       "noExpiration": "Sin vencimiento",
       "sharedWithCountTooltip_one": "Compartido con {{count}} persona",
-      "sharedWithCountTooltip_other": "Compartido con {{count}} personas"
+      "sharedWithCountTooltip_other": "Compartido con {{count}} personas",
+      "editButton": "Editar",
+      "editingBanner": "Editando el share con {{email}} — el email no se puede cambiar, solo el permiso y el vencimiento.",
+      "currentExpiration": "Vencimiento actual: {{date}}",
+      "currentExpirationNone": "Vencimiento actual: sin vencimiento",
+      "saveChangesButton": "Guardar cambios",
+      "cancelEditButton": "Cancelar",
+      "updateSuccess": "Se actualizó el share con {{email}}",
+      "updateFailed": "No se pudo actualizar el share con {{email}}"
     },
     "sharedWithMe": {
       "title": "Compartido conmigo",

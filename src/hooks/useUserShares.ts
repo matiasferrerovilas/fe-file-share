@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getUserShares, revokeUserShare, shareWithUser } from "../api/userSharesApi";
+import { getUserShares, revokeUserShare, shareWithUser, updateUserShare } from "../api/userSharesApi";
 import type { SharePermission } from "../models/FileShare";
 import { FILE_SYSTEM_TREE_QUERY_KEY } from "./useFileSystemTree";
 
@@ -28,6 +28,25 @@ export const useShareWithUser = () => {
     onSuccess: (_, { fileId }) => {
       queryClient.invalidateQueries({ queryKey: [...USER_SHARES_QUERY_KEY, fileId] });
       queryClient.invalidateQueries({ queryKey: FILE_SYSTEM_TREE_QUERY_KEY });
+    },
+  });
+};
+
+interface UpdateUserShareVariables {
+  shareId: string;
+  fileId: string;
+  permission: SharePermission;
+  expiresAt: string | null;
+}
+
+export const useUpdateUserShare = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ shareId, permission, expiresAt }: UpdateUserShareVariables) =>
+      updateUserShare(shareId, permission, expiresAt),
+    onSuccess: (_, { fileId }) => {
+      queryClient.invalidateQueries({ queryKey: [...USER_SHARES_QUERY_KEY, fileId] });
     },
   });
 };

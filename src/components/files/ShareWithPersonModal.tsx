@@ -1,11 +1,14 @@
 import { useState } from "react";
 import { App as AntdApp, Button, DatePicker, Empty, Flex, Form, Input, List, Modal, Popconfirm, Select, Tag, Typography } from "antd";
+import CloseOutlined from "@ant-design/icons/CloseOutlined";
 import DeleteOutlined from "@ant-design/icons/DeleteOutlined";
+import EditOutlined from "@ant-design/icons/EditOutlined";
 import PlusCircleOutlined from "@ant-design/icons/PlusCircleOutlined";
+import SaveOutlined from "@ant-design/icons/SaveOutlined";
 import UsergroupAddOutlined from "@ant-design/icons/UsergroupAddOutlined";
 import { useTranslation } from "react-i18next";
 import { SharePermission, type UserFileShare } from "../../models/FileShare";
-import { useShareWithUser, useUserShares, useRevokeUserShare } from "../../hooks/useUserShares";
+import { useShareWithUser, useUserShares, useRevokeUserShare, useUpdateUserShare } from "../../hooks/useUserShares";
 
 const { Text } = Typography;
 
@@ -28,30 +31,54 @@ export default function ShareWithPersonModal({ node, onClose }: ShareWithPersonM
 
   const sharesQuery = useUserShares(fileId);
   const shareMutation = useShareWithUser();
+  const updateMutation = useUpdateUserShare();
   const revokeMutation = useRevokeUserShare();
   const [expiresAtDate, setExpiresAtDate] = useState<string | null>(null);
+  const [editingShare, setEditingShare] = useState<UserFileShare | null>(null);
+
+  const resetForm = () => {
+    form.resetFields();
+    setExpiresAtDate(null);
+    setEditingShare(null);
+  };
 
   const handleClose = () => {
     onClose();
-    form.resetFields();
-    setExpiresAtDate(null);
+    resetForm();
+  };
+
+  const handleStartEdit = (share: UserFileShare) => {
+    setEditingShare(share);
+    form.setFieldsValue({ email: share.sharedWithEmail, permission: share.permission });
+    setExpiresAtDate(share.expiresAt ? share.expiresAt.slice(0, 10) : null);
   };
 
   const handleSubmit = (values: ShareForm) => {
     if (!fileId) return;
+    // "Hasta el X" incluye todo ese día, no solo el instante de medianoche.
+    const expiresAt = expiresAtDate ? `${expiresAtDate}T23:59:59` : null;
+
+    if (editingShare) {
+      updateMutation.mutate(
+        { shareId: editingShare.id, fileId, permission: values.permission, expiresAt },
+        {
+          onSuccess: () => {
+            message.success(t("files.shareWithPerson.updateSuccess", { email: editingShare.sharedWithEmail }));
+            resetForm();
+          },
+          onError: () =>
+            message.error(t("files.shareWithPerson.updateFailed", { email: editingShare.sharedWithEmail })),
+        },
+      );
+      return;
+    }
+
     shareMutation.mutate(
-      {
-        fileId,
-        email: values.email,
-        permission: values.permission,
-        // "Hasta el X" incluye todo ese día, no solo el instante de medianoche.
-        expiresAt: expiresAtDate ? `${expiresAtDate}T23:59:59` : null,
-      },
+      { fileId, email: values.email, permission: values.permission, expiresAt },
       {
         onSuccess: () => {
           message.success(t("files.shareWithPerson.shareSuccess", { email: values.email }));
-          form.resetFields();
-          setExpiresAtDate(null);
+          resetForm();
         },
         onError: (error) => {
           const status = (error as { response?: { status?: number } }).response?.status;
@@ -82,6 +109,8 @@ export default function ShareWithPersonModal({ node, onClose }: ShareWithPersonM
   };
 
   const shares = sharesQuery.data ?? [];
+  const isEditing = editingShare !== null;
+  const isSubmitting = shareMutation.isPending || updateMutation.isPending;
 
   return (
     <Modal
@@ -96,9 +125,14 @@ export default function ShareWithPersonModal({ node, onClose }: ShareWithPersonM
         form={form}
         layout="vertical"
         onFinish={handleSubmit}
-        disabled={shareMutation.isPending}
+        disabled={isSubmitting}
         initialValues={{ permission: SharePermission.READ }}
       >
+        {isEditing && (
+          <Text type="secondary" style={{ display: "block", marginBottom: 12, fontSize: 13 }}>
+            {t("files.shareWithPerson.editingBanner", { email: editingShare.sharedWithEmail })}
+          </Text>
+        )}
         <Flex gap={12} align="flex-start" wrap>
           <Form.Item
             label={t("files.shareWithPerson.emailLabel")}
@@ -109,7 +143,7 @@ export default function ShareWithPersonModal({ node, onClose }: ShareWithPersonM
               { type: "email", message: t("files.shareWithPerson.emailInvalid") },
             ]}
           >
-            <Input placeholder={t("files.shareWithPerson.emailPlaceholder")} />
+            <Input placeholder={t("files.shareWithPerson.emailPlaceholder")} disabled={isEditing} />
           </Form.Item>
           <Form.Item
             label={t("files.shareWithPerson.permissionLabel")}
@@ -132,16 +166,30 @@ export default function ShareWithPersonModal({ node, onClose }: ShareWithPersonM
             placeholder={t("files.shareWithPerson.expiresAtPlaceholder")}
             onChange={(_, dateString) => setExpiresAtDate(typeof dateString === "string" && dateString ? dateString : null)}
           />
+          {isEditing && (
+            <Text type="secondary" style={{ display: "block", marginTop: 6, fontSize: 12 }}>
+              {expiresAtDate
+                ? t("files.shareWithPerson.currentExpiration", { date: expiresAtDate })
+                : t("files.shareWithPerson.currentExpirationNone")}
+            </Text>
+          )}
         </Form.Item>
-        <Button
-          type="primary"
-          icon={<PlusCircleOutlined />}
-          htmlType="submit"
-          loading={shareMutation.isPending}
-          block
-        >
-          {t("files.shareWithPerson.shareButton")}
-        </Button>
+        <Flex gap={8}>
+          <Button
+            type="primary"
+            icon={isEditing ? <SaveOutlined /> : <PlusCircleOutlined />}
+            htmlType="submit"
+            loading={isSubmitting}
+            block
+          >
+            {t(isEditing ? "files.shareWithPerson.saveChangesButton" : "files.shareWithPerson.shareButton")}
+          </Button>
+          {isEditing && (
+            <Button icon={<CloseOutlined />} onClick={resetForm} disabled={isSubmitting}>
+              {t("files.shareWithPerson.cancelEditButton")}
+            </Button>
+          )}
+        </Flex>
       </Form>
 
       <List
@@ -152,6 +200,14 @@ export default function ShareWithPersonModal({ node, onClose }: ShareWithPersonM
         renderItem={(share) => (
           <List.Item
             actions={[
+              <Button
+                key="edit"
+                type="text"
+                size="small"
+                icon={<EditOutlined />}
+                aria-label={t("files.shareWithPerson.editButton")}
+                onClick={() => handleStartEdit(share)}
+              />,
               <Popconfirm
                 key="revoke"
                 title={t("files.shareWithPerson.revokeConfirmTitle", { email: share.sharedWithEmail })}

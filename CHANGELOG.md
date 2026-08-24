@@ -8,6 +8,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Editing a person-share in place: a new "Editar" button per row in `ShareWithPersonModal` loads
+  that grant's permission/expiration back into the form (email is locked — only the target can't
+  be changed) and submits to the new `PATCH /v1/shares/users/{id}` instead of creating a new one.
+  Previously changing a permission or extending an expiration meant revoking and re-sharing from
+  scratch. New `updateUserShare` API call, `useUpdateUserShare` hook.
+
+### Fixed
+- `UserSharingService.shareWithUser` (api-keep) gained a guard against sharing a file with
+  yourself — no frontend change needed, the "Compartir con una persona" form already surfaces the
+  backend's error message on failure.
+
+### Added
 - **File/folder activity log** — new "Ver actividad" context-menu item (available to anyone with
   access to the node, not admin-gated) opens `FileActivityModal`: a read-only timeline of who
   uploaded, renamed, moved, deleted, restored, or (un)shared it, and when. New

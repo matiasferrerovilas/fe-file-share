@@ -122,7 +122,15 @@
       "expiresOn": "Expires on {{date}}",
       "noExpiration": "Never expires",
       "sharedWithCountTooltip_one": "Shared with {{count}} person",
-      "sharedWithCountTooltip_other": "Shared with {{count}} people"
+      "sharedWithCountTooltip_other": "Shared with {{count}} people",
+      "editButton": "Edit",
+      "editingBanner": "Editing the share with {{email}} — the email can't be changed, only the permission and expiration.",
+      "currentExpiration": "Current expiration: {{date}}",
+      "currentExpirationNone": "Current expiration: never expires",
+      "saveChangesButton": "Save changes",
+      "cancelEditButton": "Cancel",
+      "updateSuccess": "Updated the share with {{email}}",
+      "updateFailed": "Couldn't update the share with {{email}}"
     },
     "sharedWithMe": {
       "title": "Shared with me",

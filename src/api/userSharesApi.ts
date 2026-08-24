@@ -15,6 +15,15 @@ export const shareWithUser = (
 export const getUserShares = (fileId: string) =>
   api.get<UserFileShare[]>("shares/users", { params: { fileId } }).then((r) => r.data);
 
+export const updateUserShare = (
+  shareId: string,
+  permission: SharePermission,
+  expiresAt: string | null,
+) =>
+  api
+    .patch<UserFileShare>(`shares/users/${shareId}`, { permission, expiresAt })
+    .then((r) => r.data);
+
 export const revokeUserShare = (shareId: string) =>
   api.delete(`shares/users/${shareId}`).then(() => undefined);
 
