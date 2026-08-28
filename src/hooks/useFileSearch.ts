@@ -2,10 +2,15 @@ import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { searchFiles } from "../api/foldersApi";
 import { useCurrentWorkspace } from "../workspace/WorkspaceContext";
+import type { FileSearchResult } from "../models/FileSearchResult";
 
 export const FILE_SEARCH_QUERY_KEY = ["file-search"] as const;
 
 const DEBOUNCE_MS = 300;
+
+// Referencia estable: FileSearch compara `results` por identidad para resetear activeIndex, así
+// que un array nuevo en cada render (p.ej. `?? []` inline) dispara un loop de renders (React #301).
+const EMPTY_RESULTS: FileSearchResult[] = [];
 
 /**
  * Backs the top-bar search: debounces the raw input before hitting `GET /v1/folders/search`, so
@@ -32,7 +37,7 @@ export const useFileSearch = (query: string) => {
 
   return {
     ...queryResult,
-    results: trimmed === "" ? [] : (queryResult.data ?? []),
+    results: trimmed === "" ? EMPTY_RESULTS : (queryResult.data ?? EMPTY_RESULTS),
     isSearching: trimmed !== query.trim() || queryResult.isFetching,
   };
 };
