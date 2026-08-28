@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { App as AntdApp, Button, DatePicker, Empty, Flex, Form, Input, List, Modal, Popconfirm, Select, Tag, Typography } from "antd";
+import { App as AntdApp, Button, DatePicker, Empty, Flex, Form, List, Modal, Popconfirm, Select, Tag, Typography } from "antd";
 import CloseOutlined from "@ant-design/icons/CloseOutlined";
 import DeleteOutlined from "@ant-design/icons/DeleteOutlined";
 import EditOutlined from "@ant-design/icons/EditOutlined";
@@ -18,10 +18,12 @@ interface ShareWithPersonModalProps {
 }
 
 interface ShareForm {
-  email: string;
+  emails: string[];
   permission: SharePermission;
   expiresAt?: string;
 }
+
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function ShareWithPersonModal({ node, onClose }: ShareWithPersonModalProps) {
   const { t } = useTranslation();
@@ -49,11 +51,11 @@ export default function ShareWithPersonModal({ node, onClose }: ShareWithPersonM
 
   const handleStartEdit = (share: UserFileShare) => {
     setEditingShare(share);
-    form.setFieldsValue({ email: share.sharedWithEmail, permission: share.permission });
+    form.setFieldsValue({ emails: [share.sharedWithEmail], permission: share.permission });
     setExpiresAtDate(share.expiresAt ? share.expiresAt.slice(0, 10) : null);
   };
 
-  const handleSubmit = (values: ShareForm) => {
+  const handleSubmit = async (values: ShareForm) => {
     if (!fileId) return;
     // "Hasta el X" incluye todo ese día, no solo el instante de medianoche.
     const expiresAt = expiresAtDate ? `${expiresAtDate}T23:59:59` : null;
@@ -73,28 +75,33 @@ export default function ShareWithPersonModal({ node, onClose }: ShareWithPersonM
       return;
     }
 
-    shareMutation.mutate(
-      { fileId, email: values.email, permission: values.permission, expiresAt },
-      {
-        onSuccess: () => {
-          message.success(t("files.shareWithPerson.shareSuccess", { email: values.email }));
-          resetForm();
-        },
-        onError: (error) => {
-          const status = (error as { response?: { status?: number } }).response?.status;
-          message.error(
-            t(
-              status === 404
-                ? "files.shareWithPerson.noAccountForEmail"
-                : status === 409
-                  ? "files.shareWithPerson.alreadyShared"
-                  : "files.shareWithPerson.shareFailed",
-              { email: values.email },
-            ),
-          );
-        },
-      },
+    // Un email por request al backend (no hay endpoint de lote) — Promise.allSettled para que un
+    // 404/409 de una persona no le impida al resto de la tanda compartirse igual, mismo patrón que
+    // el borrado/movido en lote de FolderContentsPanel.
+    const results = await Promise.allSettled(
+      values.emails.map((email) => shareMutation.mutateAsync({ fileId, email, permission: values.permission, expiresAt })),
     );
+    const failedEmails = values.emails.filter((_, index) => results[index]?.status === "rejected");
+
+    if (failedEmails.length === 0) {
+      message.success(
+        values.emails.length === 1
+          ? t("files.shareWithPerson.shareSuccess", { email: values.emails[0] })
+          : t("files.shareWithPerson.shareSuccessMultiple", { count: values.emails.length }),
+      );
+      resetForm();
+    } else if (failedEmails.length < values.emails.length) {
+      message.warning(
+        t("files.shareWithPerson.sharePartialFailure", {
+          failed: failedEmails.length,
+          total: values.emails.length,
+          emails: failedEmails.join(", "),
+        }),
+      );
+      resetForm();
+    } else {
+      message.error(t("files.shareWithPerson.shareFailedAll"));
+    }
   };
 
   const handleRevoke = (share: UserFileShare) => {
@@ -135,15 +142,32 @@ export default function ShareWithPersonModal({ node, onClose }: ShareWithPersonM
         )}
         <Flex gap={12} align="flex-start" wrap>
           <Form.Item
-            label={t("files.shareWithPerson.emailLabel")}
-            name="email"
+            label={t(isEditing ? "files.shareWithPerson.emailLabel" : "files.shareWithPerson.emailsLabel")}
+            name="emails"
             style={{ flex: 1, minWidth: 200 }}
             rules={[
-              { required: true, message: t("files.shareWithPerson.emailRequired") },
-              { type: "email", message: t("files.shareWithPerson.emailInvalid") },
+              {
+                validator: async (_, value: string[] | undefined) => {
+                  if (!value || value.length === 0) {
+                    throw new Error(t("files.shareWithPerson.emailRequired"));
+                  }
+                  if (value.some((email) => !EMAIL_PATTERN.test(email))) {
+                    throw new Error(t("files.shareWithPerson.emailInvalid"));
+                  }
+                },
+              },
             ]}
           >
-            <Input placeholder={t("files.shareWithPerson.emailPlaceholder")} disabled={isEditing} />
+            <Select
+              mode="tags"
+              open={false}
+              suffixIcon={null}
+              tokenSeparators={[",", ";", " "]}
+              placeholder={t(
+                isEditing ? "files.shareWithPerson.emailPlaceholder" : "files.shareWithPerson.emailsPlaceholder",
+              )}
+              disabled={isEditing}
+            />
           </Form.Item>
           <Form.Item
             label={t("files.shareWithPerson.permissionLabel")}

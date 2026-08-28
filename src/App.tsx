@@ -15,6 +15,7 @@ import { useCurrentUser } from "./hooks/useCurrentUser";
 import NotFound from "./components/NotFound";
 import { WorkspaceProvider } from "./workspace/WorkspaceProvider";
 import { FileTreeRealtimeSync } from "./websocket/FileTreeRealtimeSync";
+import { UserShareRealtimeSync } from "./websocket/UserShareRealtimeSync";
 import { TourRefsProvider } from "./tour/TourRefsProvider";
 
 declare module "@tanstack/react-router" {
@@ -91,6 +92,7 @@ function RouterWithAuth() {
     <WorkspaceProvider>
       <TourRefsProvider>
         <FileTreeRealtimeSync />
+        <UserShareRealtimeSync />
         <RouterProvider router={router} />
       </TourRefsProvider>
     </WorkspaceProvider>

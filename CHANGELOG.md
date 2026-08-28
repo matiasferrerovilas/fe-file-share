@@ -8,6 +8,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Real-time notification when someone shares a file/folder with you, or when a share you have is
+  about to expire — a new toast (and a live refresh of "Compartido conmigo") arrives over the
+  existing WebSocket connection instead of requiring you to open that page and look. New
+  `useUserShareSubscription`/`UserShareRealtimeSync`, mounted globally (like file-tree sync, not
+  scoped to the Settings page like the invitation/membership subscriptions) since a share can
+  arrive at any time.
+- Sharing a file/folder with multiple people in one action: the email field in
+  `ShareWithPersonModal` is now a multi-value tag input (type an email, Enter/comma to add
+  another) instead of a single `Input`. No batch endpoint on the backend — fires one
+  `shareWithUser` call per email via `Promise.allSettled` (same pattern as bulk delete/move/
+  download in `FolderContentsPanel`) so one person already having access doesn't block sharing
+  with the rest of the list.
 - Editing a person-share in place: a new "Editar" button per row in `ShareWithPersonModal` loads
   that grant's permission/expiration back into the form (email is locked — only the target can't
   be changed) and submits to the new `PATCH /v1/shares/users/{id}` instead of creating a new one.
