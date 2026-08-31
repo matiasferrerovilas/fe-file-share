@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.9.0] - 2026-08-31
+
+### Added
+- `InviteUserToWorkspace` now has a role selector (Colaborador / Solo lectura, defaulting to
+  Colaborador) alongside the email field — the chosen role is sent to the backend and applied to
+  the membership when the invitee accepts. New `WorkspaceRoleEnum`-typed `role` field on
+  `CreateInvitationForm`/`Invitations`/`SentInvitation`.
+
 ## [1.8.0] - 2026-08-30
 
 ### Added
