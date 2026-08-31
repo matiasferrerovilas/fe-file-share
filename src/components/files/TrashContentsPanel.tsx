@@ -1,10 +1,11 @@
 import { useMemo, useState } from "react";
-import { App as AntdApp, Button, Empty, Flex, Spin, Typography, theme } from "antd";
+import { App as AntdApp, Button, Empty, Flex, Popconfirm, Spin, Typography, theme } from "antd";
 import CloseOutlined from "@ant-design/icons/CloseOutlined";
 import RollbackOutlined from "@ant-design/icons/RollbackOutlined";
+import DeleteOutlined from "@ant-design/icons/DeleteOutlined";
 import { useTranslation } from "react-i18next";
 import type { FileSystemNode } from "../../models/FileSystemNode";
-import { useRestoreNode } from "../../hooks/useTrash";
+import { useRestoreNode, usePurgeNode } from "../../hooks/useTrash";
 import { describeBulkFailures } from "../../utils/describeBulkFailures";
 import TrashContentRow from "./TrashContentRow";
 
@@ -22,6 +23,7 @@ export default function TrashContentsPanel({ nodes, title, isLoading }: TrashCon
   const { message, notification } = AntdApp.useApp();
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const restoreMutation = useRestoreNode();
+  const purgeMutation = usePurgeNode();
 
   const rows = useMemo(() => [...nodes].sort((a, b) => a.name.localeCompare(b.name)), [nodes]);
   const selectedNodes = useMemo(() => rows.filter((node) => selectedIds.has(node.id)), [rows, selectedIds]);
@@ -51,14 +53,50 @@ export default function TrashContentsPanel({ nodes, title, isLoading }: TrashCon
     clearSelection();
   };
 
+  const purgeNodes = async (targets: FileSystemNode[]) => {
+    const results = await Promise.allSettled(targets.map((node) => purgeMutation.mutateAsync(node.id)));
+    const failed = results.filter((r) => r.status === "rejected").length;
+    if (failed > 0) {
+      notification.error({
+        message: t("files.bulkPurgeFailed", { failed, total: targets.length }),
+        description: describeBulkFailures(targets, results),
+      });
+    } else {
+      message.success(t("files.itemsPurgedSuccess"));
+    }
+  };
+
+  const handleBulkPurge = async () => {
+    await purgeNodes(selectedNodes);
+    clearSelection();
+  };
+
+  const handleEmptyTrash = () => purgeNodes(rows);
+
   return (
     <>
-      <Typography.Title level={4} style={{ marginTop: 0, marginBottom: 4 }}>
-        {title}
-      </Typography.Title>
-      <Text type="secondary" style={{ marginBottom: 16 }}>
-        {t("files.trashRetentionHint")}
-      </Text>
+      <Flex align="center" justify="space-between" wrap gap={8}>
+        <div>
+          <Typography.Title level={4} style={{ marginTop: 0, marginBottom: 4 }}>
+            {title}
+          </Typography.Title>
+          <Text type="secondary">{t("files.trashRetentionHint")}</Text>
+        </div>
+        {rows.length > 0 && (
+          <Popconfirm
+            title={t("files.emptyTrashConfirmTitle")}
+            description={t("files.emptyTrashConfirmDescription", { count: rows.length })}
+            onConfirm={handleEmptyTrash}
+            okText={t("files.purgeConfirmOk")}
+            cancelText={t("files.purgeConfirmCancel")}
+            okButtonProps={{ danger: true, loading: purgeMutation.isPending }}
+          >
+            <Button danger icon={<DeleteOutlined />}>
+              {t("files.emptyTrashButton")}
+            </Button>
+          </Popconfirm>
+        )}
+      </Flex>
       {selectedNodes.length > 0 && (
         <Flex
           align="center"
@@ -76,6 +114,18 @@ export default function TrashContentsPanel({ nodes, title, isLoading }: TrashCon
           <Button icon={<RollbackOutlined />} onClick={handleBulkRestore}>
             {t("files.restore")}
           </Button>
+          <Popconfirm
+            title={t("files.emptyTrashConfirmTitle")}
+            description={t("files.purgeConfirmDescription")}
+            onConfirm={handleBulkPurge}
+            okText={t("files.purgeConfirmOk")}
+            cancelText={t("files.purgeConfirmCancel")}
+            okButtonProps={{ danger: true, loading: purgeMutation.isPending }}
+          >
+            <Button danger icon={<DeleteOutlined />}>
+              {t("files.purgeNow")}
+            </Button>
+          </Popconfirm>
           <Button type="text" icon={<CloseOutlined />} onClick={clearSelection} />
         </Flex>
       )}

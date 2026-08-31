@@ -4,6 +4,7 @@ import type {
   CreateInvitationForm,
   CreateWorkspaceForm,
   Invitations,
+  SentInvitation,
   Workspace,
 } from "../models/Workspace";
 
@@ -33,3 +34,9 @@ export const acceptRejectWorkspaceInvitationApi = (confirmInvitations: ConfirmIn
   api
     .patch(`${baseUrl}/invitations/${confirmInvitations.id}`, confirmInvitations)
     .then((r) => r.data);
+
+export const getSentWorkspaceInvitations = () =>
+  api.get<SentInvitation[]>(`${baseUrl}/invitations/sent`).then((r) => r.data);
+
+export const cancelWorkspaceInvitationApi = (invitationId: number) =>
+  api.delete(`${baseUrl}/invitations/${invitationId}`).then((r) => r.data);

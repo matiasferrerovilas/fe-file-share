@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { protectedRouteGuard } from "../auth/protectedRouteGuard";
 import { RoleEnum } from "../enums/RoleEnum";
 import { SettingInviteWorkspaces } from "../components/settings/SettingInviteWorkspaces";
+import { SettingSentInvitations } from "../components/settings/SettingSentInvitations";
 import { SettingCurrentWorkspace } from "../components/settings/SettingCurrentWorkspace";
 
 const { Title } = Typography;
@@ -26,6 +27,7 @@ function RouteComponent() {
         </Title>
         <Flex vertical gap={16}>
           <SettingInviteWorkspaces />
+          <SettingSentInvitations />
           <SettingCurrentWorkspace />
         </Flex>
       </Col>

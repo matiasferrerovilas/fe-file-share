@@ -7,7 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.8.0] - 2026-08-30
+
 ### Added
+- "Invitaciones Enviadas" card in Settings: lists pending invitations the authenticated user sent,
+  with a cancel button per row (`SettingSentInvitations`/`SettingSentInvitationCard`, mirroring the
+  existing "Invitaciones Pendientes" received-invitations card). Backed by api-keep's new
+  `GET/DELETE /v1/workspace/invitations/sent|{id}`.
 - Real-time notification when someone shares a file/folder with you, or when a share you have is
   about to expire — a new toast (and a live refresh of "Compartido conmigo") arrives over the
   existing WebSocket connection instead of requiring you to open that page and look. New

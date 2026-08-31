@@ -37,9 +37,13 @@ export const restoreNode = (nodeId: string) =>
   api.post<FileSystemNode>(`folders/${nodeId}/restore`).then((r) => r.data);
 
 // Soft-delete: el nodo queda en la papelera y se purga automáticamente al día siguiente si no
-// se restaura antes (ver getTrash/restoreNode).
+// se restaura antes (ver getTrash/restoreNode/purgeNode).
 export const deleteFolder = (folderId: string) =>
   api.delete<void>(`folders/${folderId}`).then((r) => r.data);
+
+// Borra permanentemente un nodo que ya está en la papelera, sin esperar al barrido automático.
+export const purgeNode = (nodeId: string) =>
+  api.delete<void>(`folders/${nodeId}/purge`).then((r) => r.data);
 
 export const createFolder = (workspaceId: number, folderId: string, name: string) =>
   api

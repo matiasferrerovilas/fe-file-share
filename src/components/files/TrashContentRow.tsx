@@ -1,12 +1,13 @@
 import { useState } from "react";
-import { App as AntdApp, Button, Checkbox, Flex, Tooltip, Typography, theme } from "antd";
+import { App as AntdApp, Button, Checkbox, Flex, Popconfirm, Tooltip, Typography, theme } from "antd";
 import { useTranslation } from "react-i18next";
 import FolderOutlined from "@ant-design/icons/FolderOutlined";
 import RollbackOutlined from "@ant-design/icons/RollbackOutlined";
+import DeleteOutlined from "@ant-design/icons/DeleteOutlined";
 import { formatFileSize } from "../../utils/formatFileSize";
 import { getFileTypeIcon } from "../../utils/getFileTypeIcon";
 import { FileSystemNodeType, type FileSystemNode } from "../../models/FileSystemNode";
-import { useRestoreNode } from "../../hooks/useTrash";
+import { useRestoreNode, usePurgeNode } from "../../hooks/useTrash";
 
 const { Text } = Typography;
 
@@ -23,6 +24,7 @@ export default function TrashContentRow({ node, selected, selectionActive, onTog
   const { message } = AntdApp.useApp();
   const [hovering, setHovering] = useState(false);
   const restoreMutation = useRestoreNode();
+  const purgeMutation = usePurgeNode();
 
   const isFolder = node.metadata.type === FileSystemNodeType.FOLDER;
   const fileTypeIcon = getFileTypeIcon(node.metadata.contentType);
@@ -30,6 +32,12 @@ export default function TrashContentRow({ node, selected, selectionActive, onTog
   const handleRestore = () => {
     restoreMutation.mutate(node.id, {
       onError: () => message.error(t("files.restoreFailed", { name: node.name })),
+    });
+  };
+
+  const handlePurge = () => {
+    purgeMutation.mutate(node.id, {
+      onError: () => message.error(t("files.purgeFailed", { name: node.name })),
     });
   };
 
@@ -71,6 +79,24 @@ export default function TrashContentRow({ node, selected, selectionActive, onTog
           {t("files.restore")}
         </Button>
       </Tooltip>
+      <Popconfirm
+        title={t("files.purgeConfirmTitle", { name: node.name })}
+        description={t("files.purgeConfirmDescription")}
+        onConfirm={handlePurge}
+        okText={t("files.purgeConfirmOk")}
+        cancelText={t("files.purgeConfirmCancel")}
+        okButtonProps={{ danger: true, loading: purgeMutation.isPending }}
+        placement="topRight"
+      >
+        <Tooltip title={t("files.purgeNow")}>
+          <Button
+            danger
+            icon={<DeleteOutlined />}
+            loading={purgeMutation.isPending}
+            style={{ flexShrink: 0 }}
+          />
+        </Tooltip>
+      </Popconfirm>
     </Flex>
   );
 }
